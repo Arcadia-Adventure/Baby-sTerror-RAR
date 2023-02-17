@@ -43,7 +43,14 @@ public class ObjectiveController : MonoBehaviour
         taskTxt[taskNo-1].text = taskTxt[taskNo-1].text + "(complete)";
         //taskTxt[currentTask].text.Insert(taskTxt[currentTask].text.Length, " (Complete)"); 
         taskTxt[taskNo-1].color = completeTaskColor;
-        
+    }
+    public IEnumerator WriteObjective(Text objectiveText , string text)
+    {
+        foreach (var item in text)
+        {
+            objectiveText.text += item;
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 
 
