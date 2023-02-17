@@ -1,0 +1,10 @@
+Converting script [1 / 1]	[\Scripts\PickDropController.cs]
+	Fragments : 1
+		[ 0] : Line:   81	InputMethod   GetMouseButtonDown  	(1)
+
+
+1 scripts modified!
+Overwriting actual scripts...
+	[0 / 1] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-15-13-30\Assets-After/\Scripts\PickDropController.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\Scripts\PickDropController.cs]
+
+Overwriting COMPLETED!
