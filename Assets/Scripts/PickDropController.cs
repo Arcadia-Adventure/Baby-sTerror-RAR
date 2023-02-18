@@ -54,14 +54,20 @@ public class PickDropController : MonoBehaviour
             GamePlayManager.instance.GlowOn();
             print("drop");
 
+
+            if (GameManager.instance.selectedLevel == 2)
+            {
+                GamePlayManager.instance.baby.tag = "Untagged";
+            }
+
+
             if (prefabe)
             {
-                PrefabeInstant();
+                PrefabeInstantLvl1();
 
                 var b = GameObject.FindWithTag("Baby");
                 Destroy(b);
 
-               
 
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
                 GamePlayManager.instance.cradleGreenGlow.Stop();
@@ -78,7 +84,9 @@ public class PickDropController : MonoBehaviour
                 var f = GameObject.FindGameObjectWithTag("Feeder");
                 Destroy(f);
 
+
                 GamePlayManager.instance.baby.tag = "Untagged";
+
 
                 BabyController.instance.babyCry.Stop();
                 SoundManager.instance.BabyHappy();
@@ -87,12 +95,57 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
                 BabyController.instance.BabyAnim.SetBool("Sit", false);
 
-
                 StartCoroutine(BabyController.instance.LevelComplete());
 
                 print("feeder detection");
             }
-            
+
+            if (washPoint)
+            {
+                PrefabeInstantLvl3();
+
+                var b = GameObject.FindWithTag("Baby");
+                Destroy(b);
+
+                ObjectiveController.instance.UpdateTask(1);
+
+                BabyController.instance.BabyAnim.SetBool("Fly", false);
+                BabyController.instance.BabyAnim.SetBool("Sit", true);
+
+                GamePlayManager.instance.washPointGreenGlow.Stop();
+
+                print("Sit with cry");
+
+                //GamePlayManager.instance.facewashGlow.Play();
+
+
+            }
+
+
+            if (faceWash)
+            {
+                var b = GameObject.FindWithTag("Facewash");
+                Destroy(b);
+
+                BabyController.instance.babyBlueGlow.Play();
+                SoundManager.instance.BabyHappy();
+
+                ObjectiveController.instance.UpdateTask(2);
+
+                BabyController.instance.BabyAnim.SetBool("Sit", false);
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+
+                babyposLvl3.GetComponent<AudioSource>().enabled = false;
+                babyposLvl3.tag = "Untagged";
+
+                BabyController.instance.babyDirtyFace.SetActive(false);
+
+                StartCoroutine(BabyController.instance.LevelComplete());
+
+            }
+
+
+
         }
     }
 
@@ -252,7 +305,38 @@ public class PickDropController : MonoBehaviour
                 {
                     feeder = false;
                 }
-               
+
+                if(hit.transform.tag == "WashPoint" && (GameManager.instance.selectedLevel == 3))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Baby";
+
+                    washPoint = true;
+                }
+                else
+                {
+                    washPoint = false;
+                }
+
+                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 3))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Facewash";
+
+                    faceWash = true;
+                }
+                else
+                {
+                    faceWash = false;
+                }
+
+
+
+
             }
          
 
@@ -270,10 +354,18 @@ public class PickDropController : MonoBehaviour
         }
     }
 
-    public bool feeder;
-    public bool prefabe;
 
-    public void PrefabeInstant()
+
+    
+    public bool prefabe;
+    public bool feeder;
+    public bool washPoint;
+    public bool faceWash;
+
+
+
+
+    public void PrefabeInstantLvl1()
     {
         var babyPos = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
         babyPos.transform.position = GamePlayManager.instance.babyDropSpwanPoint[0].transform.position;
@@ -281,6 +373,17 @@ public class PickDropController : MonoBehaviour
         babyPos.tag = "Untagged";
         babyPos.GetComponent<AudioSource>().enabled = false;
         print(babyPos);
+    }
+
+    GameObject babyposLvl3;
+    public void PrefabeInstantLvl3()
+    {
+        babyposLvl3 = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
+        babyposLvl3.transform.position = GamePlayManager.instance.babyDropSpwanPoint[1].transform.position;
+
+        babyposLvl3.tag = "Untagged";
+       
+        print(babyposLvl3);
     }
 
 
@@ -343,6 +446,9 @@ public class PickDropController : MonoBehaviour
                 {
                     BabyController.instance.babyCry.Stop();
                     GamePlayManager.instance.washPointGreenGlow.Play();
+
+                    BabyController.instance.BabyAnim.SetBool("Sit", false);
+
                 }
                 if (GameManager.instance.selectedLevel == 6)
                 {
@@ -375,6 +481,7 @@ public class PickDropController : MonoBehaviour
             {
                 GamePlayManager.instance.feederBlueGlow.Stop();
 
+                GamePlayManager.instance.baby.tag = "Baby";
 
                 ObjectiveController.instance.UpdateTask(1);
 
@@ -389,6 +496,11 @@ public class PickDropController : MonoBehaviour
 
                 holdArea.localPosition = new Vector3(0.3f, 0, 0.8f);
                 heldObj.transform.localEulerAngles = Vector3.zero;
+
+                var w = GameObject.FindGameObjectWithTag("WashPoint");
+                w.tag = "Untagged";
+
+                babyposLvl3.tag = "Baby";
             }
 
             if (detectObj.tag == "Shirt" && GameManager.instance.selectedLevel == 4)

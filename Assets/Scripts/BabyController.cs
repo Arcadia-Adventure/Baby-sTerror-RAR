@@ -28,6 +28,8 @@ public class BabyController : MonoBehaviour
 
     public ParticleSystem babyBlueGlow;
 
+    public GameObject babyDirtyFace;
+
 
     private void Start()
     {
@@ -71,12 +73,12 @@ public class BabyController : MonoBehaviour
             }
         }*/
 
-        if (collision.gameObject.tag == "WashPoint")
+        //if (collision.gameObject.tag == "WashPoint")
         {
-            if (GameManager.instance.selectedLevel == 3)
+           // if (GameManager.instance.selectedLevel == 3)
             {
 
-                ObjectiveController.instance.UpdateTask(1);
+               /* ObjectiveController.instance.UpdateTask(1);
 
                 BabyAnim.SetBool("Fly", false);
                 BabyAnim.SetBool("Cry", false);
@@ -88,15 +90,15 @@ public class BabyController : MonoBehaviour
 
                 rb.isKinematic = true;
 
-                GamePlayManager.instance.facewashGlow.Play();
+                GamePlayManager.instance.facewashGlow.Play();*/
 
-                transform.position = facewashPoint.position;
-                transform.rotation = facewashPoint.rotation;
+                //transform.position = facewashPoint.position;
+                //transform.rotation = facewashPoint.rotation;
             }
 
         }
 
-        if (collision.gameObject.tag == "Facewash")
+       /* if (collision.gameObject.tag == "Facewash")
         {
             if (GameManager.instance.selectedLevel == 3)
             {
@@ -113,7 +115,7 @@ public class BabyController : MonoBehaviour
 
                 StartCoroutine("LevelComplete");
             }
-        }
+        }*/
 
         if (collision.gameObject.tag == "Shirt")
         {

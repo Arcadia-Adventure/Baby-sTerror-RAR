@@ -80,8 +80,14 @@ public class GamePlayManager : MonoBehaviour
         if (GameManager.instance.selectedLevel == 2)
         {
             BabyController.instance.BabyAnim.SetBool("Sit", true);
+            baby.tag = "Untagged";
         }
 
+        if (GameManager.instance.selectedLevel == 3)
+        {
+            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            BabyController.instance.babyDirtyFace.SetActive(true);
+        }
 
         if (GameManager.instance.selectedLevel == 6)
         {
