@@ -67,7 +67,7 @@ public class GamePlayManager : MonoBehaviour
 
         levelObjects[GameManager.instance.selectedLevel - 1].SetActive(true);
 
-      
+       
 
         BabyController.instance.babyCry.Play();
 
@@ -77,12 +77,12 @@ public class GamePlayManager : MonoBehaviour
             BabyController.instance.BabyAnim.SetBool("Cry", true);
         }
 
-        if(GameManager.instance.selectedLevel == 2)
+        if (GameManager.instance.selectedLevel == 2)
         {
-            baby.tag = "Untagged";
             BabyController.instance.BabyAnim.SetBool("Sit", true);
         }
-       
+
+
         if (GameManager.instance.selectedLevel == 6)
         {
             babyCryingCradle.Play();
@@ -123,6 +123,8 @@ public class GamePlayManager : MonoBehaviour
                 item.GetComponent<Rigidbody>().isKinematic = false;
             }*/
         }
+
+       
 
     }
 

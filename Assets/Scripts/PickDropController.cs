@@ -59,20 +59,34 @@ public class PickDropController : MonoBehaviour
                 PrefabeInstant();
 
                 var b = GameObject.FindWithTag("Baby");
-                b.SetActive(false);
+                Destroy(b);
+
+               
+
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                GamePlayManager.instance.cradleGreenGlow.Stop();
+                SoundManager.instance.BabyHappy();
+                ObjectiveController.instance.UpdateTask(2);
+
+                StartCoroutine(BabyController.instance.LevelComplete());
+
+                print("cradle detection");
             }
 
             if (feeder)
             {
                 var f = GameObject.FindGameObjectWithTag("Feeder");
-                f.SetActive(false);
+                Destroy(f);
+
+                GamePlayManager.instance.baby.tag = "Untagged";
 
                 BabyController.instance.babyCry.Stop();
                 SoundManager.instance.BabyHappy();
                 BabyController.instance.babyBlueGlow.Play();
                 ObjectiveController.instance.UpdateTask(2);
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
-               
+                BabyController.instance.BabyAnim.SetBool("Sit", false);
+
 
                 StartCoroutine(BabyController.instance.LevelComplete());
 
@@ -264,6 +278,8 @@ public class PickDropController : MonoBehaviour
         var babyPos = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
         babyPos.transform.position = GamePlayManager.instance.babyDropSpwanPoint[0].transform.position;
 
+        babyPos.tag = "Untagged";
+        babyPos.GetComponent<AudioSource>().enabled = false;
         print(babyPos);
     }
 

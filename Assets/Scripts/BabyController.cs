@@ -45,18 +45,16 @@ public class BabyController : MonoBehaviour
         {
             if (GameManager.instance.selectedLevel == 1 || GameManager.instance.selectedLevel == 6)
             {
-
-              
-                BabyAnim.SetBool("Happy", true);
+               /* BabyAnim.SetBool("Happy", true);
                 GamePlayManager.instance.cradleGreenGlow.Stop();
                 SoundManager.instance.BabyHappy();
                 ObjectiveController.instance.UpdateTask(2);
 
-                StartCoroutine("LevelComplete");
+                StartCoroutine("LevelComplete");*/
             }   
         }
 
-        if (collision.gameObject.tag == "Feeder")
+       /* if (collision.gameObject.tag == "Feeder")
         {
             if (GameManager.instance.selectedLevel == 2)
             {
@@ -71,7 +69,7 @@ public class BabyController : MonoBehaviour
 
                 print("feeder collison");
             }
-        }
+        }*/
 
         if (collision.gameObject.tag == "WashPoint")
         {
