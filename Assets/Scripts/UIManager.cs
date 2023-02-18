@@ -95,8 +95,6 @@ public class UIManager : MonoBehaviour
 
         GamePlayManager.instance.RainBG.mute = true;
         BabyController.instance.babyCry.enabled = false;
-
-      
     }
 
 
@@ -108,13 +106,19 @@ public class UIManager : MonoBehaviour
 
         SoundManager.instance.ClickSound();
 
-        if (GameManager.instance.selectedLevel == 1)
-        {
-            GamePlayManager.instance.doorBell.Play();
-        }
+      
 
         GamePlayManager.instance.RainBG.mute = false;
-        BabyController.instance.babyCry.enabled = true;
+
+        if(PickDropController.instance.heldObj != true)
+        {
+            if (GameManager.instance.selectedLevel == 1)
+            {
+                GamePlayManager.instance.doorBell.Play();
+            }
+
+            BabyController.instance.babyCry.enabled = true;
+        }
     }
 
 

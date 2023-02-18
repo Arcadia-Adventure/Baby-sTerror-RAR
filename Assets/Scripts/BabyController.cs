@@ -45,6 +45,8 @@ public class BabyController : MonoBehaviour
         {
             if (GameManager.instance.selectedLevel == 1 || GameManager.instance.selectedLevel == 6)
             {
+
+              
                 BabyAnim.SetBool("Happy", true);
                 GamePlayManager.instance.cradleGreenGlow.Stop();
                 SoundManager.instance.BabyHappy();
@@ -66,6 +68,8 @@ public class BabyController : MonoBehaviour
                 Destroy(collision.gameObject);
 
                 StartCoroutine("LevelComplete");
+
+                print("feeder collison");
             }
         }
 

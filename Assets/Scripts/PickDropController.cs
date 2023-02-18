@@ -30,21 +30,55 @@ public class PickDropController : MonoBehaviour
         doorController.DoorOpenClose();
         GamePlayManager.instance.doorBell.Stop();
     }
-    public void DetectItemsUI()
+    public void DetectItemsPickUI()
     {
         UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
         UIManager.instance.crossHairDetection.sprite = UIManager.instance.pickImage;
         UIManager.instance.crossHairDetection.DOFade(1, 1);
     }
+
+    public void DetectItemsDropUI()
+    {
+        UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
+        UIManager.instance.crossHairDetection.sprite = UIManager.instance.dropImage;
+        UIManager.instance.crossHairDetection.DOFade(1, 1);
+    }
+
     public void Drop()
     {
         if (heldObj != null)
         {
-            DetectItemsUI();
+            DetectItemsPickUI();
             DropObject();
             SoundManager.instance.DropItem();
             GamePlayManager.instance.GlowOn();
             print("drop");
+
+            if (prefabe)
+            {
+                PrefabeInstant();
+
+                var b = GameObject.FindWithTag("Baby");
+                b.SetActive(false);
+            }
+
+            if (feeder)
+            {
+                var f = GameObject.FindGameObjectWithTag("Feeder");
+                f.SetActive(false);
+
+                BabyController.instance.babyCry.Stop();
+                SoundManager.instance.BabyHappy();
+                BabyController.instance.babyBlueGlow.Play();
+                ObjectiveController.instance.UpdateTask(2);
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+               
+
+                StartCoroutine(BabyController.instance.LevelComplete());
+
+                print("feeder detection");
+            }
+            
         }
     }
 
@@ -52,16 +86,16 @@ public class PickDropController : MonoBehaviour
     {
         if (ControlFreak2.CF2Input.GetKeyDown(KeyCode.P))
         {
-            if(heldObj!=null)
+            if (heldObj != null)
             {
                 Drop();
             }
             else
             {
-               PickupObject();
+                PickupObject();
             }
         }
-      
+
 
 
         RaycastHit hit;
@@ -85,7 +119,7 @@ public class PickDropController : MonoBehaviour
 
 
 
-                if (hit.transform.tag == "Door"|| hit.transform.tag == "Fridge")
+                if (hit.transform.tag == "Door" || hit.transform.tag == "Fridge")
                 {
                     print("door open and cloase");
                     hit.transform.GetComponent<DoorController>().DoorOpenClose();
@@ -102,7 +136,7 @@ public class PickDropController : MonoBehaviour
             if (hit.transform.tag == "Door" || hit.transform.tag == "Fridge")
             {
                 print("detection");
-              
+
                 UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
                 UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
 
@@ -110,7 +144,7 @@ public class PickDropController : MonoBehaviour
                 if (hit.transform.GetComponent<DoorController>().isDoor == false)
                 {
                     UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
-                    UIManager.instance.detectionTxt.text = "Open "+ hit.transform.tag;
+                    UIManager.instance.detectionTxt.text = "Open " + hit.transform.tag;
                     UIManager.instance.crossHairDetection.DOFade(1, 1);
 
                     UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
@@ -135,8 +169,9 @@ public class PickDropController : MonoBehaviour
 
 
 
-            // set item UI detection
+            // set pick item UI detection
             string tag = hit.transform.tag;
+
             if (tag == "Baby" ||
                  tag == "Feeder" ||
                  tag == "Facewash" ||
@@ -147,14 +182,14 @@ public class PickDropController : MonoBehaviour
                  tag == "Talisman"
                 )
             {
-                DetectItemsUI();
+                DetectItemsPickUI();
                 BtnFade(UIManager.instance.pick, true);
                 UIManager.instance.pick.SetSprite(UIManager.instance.pickImage);
                 UIManager.instance.detectionTxt.text = "Pick " + hit.transform.tag;
             }
-            else if(tag!="Door")
+            else if (tag != "Door")
             {
-                if(tag != "Fridge")
+                if (tag != "Fridge")
                 {
                     if (heldObj != null)
                     {
@@ -167,8 +202,46 @@ public class PickDropController : MonoBehaviour
                     UIManager.instance.crossHairDetection.sprite = UIManager.instance.knobImage;
                     UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
                     UIManager.instance.detectionTxt.text = null;
-                } 
+                }
             }
+
+
+
+            // set drop item UI detection
+            if (heldObj != null)
+            {
+                if (hit.transform.tag == "Cradle" && (GameManager.instance.selectedLevel == 1))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Baby";
+
+                    prefabe = true;
+                }
+                else
+                {
+                    prefabe = false;
+                }
+
+
+                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 2))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Feeder";
+
+                    feeder = true;
+                }
+                else
+                {
+                    feeder = false;
+                }
+               
+            }
+         
+
 
             //PickupObject
             if (heldObj == null)
@@ -181,6 +254,17 @@ public class PickDropController : MonoBehaviour
             //MoveObject
             MoveObject();
         }
+    }
+
+    public bool feeder;
+    public bool prefabe;
+
+    public void PrefabeInstant()
+    {
+        var babyPos = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
+        babyPos.transform.position = GamePlayManager.instance.babyDropSpwanPoint[0].transform.position;
+
+        print(babyPos);
     }
 
 
@@ -241,7 +325,6 @@ public class PickDropController : MonoBehaviour
                 }
                 if (GameManager.instance.selectedLevel == 3)
                 {
-
                     BabyController.instance.babyCry.Stop();
                     GamePlayManager.instance.washPointGreenGlow.Play();
                 }
@@ -360,7 +443,5 @@ public class PickDropController : MonoBehaviour
         heldObj.transform.parent = null;
         heldObj = null;
         heldObjRB.AddForce(transform.forward * 10, ForceMode.Impulse);
-
-
     }
 }

@@ -49,6 +49,9 @@ public class GamePlayManager : MonoBehaviour
 
     public GameObject doorLock;
 
+    public GameObject[] babyDropSpwanPoint;
+
+
     private void Start()
     {
         RainBG.volume = 0.2f;
@@ -64,13 +67,20 @@ public class GamePlayManager : MonoBehaviour
 
         levelObjects[GameManager.instance.selectedLevel - 1].SetActive(true);
 
-        BabyController.instance.BabyAnim.SetBool("Cry", true);
+      
 
         BabyController.instance.babyCry.Play();
 
         if (GameManager.instance.selectedLevel == 1)
         {   
             doorBell.Play();
+            BabyController.instance.BabyAnim.SetBool("Cry", true);
+        }
+
+        if(GameManager.instance.selectedLevel == 2)
+        {
+            baby.tag = "Untagged";
+            BabyController.instance.BabyAnim.SetBool("Sit", true);
         }
        
         if (GameManager.instance.selectedLevel == 6)
