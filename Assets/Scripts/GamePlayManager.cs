@@ -103,7 +103,10 @@ public class GamePlayManager : MonoBehaviour
 
         if (GameManager.instance.selectedLevel == 6)
         {
+           
             babyCryingCradle.Play();
+
+            baby.SetActive(false);
         }
       
         if (GameManager.instance.selectedLevel == 8)

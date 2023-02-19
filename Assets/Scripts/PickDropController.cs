@@ -63,7 +63,17 @@ public class PickDropController : MonoBehaviour
 
             if (prefabe)
             {
-                PrefabeInstantLvl1();
+
+                if(GameManager.instance.selectedLevel == 1)
+                {
+                    PrefabeInstantLvl1();
+                }
+
+                if (GameManager.instance.selectedLevel == 6)
+                {
+                    PrefabeInstantLvl6();
+                }
+
 
                 var b = GameObject.FindWithTag("Baby");
                 Destroy(b);
@@ -168,7 +178,6 @@ public class PickDropController : MonoBehaviour
 
             if (toy)
             {
-
                 var t = GameObject.FindWithTag("Toy");
                 Destroy(t);
 
@@ -181,7 +190,7 @@ public class PickDropController : MonoBehaviour
 
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
                 BabyController.instance.BabyAnim.SetBool("Sit", false);
-              
+
 
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
@@ -317,19 +326,25 @@ public class PickDropController : MonoBehaviour
             // set drop item UI detection
             if (heldObj != null)
             {
-                if (hit.transform.tag == "Cradle" && (GameManager.instance.selectedLevel == 1))
-                {
-                    DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Baby";
 
-                    prefabe = true;
-                }
-                else
+
+                if ((GameManager.instance.selectedLevel == 1) || (GameManager.instance.selectedLevel == 6))
                 {
-                    prefabe = false;
+                    if (hit.transform.tag == "Cradle")
+                    {
+                        DetectItemsDropUI();
+                        BtnFade(UIManager.instance.pick, true);
+                        UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                        UIManager.instance.detectionTxt.text = "Drop Baby";
+
+                        prefabe = true;
+                    }
+                    else
+                    {
+                        prefabe = false;
+                    }
                 }
+
 
 
                 if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 2))
@@ -346,7 +361,7 @@ public class PickDropController : MonoBehaviour
                     feeder = false;
                 }
 
-                if(hit.transform.tag == "WashPoint" && (GameManager.instance.selectedLevel == 3))
+                if (hit.transform.tag == "WashPoint" && (GameManager.instance.selectedLevel == 3))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -404,7 +419,7 @@ public class PickDropController : MonoBehaviour
 
 
             }
-         
+
 
 
             //PickupObject
@@ -422,7 +437,7 @@ public class PickDropController : MonoBehaviour
 
 
 
-    
+
     public bool prefabe;
     public bool feeder;
     public bool washPoint;
@@ -450,8 +465,18 @@ public class PickDropController : MonoBehaviour
         babyposLvl3.transform.position = GamePlayManager.instance.babyDropSpwanPoint[1].transform.position;
 
         babyposLvl3.tag = "Untagged";
-       
+
         print(babyposLvl3);
+    }
+
+    public void PrefabeInstantLvl6()
+    {
+        var babyPos = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
+        babyPos.transform.position = GamePlayManager.instance.babyDropSpwanPoint[2].transform.position;
+
+        babyPos.tag = "Untagged";
+        babyPos.GetComponent<AudioSource>().enabled = false;
+        print(babyPos);
     }
 
 
@@ -523,12 +548,16 @@ public class PickDropController : MonoBehaviour
                     BabyController.instance.babyCry.Stop();
                     GamePlayManager.instance.cradleGreenGlow.Play();
                     GamePlayManager.instance.cradleSoundTrigger.SetActive(false);
+
+                    BabyController.instance.BabyAnim.SetBool("Sit", false);
                 }
                 if (GameManager.instance.selectedLevel == 8)
                 {
                     BabyController.instance.babyCry.Stop();
 
                     GamePlayManager.instance.doorTrigger.SetActive(true);
+
+                    BabyController.instance.BabyAnim.SetBool("Sit", false);
                 }
 
 

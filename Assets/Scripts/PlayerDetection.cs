@@ -37,7 +37,10 @@ public class PlayerDetection : MonoBehaviour
 
     IEnumerator DelaySoundStart()
     {
+        GamePlayManager.instance.baby.SetActive(true);
+        BabyController.instance.BabyAnim.SetBool("Sit", true);
         yield return new WaitForSeconds(2f);
         BabyController.instance.babyCry.Play();
+      
     }
 }
