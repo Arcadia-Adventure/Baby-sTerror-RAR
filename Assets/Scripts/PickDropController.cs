@@ -195,6 +195,48 @@ public class PickDropController : MonoBehaviour
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
 
+            if (fire)
+            {
+                var pump = GameObject.FindWithTag("Fire Extinguisher");
+                Destroy(pump);
+
+                var f = GameObject.FindGameObjectsWithTag("Fire");
+                for (int i = 0; i < f.Length; i++)
+                {
+                    f[i].gameObject.SetActive(false);
+                }
+
+                GamePlayManager.instance.baby.tag = "Untagged";
+
+                BabyController.instance.babyCry.Stop();
+                BabyController.instance.babyBlueGlow.Play();
+                SoundManager.instance.BabyHappy();
+                ObjectiveController.instance.UpdateTask(2);
+
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                BabyController.instance.BabyAnim.SetBool("Sit", false);
+
+                StartCoroutine(BabyController.instance.LevelComplete());
+            }
+
+            if (talisman)
+            {
+
+                BabyController.instance.babyAngryVoice.Stop();
+                BabyController.instance.babyBlueGlow.Play();
+                SoundManager.instance.BabyHappy();
+                ObjectiveController.instance.UpdateTask(2);
+
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                BabyController.instance.BabyAnim.SetBool("AngryFly", false);
+
+                BabyController.instance.babyEyesRed.color = Color.white;
+
+                GamePlayManager.instance.baby.tag = "Untagged";
+
+                StartCoroutine(BabyController.instance.LevelComplete());
+            }
+
         }
     }
 
@@ -293,7 +335,7 @@ public class PickDropController : MonoBehaviour
                  tag == "Facewash" ||
                  tag == "Shirt" ||
                  tag == "Toy" ||
-                 tag == "Cylinder" ||
+                 tag == "Fire Extinguisher" ||
                  tag == "Axe" ||
                  tag == "Talisman"
                 )
@@ -417,6 +459,34 @@ public class PickDropController : MonoBehaviour
                     toy = false;
                 }
 
+                if (hit.transform.tag == "Fire" && (GameManager.instance.selectedLevel == 7))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Talisman";
+
+                    fire = true;
+                }
+                else
+                {
+                    fire = false;
+                }
+
+                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 10))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Talisman";
+
+                    talisman = true;
+                }
+                else
+                {
+                    talisman = false;
+                }
+
 
             }
 
@@ -444,6 +514,8 @@ public class PickDropController : MonoBehaviour
     public bool faceWash;
     public bool shirt;
     public bool toy;
+    public bool fire;
+    public bool talisman;
 
 
 
@@ -570,7 +642,6 @@ public class PickDropController : MonoBehaviour
 
                 holdArea.GetChild(0).localPosition = new Vector3(0, 0, 0);
                 holdArea.GetChild(0).localEulerAngles = new Vector3(0, 0, 0);
-
             }
 
 
@@ -585,7 +656,6 @@ public class PickDropController : MonoBehaviour
                 holdArea.localPosition = new Vector3(0.3f, 0, 0.8f);
                 heldObj.transform.localEulerAngles = Vector3.zero;
             }
-
 
             if (detectObj.tag == "Facewash" && GameManager.instance.selectedLevel == 3)
             {
@@ -626,7 +696,7 @@ public class PickDropController : MonoBehaviour
                 GamePlayManager.instance.baby.tag = "Baby";
             }
 
-            if (detectObj.tag == "Cylinder" && GameManager.instance.selectedLevel == 7)
+            if (detectObj.tag == "Fire Extinguisher" && GameManager.instance.selectedLevel == 7)
             {
                 GamePlayManager.instance.cylinderBlueGlow.Stop();
                 ObjectiveController.instance.UpdateTask(1);
@@ -654,6 +724,8 @@ public class PickDropController : MonoBehaviour
                 ObjectiveController.instance.UpdateTask(1);
                 holdArea.localPosition = new Vector3(0.3f, 0, 0.4f);
                 heldObj.transform.localEulerAngles = Vector3.zero;
+
+                GamePlayManager.instance.baby.tag = "Baby";
             }
 
             handObjTag = detectObj.tag;

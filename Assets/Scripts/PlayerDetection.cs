@@ -28,6 +28,8 @@ public class PlayerDetection : MonoBehaviour
         {
             print("neck");
 
+            BabyController.instance.babyAngryVoice.Stop();
+
             behoshBanda.SetActive(true);
 
             ObjectiveController.instance.UpdateTask(1);

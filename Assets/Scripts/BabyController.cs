@@ -43,26 +43,12 @@ public class BabyController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Cradle")
-        {
-            if (GameManager.instance.selectedLevel == 1 || GameManager.instance.selectedLevel == 6)
-            {
-               /* BabyAnim.SetBool("Happy", true);
-                GamePlayManager.instance.cradleGreenGlow.Stop();
-                SoundManager.instance.BabyHappy();
-                ObjectiveController.instance.UpdateTask(2);
-
-                StartCoroutine("LevelComplete");*/
-            }   
-        }
-
+      
      
-
-
         if (collision.gameObject.tag == "Talisman")
         {
             if (GameManager.instance.selectedLevel == 10)
-            {
+            {/*
                 babyCry.Stop();
                 babyBlueGlow.Play();
                 SoundManager.instance.BabyHappy();
@@ -70,11 +56,13 @@ public class BabyController : MonoBehaviour
 
                 BabyAnim.SetBool("Happy",true);
 
-                StartCoroutine("LevelComplete");
+                StartCoroutine("LevelComplete");*/
                
             }
         }
     }
+
+
 
     public IEnumerator LevelComplete()
     {

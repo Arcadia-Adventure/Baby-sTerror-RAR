@@ -102,13 +102,19 @@ public class GamePlayManager : MonoBehaviour
         }
 
         if (GameManager.instance.selectedLevel == 6)
-        {
-           
+        { 
             babyCryingCradle.Play();
-
             baby.SetActive(false);
         }
-      
+
+        if (GameManager.instance.selectedLevel == 7)
+        {
+            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            baby.tag = "Untagged";
+        }
+
+
+
         if (GameManager.instance.selectedLevel == 8)
         {
             doorLock.SetActive(true);
@@ -123,6 +129,17 @@ public class GamePlayManager : MonoBehaviour
         if(GameManager.instance.selectedLevel == 9)
         {
             BabyController.instance.babyEyesRed.color = Color.red;
+
+            BabyController.instance.BabyAnim.SetBool("AngrySit", true);
+
+            BabyController.instance.babyAngryVoice.Play();
+            BabyController.instance.babyCry.Stop();
+
+            baby.GetComponent<Rigidbody>().isKinematic = true;
+            baby.GetComponent<Rigidbody>().useGravity = false;
+
+            baby.tag = "Untagged";
+
         }
         else
         {
@@ -139,13 +156,23 @@ public class GamePlayManager : MonoBehaviour
                 flyingFurniture[i].GetComponent<Rigidbody>().AddForce(10, 10, 10);
             }
 
-           /* foreach (var item in flyingFurniture)
-            {
-                item.GetComponent<Rigidbody>().isKinematic = false;
-            }*/
+            /* foreach (var item in flyingFurniture)
+             {
+                 item.GetComponent<Rigidbody>().isKinematic = false;
+             }*/
+
+            baby.tag = "Untagged";
+
+            BabyController.instance.babyEyesRed.color = Color.red;
+
+            BabyController.instance.BabyAnim.SetBool("AngryFly", true);
+
+            BabyController.instance.babyAngryVoice.Play();
+            BabyController.instance.babyCry.Stop();
+
         }
 
-       
+
 
     }
 

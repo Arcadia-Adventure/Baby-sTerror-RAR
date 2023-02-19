@@ -13,12 +13,13 @@ TagManager:
   - WashPoint
   - Shirt
   - Toy
-  - Cylinder
   - Axe
   - Neck
   - Talisman
   - Fridge
   - DoorBreak
+  - Fire Extinguisher
+  - Fire
   layers:
   - Default
   - TransparentFX
