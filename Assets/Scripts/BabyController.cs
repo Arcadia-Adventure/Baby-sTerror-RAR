@@ -56,72 +56,12 @@ public class BabyController : MonoBehaviour
             }   
         }
 
-       /* if (collision.gameObject.tag == "Feeder")
-        {
-            if (GameManager.instance.selectedLevel == 2)
-            {
-                babyCry.Stop();
-                SoundManager.instance.BabyHappy();
-                babyBlueGlow.Play();
-                ObjectiveController.instance.UpdateTask(2);
-                BabyAnim.SetBool("Happy", true);
-                Destroy(collision.gameObject);
-
-                StartCoroutine("LevelComplete");
-
-                print("feeder collison");
-            }
-        }*/
-
-        //if (collision.gameObject.tag == "WashPoint")
-        {
-           // if (GameManager.instance.selectedLevel == 3)
-            {
-
-               /* ObjectiveController.instance.UpdateTask(1);
-
-                BabyAnim.SetBool("Fly", false);
-                BabyAnim.SetBool("Cry", false);
-                BabyAnim.SetBool("Sit", true);
-
-                GamePlayManager.instance.washPointGreenGlow.Stop();
-
-                print("Sit");
-
-                rb.isKinematic = true;
-
-                GamePlayManager.instance.facewashGlow.Play();*/
-
-                //transform.position = facewashPoint.position;
-                //transform.rotation = facewashPoint.rotation;
-            }
-
-        }
-
-       /* if (collision.gameObject.tag == "Facewash")
-        {
-            if (GameManager.instance.selectedLevel == 3)
-            {
-              
-                babyBlueGlow.Play();
-                SoundManager.instance.BabyHappy();
-
-                ObjectiveController.instance.UpdateTask(2);
-
-                BabyAnim.SetBool("Sit", false);
-                BabyAnim.SetBool("Happy", true);
-
-                Destroy(collision.gameObject);
-
-                StartCoroutine("LevelComplete");
-            }
-        }*/
-
+     
         if (collision.gameObject.tag == "Shirt")
         {
             if (GameManager.instance.selectedLevel == 4)
             {
-                babyCry.Stop();
+               /* babyCry.Stop();
                 babyBlueGlow.Play();
                 SoundManager.instance.BabyHappy();
                 body.SetActive(false);
@@ -132,7 +72,7 @@ public class BabyController : MonoBehaviour
 
                 BabyAnim.SetBool("Happy", true);
 
-                StartCoroutine("LevelComplete");
+                StartCoroutine("LevelComplete");*/
             }
         }
 

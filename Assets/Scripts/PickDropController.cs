@@ -132,8 +132,8 @@ public class PickDropController : MonoBehaviour
 
                 ObjectiveController.instance.UpdateTask(2);
 
-                BabyController.instance.BabyAnim.SetBool("Sit", false);
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
+                BabyController.instance.BabyAnim.SetBool("Sit", false);
 
                 babyposLvl3.GetComponent<AudioSource>().enabled = false;
                 babyposLvl3.tag = "Untagged";
@@ -141,9 +141,29 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance.babyDirtyFace.SetActive(false);
 
                 StartCoroutine(BabyController.instance.LevelComplete());
-
             }
 
+            if (shirt)
+            {
+
+                var s = GameObject.FindWithTag("Shirt");
+                Destroy(s);
+
+                GamePlayManager.instance.baby.tag = "Untagged";
+
+                BabyController.instance.babyCry.Stop();
+                BabyController.instance.babyBlueGlow.Play();
+                SoundManager.instance.BabyHappy();
+                BabyController.instance.body.SetActive(false);
+                BabyController.instance.diaper.SetActive(false);
+                BabyController.instance.clothBody.SetActive(true);
+                ObjectiveController.instance.UpdateTask(2);
+
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                BabyController.instance.BabyAnim.SetBool("Sit", false);
+
+                StartCoroutine(BabyController.instance.LevelComplete());
+            }
 
 
         }
@@ -334,7 +354,19 @@ public class PickDropController : MonoBehaviour
                     faceWash = false;
                 }
 
+                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 4))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Shirt";
 
+                    shirt = true;
+                }
+                else
+                {
+                    shirt = false;
+                }
 
 
             }
@@ -361,6 +393,7 @@ public class PickDropController : MonoBehaviour
     public bool feeder;
     public bool washPoint;
     public bool faceWash;
+    public bool shirt;
 
 
 
@@ -512,6 +545,8 @@ public class PickDropController : MonoBehaviour
                 holdArea.localPosition = new Vector3(0.3f, 0, 1f);
                 holdArea.localEulerAngles = new Vector3(0, -90, 60);
                 heldObj.transform.localEulerAngles = Vector3.zero;
+
+                GamePlayManager.instance.baby.tag = "Baby";
             }
 
             if (detectObj.tag == "Toy" && GameManager.instance.selectedLevel == 5)

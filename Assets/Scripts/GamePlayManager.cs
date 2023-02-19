@@ -89,6 +89,12 @@ public class GamePlayManager : MonoBehaviour
             BabyController.instance.babyDirtyFace.SetActive(true);
         }
 
+        if (GameManager.instance.selectedLevel == 4)
+        {
+            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            baby.tag = "Untagged";
+        }
+
         if (GameManager.instance.selectedLevel == 6)
         {
             babyCryingCradle.Play();
