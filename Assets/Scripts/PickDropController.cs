@@ -166,6 +166,26 @@ public class PickDropController : MonoBehaviour
             }
 
 
+            if (toy)
+            {
+
+                var t = GameObject.FindWithTag("Toy");
+                Destroy(t);
+
+                GamePlayManager.instance.baby.tag = "Untagged";
+
+                BabyController.instance.babyCry.Stop();
+                BabyController.instance.babyBlueGlow.Play();
+                SoundManager.instance.BabyHappy();
+                ObjectiveController.instance.UpdateTask(2);
+
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                BabyController.instance.BabyAnim.SetBool("Sit", false);
+              
+
+                StartCoroutine(BabyController.instance.LevelComplete());
+            }
+
         }
     }
 
@@ -368,6 +388,20 @@ public class PickDropController : MonoBehaviour
                     shirt = false;
                 }
 
+                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 5))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Drop Toy";
+
+                    toy = true;
+                }
+                else
+                {
+                    toy = false;
+                }
+
 
             }
          
@@ -394,6 +428,7 @@ public class PickDropController : MonoBehaviour
     public bool washPoint;
     public bool faceWash;
     public bool shirt;
+    public bool toy;
 
 
 
@@ -558,6 +593,8 @@ public class PickDropController : MonoBehaviour
                 holdArea.localPosition = new Vector3(0.5f, 0, 1.5f);
                 holdArea.localEulerAngles = new Vector3(0, -90, 40);
                 heldObj.transform.localEulerAngles = Vector3.zero;
+
+                GamePlayManager.instance.baby.tag = "Baby";
             }
 
             if (detectObj.tag == "Cylinder" && GameManager.instance.selectedLevel == 7)

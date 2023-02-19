@@ -57,39 +57,7 @@ public class BabyController : MonoBehaviour
         }
 
      
-        if (collision.gameObject.tag == "Shirt")
-        {
-            if (GameManager.instance.selectedLevel == 4)
-            {
-               /* babyCry.Stop();
-                babyBlueGlow.Play();
-                SoundManager.instance.BabyHappy();
-                body.SetActive(false);
-                diaper.SetActive(false);
-                clothBody.SetActive(true);
-                ObjectiveController.instance.UpdateTask(2);
-                Destroy(collision.gameObject);
 
-                BabyAnim.SetBool("Happy", true);
-
-                StartCoroutine("LevelComplete");*/
-            }
-        }
-
-        if (collision.gameObject.tag == "Toy")
-        {
-            if (GameManager.instance.selectedLevel == 5)
-            {
-                babyCry.Stop();
-                babyBlueGlow.Play();
-                SoundManager.instance.BabyHappy();
-                ObjectiveController.instance.UpdateTask(2);
-                BabyAnim.SetBool("Happy", true);
-                Destroy(collision.gameObject);
-
-                StartCoroutine("LevelComplete");
-            }
-        }
 
         if (collision.gameObject.tag == "Talisman")
         {
