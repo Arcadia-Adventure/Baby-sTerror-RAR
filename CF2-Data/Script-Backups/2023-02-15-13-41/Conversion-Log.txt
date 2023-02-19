@@ -1,0 +1,11 @@
+Converting script [1 / 1]	[\Scripts\UIManager.cs]
+	Fragments : 2
+		[ 0] : Line:   57	InputMethod   GetKeyDown          	(KeyCode.P)
+		[ 1] : Line:   61	InputMethod   GetKeyDown          	(KeyCode.O)
+
+
+1 scripts modified!
+Overwriting actual scripts...
+	[0 / 1] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-15-13-41\Assets-After/\Scripts\UIManager.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\Scripts\UIManager.cs]
+
+Overwriting COMPLETED!

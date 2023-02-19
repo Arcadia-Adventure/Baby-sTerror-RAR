@@ -3,7 +3,23 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PickObject
+  - Baby
+  - Door
+  - Cradle
+  - Feeder
+  - Facewash
+  - WashPoint
+  - Shirt
+  - Toy
+  - Axe
+  - Neck
+  - Talisman
+  - Fridge
+  - DoorBreak
+  - Fire Extinguisher
+  - Fire
   layers:
   - Default
   - TransparentFX

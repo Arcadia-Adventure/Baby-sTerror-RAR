@@ -1,0 +1,76 @@
+Converting script [1 / 8]	[\ModularFirstPersonController\FirstPersonController\FirstPersonController.cs]
+	Fragments : 14
+		[ 0] : Line:  156	Other mod.	[Cursor.lockState]
+		[ 1] : Line:  210	InputMethod   GetAxis             	("Mouse X")
+		[ 2] : Line:  214	InputMethod   GetAxis             	("Mouse Y")
+		[ 3] : Line:  219	InputMethod   GetAxis             	("Mouse Y")
+		[ 4] : Line:  235	InputMethod   GetKeyDown          	(zoomKey)
+		[ 5] : Line:  251	InputMethod   GetKeyDown          	(zoomKey)
+		[ 6] : Line:  255	InputMethod   GetKeyUp            	(zoomKey)
+		[ 7] : Line:  329	InputMethod   GetKeyDown          	(jumpKey)
+		[ 8] : Line:  340	InputMethod   GetKeyDown          	(crouchKey)
+		[ 9] : Line:  345	InputMethod   GetKeyDown          	(crouchKey)
+		[10] : Line:  350	InputMethod   GetKeyUp            	(crouchKey)
+		[11] : Line:  379	InputMethod   GetAxis             	("Horizontal")
+		[12] : Line:  379	InputMethod   GetAxis             	("Vertical")
+		[13] : Line:  393	InputMethod   GetKey              	(sprintKey)
+
+Converting script [2 / 8]	[\OutlineEffect\Samples\Demo\MaterialSwitcher.cs]
+	Fragments : 1
+		[ 0] : Line:   14	InputMethod   GetKeyDown          	(KeyCode.M)
+
+Converting script [3 / 8]	[\OutlineEffect\Samples\Demo\Toggle.cs]
+	Fragments : 1
+		[ 0] : Line:   18	InputMethod   GetKeyDown          	(KeyCode.K)
+
+Converting script [4 / 8]	[\Scripts\MouseLook.cs]
+	Fragments : 3
+		[ 0] : Line:   17	Other mod.	[Cursor.lockState]
+		[ 1] : Line:   23	InputMethod   GetAxis             	("Mouse X")
+		[ 2] : Line:   24	InputMethod   GetAxis             	("Mouse Y")
+
+Converting script [5 / 8]	[\Scripts\PickDropController.cs]
+	Fragments : 1
+		[ 0] : Line:   33	InputMethod   GetMouseButtonDown  	(0)
+
+Converting script [6 / 8]	[\Scripts\PlayerMovement.cs]
+	Fragments : 3
+		[ 0] : Line:   31	InputMethod   GetAxis             	("Horizontal")
+		[ 1] : Line:   32	InputMethod   GetAxis             	("Vertical")
+		[ 2] : Line:   38	InputMethod   GetButtonDown       	("Jump")
+
+Converting script [7 / 8]	[\Scripts\UIManager.cs]
+	Fragments : 2
+		[ 0] : Line:   26	InputMethod   GetKeyDown          	(KeyCode.P)
+		[ 1] : Line:   32	InputMethod   GetKeyDown          	(KeyCode.O)
+
+Converting script [8 / 8]	[\Toon babies\scripts\TBMove.cs]
+	Fragments : 14
+		[ 0] : Line:   47	InputMethod   GetKey              	(KeyCode.C)
+		[ 1] : Line:   52	InputProperty anyKey              
+		[ 2] : Line:   61	InputProperty anyKey              
+		[ 3] : Line:   69	InputProperty anyKey              
+		[ 4] : Line:   84	InputMethod   GetKey              	(KeyCode.C)
+		[ 5] : Line:   95	InputMethod   GetKey              	(KeyCode.LeftShift)
+		[ 6] : Line:   96	InputMethod   GetKey              	(KeyCode.LeftShift)
+		[ 7] : Line:  100	InputMethod   GetAxis             	("Vertical")
+		[ 8] : Line:  103	InputMethod   GetAxis             	("Horizontal")
+		[ 9] : Line:  104	InputMethod   GetAxis             	("Horizontal")
+		[10] : Line:  108	InputMethod   GetButtonDown       	("Jump")
+		[11] : Line:  121	InputMethod   GetButtonDown       	("Jump")
+		[12] : Line:  159	InputMethod   GetAxis             	("Vertical")
+		[13] : Line:  160	InputMethod   GetAxis             	("Vertical")
+
+
+8 scripts modified!
+Overwriting actual scripts...
+	[0 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\ModularFirstPersonController\FirstPersonController\FirstPersonController.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\ModularFirstPersonController\FirstPersonController\FirstPersonController.cs]
+	[1 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\OutlineEffect\Samples\Demo\MaterialSwitcher.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\OutlineEffect\Samples\Demo\MaterialSwitcher.cs]
+	[2 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\OutlineEffect\Samples\Demo\Toggle.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\OutlineEffect\Samples\Demo\Toggle.cs]
+	[3 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\Scripts\MouseLook.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\Scripts\MouseLook.cs]
+	[4 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\Scripts\PickDropController.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\Scripts\PickDropController.cs]
+	[5 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\Scripts\PlayerMovement.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\Scripts\PlayerMovement.cs]
+	[6 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\Scripts\UIManager.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\Scripts\UIManager.cs]
+	[7 / 8] from  [E:/Git Projects/HorrorSchool-RAR/CF2-Data/Script-Backups/2023-02-14-16-10\Assets-After/\Toon babies\scripts\TBMove.cs] to [E:/Git Projects/HorrorSchool-RAR/Assets/\Toon babies\scripts\TBMove.cs]
+
+Overwriting COMPLETED!
