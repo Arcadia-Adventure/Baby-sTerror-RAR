@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
 
     public GameObject levelCompletePanel;
     public GameObject pausePanel;
+ 
 
    // course sprite
     public Sprite knobImage;
@@ -148,6 +149,7 @@ public class UIManager : MonoBehaviour
         SoundManager.instance.ClickSound();
     }
 
+  
 
  
     public void SensivitySlider()
