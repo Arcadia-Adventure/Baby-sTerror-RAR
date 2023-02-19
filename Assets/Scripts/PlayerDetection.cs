@@ -16,7 +16,6 @@ public class PlayerDetection : MonoBehaviour
             StartCoroutine(DelaySoundStart());
         }
 
-      
 
         if (other.gameObject.tag == "Player" && GameManager.instance.selectedLevel == 8)
         {

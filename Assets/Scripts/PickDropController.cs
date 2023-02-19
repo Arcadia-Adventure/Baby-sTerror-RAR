@@ -221,16 +221,16 @@ public class PickDropController : MonoBehaviour
 
             if (talisman)
             {
+                var l = GameObject.FindWithTag("Talisman");
+                Destroy(l);
 
+                BabyController.instance.BabyAnim.SetBool("Fly", false);
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                SoundManager.instance.BabyHappy();
                 BabyController.instance.babyAngryVoice.Stop();
                 BabyController.instance.babyBlueGlow.Play();
-                SoundManager.instance.BabyHappy();
-                ObjectiveController.instance.UpdateTask(2);
-
-                BabyController.instance.BabyAnim.SetBool("Happy", true);
-                BabyController.instance.BabyAnim.SetBool("AngryFly", false);
-
                 BabyController.instance.babyEyesRed.color = Color.white;
+                ObjectiveController.instance.UpdateTask(2);
 
                 GamePlayManager.instance.baby.tag = "Untagged";
 

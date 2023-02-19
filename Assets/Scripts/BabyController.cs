@@ -41,28 +41,6 @@ public class BabyController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-      
-     
-        if (collision.gameObject.tag == "Talisman")
-        {
-            if (GameManager.instance.selectedLevel == 10)
-            {/*
-                babyCry.Stop();
-                babyBlueGlow.Play();
-                SoundManager.instance.BabyHappy();
-                ObjectiveController.instance.UpdateTask(2);
-
-                BabyAnim.SetBool("Happy",true);
-
-                StartCoroutine("LevelComplete");*/
-               
-            }
-        }
-    }
-
-
 
     public IEnumerator LevelComplete()
     {

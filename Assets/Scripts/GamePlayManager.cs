@@ -165,10 +165,13 @@ public class GamePlayManager : MonoBehaviour
 
             BabyController.instance.babyEyesRed.color = Color.red;
 
-            BabyController.instance.BabyAnim.SetBool("AngryFly", true);
+            BabyController.instance.BabyAnim.SetBool("Fly", true);
 
             BabyController.instance.babyAngryVoice.Play();
             BabyController.instance.babyCry.Stop();
+
+            baby.GetComponent<Rigidbody>().isKinematic = true;
+            baby.GetComponent<Rigidbody>().useGravity = false;
 
         }
 
