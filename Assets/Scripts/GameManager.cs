@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     {
         if (!PlayerPrefs.HasKey("MouseSensitivity"))
         {
-			PlayerPrefs.SetFloat("MouseSensitivity", 1);
+			PlayerPrefs.SetFloat("MouseSensitivity", 0.3f);
         }
 
         if (!PlayerPrefs.HasKey("Music"))

@@ -27,6 +27,8 @@ public class MainMenuManager : MonoBehaviour
 
 
 	public GameObject settingPanel;
+	public GameObject quitPanel;
+
 
 	public Slider slider;
 
@@ -106,11 +108,25 @@ public class MainMenuManager : MonoBehaviour
 		SoundManager.instance.ClickSound();
 	}
 
+
 	public void QuitBtn()
+    { 
+		quitPanel.SetActive(true);
+		SoundManager.instance.ClickSound();
+	}
+
+	public void QuitBtnYes()
     {
 		Application.Quit();
 		SoundManager.instance.ClickSound();
 	}
+
+	public void QuitBtnNo()
+	{
+		quitPanel.SetActive(false);
+		SoundManager.instance.ClickSound();
+	}
+
 
 	public void SensivitySlider()
     {

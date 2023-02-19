@@ -44,8 +44,7 @@ public class GamePlayManager : MonoBehaviour
 
     public GameObject cradleSoundTrigger;
 
-    public ParticleSystem redDoorGlow;
-    public ParticleSystem greenDoorGlow;
+  
 
     public GameObject doorLock;
 
@@ -117,11 +116,7 @@ public class GamePlayManager : MonoBehaviour
 
         if (GameManager.instance.selectedLevel == 8)
         {
-            doorLock.SetActive(true);
-
             BabyController.instance.babyCry.Play();
-            redDoorGlow.Play();
-            doorTrigger.SetActive(false);
         }
       
        

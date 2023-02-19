@@ -195,6 +195,14 @@ public class PickDropController : MonoBehaviour
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
 
+
+
+            if (doorLock)
+            {
+               //heldObjRB.DORotate(-30, 0.5f);
+            }
+
+
             if (fire)
             {
                 var pump = GameObject.FindWithTag("Fire Extinguisher");
@@ -473,6 +481,23 @@ public class PickDropController : MonoBehaviour
                     fire = false;
                 }
 
+
+                if (hit.transform.tag == "DoorBreak" && (GameManager.instance.selectedLevel == 8))
+                {
+                    DetectItemsDropUI();
+                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
+                    UIManager.instance.detectionTxt.text = "Door Lock";
+
+                    doorLock = true;
+                }
+                else
+                {
+                    doorLock = false;
+                }
+
+
+
                 if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 10))
                 {
                     DetectItemsDropUI();
@@ -514,6 +539,7 @@ public class PickDropController : MonoBehaviour
     public bool faceWash;
     public bool shirt;
     public bool toy;
+    public bool doorLock;
     public bool fire;
     public bool talisman;
 
@@ -711,8 +737,8 @@ public class PickDropController : MonoBehaviour
             {
                 GamePlayManager.instance.axeBlueGlow.Stop();
 
-                holdArea.localPosition = new Vector3(0.3f, 0.3f, 1);
-                holdArea.localEulerAngles = new Vector3(-90, -90, 0);
+                holdArea.localPosition = new Vector3(0.3f, 0, 0);
+                holdArea.localEulerAngles = new Vector3(0, 0, 0);
 
                 heldObj.transform.localEulerAngles = Vector3.zero;
             }
