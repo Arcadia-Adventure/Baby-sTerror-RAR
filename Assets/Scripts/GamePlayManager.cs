@@ -44,9 +44,8 @@ public class GamePlayManager : MonoBehaviour
 
     public GameObject cradleSoundTrigger;
 
-  
-
-    public GameObject doorLock;
+    public DoorController babyRoomDoor;
+    public AudioSource doorLock;
 
     public GameObject[] babyDropSpwanPoint;
 
@@ -55,7 +54,6 @@ public class GamePlayManager : MonoBehaviour
     {
         RainBG.volume = 0.2f;
         RainBG.Play();
-
         SoundManager.instance.BG.Stop();
 
         player.transform.position = playerSpawnPoint[GameManager.instance.selectedLevel - 1].position;    
@@ -116,10 +114,10 @@ public class GamePlayManager : MonoBehaviour
 
         if (GameManager.instance.selectedLevel == 8)
         {
+            babyRoomDoor.isDoorLock = true;
             BabyController.instance.babyCry.Play();
         }
-      
-       
+
 
         if(GameManager.instance.selectedLevel == 9)
         {

@@ -5,21 +5,41 @@ using DG.Tweening;
 
 public class DoorController : MonoBehaviour
 {
-  
     public Vector3 doorOpen;
     public Vector3 doorClose;
     public bool isDoor = false;
+
+    public bool isDoorLock;
+
     public void DoorOpenClose()
     {
-        if(isDoor == false)
+        if (isDoorLock == false)
         {
-            transform.DORotate(doorOpen, 0.5f);
-            isDoor = true;
+            if (isDoor == false)
+            {
+                transform.DORotate(doorOpen, 0.5f);
+                isDoor = true;
+
+                SoundManager.instance.doorOpenClose.Play();
+            }
+            else
+            {
+                transform.DORotate(doorClose, 0.5f);
+                isDoor = false;
+
+                SoundManager.instance.doorOpenClose.Play();
+            }
         }
         else
         {
-            transform.DORotate(doorClose, 0.5f);
-            isDoor = false;
+            transform.DOPunchRotation(Vector3.up*2 , 0.5f).OnComplete(() => {
+                transform.DORotate(doorClose, 0.1f);
+
+
+            });
+
+            GamePlayManager.instance.doorLock.Play();
         }
+       
     }
 }

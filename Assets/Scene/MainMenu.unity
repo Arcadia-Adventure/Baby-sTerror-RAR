@@ -1394,7 +1394,6 @@ MonoBehaviour:
   fridgeOpen: {fileID: 2024807853}
   fridgeClose: {fileID: 1793686314}
   doorOpenClose: {fileID: 1329927506}
-  doorLock: {fileID: 1982012840}
   pick: {fileID: 182604811}
   drop: {fileID: 1146391644}
   levelComplete: {fileID: 1401632942}

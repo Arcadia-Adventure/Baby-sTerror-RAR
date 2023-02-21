@@ -31,7 +31,6 @@ public class SoundManager : MonoBehaviour
 	public AudioSource fridgeOpen;
 	public AudioSource fridgeClose;
 	public AudioSource doorOpenClose;
-	public AudioSource doorLock;
 	public AudioSource pick;
 	public AudioSource drop;
 	public AudioSource levelComplete;
@@ -66,10 +65,7 @@ public class SoundManager : MonoBehaviour
     {
 		doorOpenClose.Play();
     }
-	public void DoorLock()
-    {
-		doorLock.Play();
-    }
+	
 
 	public void PickItem()
     {

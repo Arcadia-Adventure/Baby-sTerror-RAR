@@ -49,22 +49,40 @@ public class PickDropController : MonoBehaviour
         if (heldObj != null)
         {
             DetectItemsPickUI();
-            DropObject();
+           
             SoundManager.instance.DropItem();
             GamePlayManager.instance.GlowOn();
             print("drop");
 
+            //DropObject();
+
+
+
+            if (doorLock)
+            {
+
+                //holdArea.DORotate(new Vector3(-30, 0, 0), 0.5f).
+                //    OnComplete(() => holdArea.DOLocalRotate(Vector3.zero, 0.5f));
+
+                //holdArea.localEulerAngles = new Vector3(0, 0, 0);
+
+
+                /*                heldObjRB.DORotate(new Vector3(-30, 0, 0), 0.5f).
+                                    OnComplete(() => heldObjRB.DOLocalRotate(Vector3.zero,0.1f));*/
+                heldObjRB.GetComponent<DOTweenAnimation>().DORestart();
+                print("hitting axe");
+                ObjectiveController.instance.UpdateTask(2);
+            }
 
             if (GameManager.instance.selectedLevel == 2)
             {
                 GamePlayManager.instance.baby.tag = "Untagged";
             }
 
-
             if (prefabe)
             {
 
-                if(GameManager.instance.selectedLevel == 1)
+                if (GameManager.instance.selectedLevel == 1)
                 {
                     PrefabeInstantLvl1();
                 }
@@ -197,10 +215,7 @@ public class PickDropController : MonoBehaviour
 
 
 
-            if (doorLock)
-            {
-               //heldObjRB.DORotate(-30, 0.5f);
-            }
+           
 
 
             if (fire)
@@ -273,25 +288,19 @@ public class PickDropController : MonoBehaviour
             {
 
                 print(hit.transform.name);
-                if (hit.transform.tag == "DoorBreak")
-                {
-                    if (GameManager.instance.selectedLevel == 8)
-                    {
-                        SoundManager.instance.DoorLock();
-                        ObjectiveController.instance.UpdateTask(1);
-                        GamePlayManager.instance.axeBlueGlow.Play();
-                    }
-                }
-
-
+               
 
                 if (hit.transform.tag == "Door" || hit.transform.tag == "Fridge")
                 {
-                    print("door open and cloase");
+                    print("door open and close");
                     hit.transform.GetComponent<DoorController>().DoorOpenClose();
                     GamePlayManager.instance.doorBell.Stop();
 
-                    SoundManager.instance.doorOpenClose.Play();
+                    if ((GameManager.instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
+                    {
+                        ObjectiveController.instance.UpdateTask(1);
+                    }
+
                 }
             }
 
@@ -315,6 +324,19 @@ public class PickDropController : MonoBehaviour
 
                     UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
                     BtnFade(UIManager.instance.door, true);
+
+
+                    if ((GameManager.instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
+                    {
+                        UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
+                        UIManager.instance.detectionTxt.text = "Door Lock";
+                        UIManager.instance.crossHairDetection.DOFade(1, 1);
+
+                        UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
+                        BtnFade(UIManager.instance.door, true);
+                       
+                        GamePlayManager.instance.axeBlueGlow.Play();
+                    }
                 }
                 else
                 {
@@ -482,14 +504,15 @@ public class PickDropController : MonoBehaviour
                 }
 
 
-                if (hit.transform.tag == "DoorBreak" && (GameManager.instance.selectedLevel == 8))
+                if (hit.transform.tag == "Door" && (GameManager.instance.selectedLevel == 8))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Door Lock";
+                    UIManager.instance.detectionTxt.text = "Door Break";
 
                     doorLock = true;
+
                 }
                 else
                 {
@@ -737,10 +760,10 @@ public class PickDropController : MonoBehaviour
             {
                 GamePlayManager.instance.axeBlueGlow.Stop();
 
-                holdArea.localPosition = new Vector3(0.3f, 0, 0);
+                holdArea.localPosition = new Vector3(0.4f, -0.5f, 0.7f);
                 holdArea.localEulerAngles = new Vector3(0, 0, 0);
 
-                heldObj.transform.localEulerAngles = Vector3.zero;
+                heldObj.transform.localEulerAngles = Vector3.right*-90f;
             }
 
             if (detectObj.tag == "Talisman" && GameManager.instance.selectedLevel == 10)
