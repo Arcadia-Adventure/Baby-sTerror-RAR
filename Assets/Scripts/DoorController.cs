@@ -20,14 +20,14 @@ public class DoorController : MonoBehaviour
                 transform.DORotate(doorOpen, 0.5f);
                 isDoor = true;
 
-                SoundManager.instance.doorOpenClose.Play();
+                SoundManager.instance.doorOpen.Play();
             }
             else
             {
                 transform.DORotate(doorClose, 0.5f);
                 isDoor = false;
 
-                SoundManager.instance.doorOpenClose.Play();
+                SoundManager.instance.doorClose.Play();
             }
         }
         else

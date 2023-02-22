@@ -65,17 +65,27 @@ public class PickDropController : MonoBehaviour
 
                 this.transform.DOShakePosition(0.5f,1, 10, 30);
 
+                SoundManager.instance.drop.Stop();
+
+
                 print("hitting axe");
-                ObjectiveController.instance.UpdateTask(2);
+
+            }
+            else
+            {
+                DropObject();
             }
 
             if (GameManager.instance.selectedLevel == 2)
             {
                 GamePlayManager.instance.baby.tag = "Untagged";
+
+                DropObject();
             }
 
             if (prefabe)
             {
+                DropObject();
 
                 if (GameManager.instance.selectedLevel == 1)
                 {
@@ -104,6 +114,7 @@ public class PickDropController : MonoBehaviour
 
             if (feeder)
             {
+                DropObject();
                 var f = GameObject.FindGameObjectWithTag("Feeder");
                 Destroy(f);
 
@@ -125,6 +136,7 @@ public class PickDropController : MonoBehaviour
 
             if (washPoint)
             {
+                DropObject();
                 PrefabeInstantLvl3();
 
                 var b = GameObject.FindWithTag("Baby");
@@ -147,6 +159,7 @@ public class PickDropController : MonoBehaviour
 
             if (faceWash)
             {
+                DropObject();
                 var b = GameObject.FindWithTag("Facewash");
                 Destroy(b);
 
@@ -168,7 +181,7 @@ public class PickDropController : MonoBehaviour
 
             if (shirt)
             {
-
+                DropObject();
                 var s = GameObject.FindWithTag("Shirt");
                 Destroy(s);
 
@@ -191,6 +204,7 @@ public class PickDropController : MonoBehaviour
 
             if (toy)
             {
+                DropObject();
                 var t = GameObject.FindWithTag("Toy");
                 Destroy(t);
 
@@ -215,6 +229,7 @@ public class PickDropController : MonoBehaviour
 
             if (fire)
             {
+                DropObject();
                 var pump = GameObject.FindWithTag("Fire Extinguisher");
                 Destroy(pump);
 
@@ -239,6 +254,7 @@ public class PickDropController : MonoBehaviour
 
             if (talisman)
             {
+                DropObject();
                 var l = GameObject.FindWithTag("Talisman");
                 Destroy(l);
 
@@ -294,6 +310,9 @@ public class PickDropController : MonoBehaviour
                     if ((GameManager.instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
                     {
                         ObjectiveController.instance.UpdateTask(1);
+
+                        GamePlayManager.instance.axeBlueGlow.transform.parent.tag = "Axe";
+
                     }
 
                 }
@@ -305,7 +324,7 @@ public class PickDropController : MonoBehaviour
             // set door button UI 
             if (hit.transform.tag == "Door" || hit.transform.tag == "Fridge")
             {
-                print("detection");
+              
 
                 UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
                 UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
@@ -507,6 +526,13 @@ public class PickDropController : MonoBehaviour
                     UIManager.instance.detectionTxt.text = "Door Break";
 
                     doorLock = true;
+
+                    if (GamePlayManager.instance.babyRoomDoor.isDoorLock == false)
+                    {
+                        UIManager.instance.detectionTxt.text = "Door Close";
+
+                        BtnFade(UIManager.instance.pick, false);
+                    }
 
                 }
                 else

@@ -45,6 +45,7 @@ public class GamePlayManager : MonoBehaviour
     public GameObject cradleSoundTrigger;
 
     public DoorController babyRoomDoor;
+    public DoorController houseExitDoor;
     public AudioSource doorLock;
 
     public GameObject[] babyDropSpwanPoint;
@@ -59,10 +60,16 @@ public class GamePlayManager : MonoBehaviour
             if (i == 2)
             {
                 babyRoomDoor.isDoorLock = false;
+
+                var g = PickDropController.instance.heldObj;
+                Destroy(g);
+                ObjectiveController.instance.UpdateTask(2);
+
             }
             if (!Cracker[i].activeInHierarchy)
             {
                 Cracker[i].SetActive(true);
+                SoundManager.instance.doorBreak.Play();
                 return;
             }
         }
@@ -91,6 +98,12 @@ public class GamePlayManager : MonoBehaviour
         {   
             doorBell.Play();
             BabyController.instance.BabyAnim.SetBool("Cry", true);
+
+            houseExitDoor.isDoorLock = false;
+        }
+        else
+        {
+            houseExitDoor.isDoorLock = true;
         }
 
         if (GameManager.instance.selectedLevel == 2)
@@ -135,6 +148,11 @@ public class GamePlayManager : MonoBehaviour
         {
             babyRoomDoor.isDoorLock = true;
             BabyController.instance.babyCry.Play();
+
+            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            axeBlueGlow.transform.parent.tag = "Untagged";
+
+            axeBlueGlow.Stop();
         }
 
 
