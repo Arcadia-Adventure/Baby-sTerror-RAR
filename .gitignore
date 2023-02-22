@@ -60,3 +60,5 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+ProjectSettings/ProjectSettings.asset
+*.asset
