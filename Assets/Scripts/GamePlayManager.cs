@@ -50,6 +50,25 @@ public class GamePlayManager : MonoBehaviour
     public GameObject[] babyDropSpwanPoint;
 
 
+    public GameObject[] Cracker;
+
+    public void Crack()
+    {
+        for (int i = 0; i < Cracker.Length; i++)
+        {
+            if (i == 2)
+            {
+                babyRoomDoor.isDoorLock = false;
+            }
+            if (!Cracker[i].activeInHierarchy)
+            {
+                Cracker[i].SetActive(true);
+                return;
+            }
+        }
+    }
+
+
     private void Start()
     {
         RainBG.volume = 0.2f;
@@ -167,11 +186,7 @@ public class GamePlayManager : MonoBehaviour
             baby.GetComponent<Rigidbody>().useGravity = false;
 
         }
-
-
-
     }
-
 
 
     public void LevelComplete()

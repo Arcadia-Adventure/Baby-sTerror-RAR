@@ -44,6 +44,7 @@ public class PickDropController : MonoBehaviour
         UIManager.instance.crossHairDetection.DOFade(1, 1);
     }
 
+   
     public void Drop()
     {
         if (heldObj != null)
@@ -60,16 +61,10 @@ public class PickDropController : MonoBehaviour
 
             if (doorLock)
             {
-
-                //holdArea.DORotate(new Vector3(-30, 0, 0), 0.5f).
-                //    OnComplete(() => holdArea.DOLocalRotate(Vector3.zero, 0.5f));
-
-                //holdArea.localEulerAngles = new Vector3(0, 0, 0);
-
-
-                /*                heldObjRB.DORotate(new Vector3(-30, 0, 0), 0.5f).
-                                    OnComplete(() => heldObjRB.DOLocalRotate(Vector3.zero,0.1f));*/
                 heldObjRB.GetComponent<DOTweenAnimation>().DORestart();
+
+                this.transform.DOShakePosition(0.5f,1, 10, 30);
+
                 print("hitting axe");
                 ObjectiveController.instance.UpdateTask(2);
             }
@@ -760,10 +755,10 @@ public class PickDropController : MonoBehaviour
             {
                 GamePlayManager.instance.axeBlueGlow.Stop();
 
-                holdArea.localPosition = new Vector3(0.4f, -0.5f, 0.7f);
+                holdArea.localPosition = new Vector3(0.4f, -0.8f, 1f);
                 holdArea.localEulerAngles = new Vector3(0, 0, 0);
 
-                heldObj.transform.localEulerAngles = Vector3.right*-90f;
+                heldObj.transform.localEulerAngles = Vector3.zero;
             }
 
             if (detectObj.tag == "Talisman" && GameManager.instance.selectedLevel == 10)
