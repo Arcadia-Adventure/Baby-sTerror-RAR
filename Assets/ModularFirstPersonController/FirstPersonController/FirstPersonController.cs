@@ -186,7 +186,7 @@ public class FirstPersonController : MonoBehaviour
 
             if(hideBarWhenFull)
             {
-                sprintBarCG.alpha = 0;
+                //sprintBarCG.alpha = 0;
             }
         }
         else

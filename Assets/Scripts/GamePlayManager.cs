@@ -60,7 +60,8 @@ public class GamePlayManager : MonoBehaviour
             if (i == 2)
             {
                 babyRoomDoor.isDoorLock = false;
-
+                
+               
                 var g = PickDropController.instance.heldObj;
                 Destroy(g);
                 ObjectiveController.instance.UpdateTask(2);
@@ -154,6 +155,10 @@ public class GamePlayManager : MonoBehaviour
 
             axeBlueGlow.Stop();
         }
+        else
+        {
+            babyRoomDoor.isDoorLock = false;
+        }
 
 
         if(GameManager.instance.selectedLevel == 9)
@@ -213,7 +218,10 @@ public class GamePlayManager : MonoBehaviour
 
         int currentPlayerPrefs = PlayerPrefs.GetInt("totalUnlockLevel");
 
-        PlayerPrefs.SetInt("totalUnlockLevel", currentPlayerPrefs+1);
+        if(currentPlayerPrefs < 9 && GameManager.instance.selectedLevel == currentPlayerPrefs)
+        {
+            PlayerPrefs.SetInt("totalUnlockLevel", currentPlayerPrefs+1);
+        }
     }
 
 

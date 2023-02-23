@@ -85,7 +85,7 @@ public class PickDropController : MonoBehaviour
 
             if (prefabe)
             {
-                DropObject();
+                //DropObject();
 
                 if (GameManager.instance.selectedLevel == 1)
                 {
