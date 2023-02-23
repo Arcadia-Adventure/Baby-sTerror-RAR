@@ -79,13 +79,12 @@ public class PickDropController : MonoBehaviour
             if (GameManager.instance.selectedLevel == 2)
             {
                 GamePlayManager.instance.baby.tag = "Untagged";
-
-                DropObject();
             }
+           
 
             if (prefabe)
             {
-                //DropObject();
+              
 
                 if (GameManager.instance.selectedLevel == 1)
                 {
@@ -111,10 +110,11 @@ public class PickDropController : MonoBehaviour
 
                 print("cradle detection");
             }
+           
 
             if (feeder)
             {
-                DropObject();
+                
                 var f = GameObject.FindGameObjectWithTag("Feeder");
                 Destroy(f);
 
@@ -133,10 +133,11 @@ public class PickDropController : MonoBehaviour
 
                 print("feeder detection");
             }
+           
 
             if (washPoint)
             {
-                DropObject();
+               
                 PrefabeInstantLvl3();
 
                 var b = GameObject.FindWithTag("Baby");
@@ -152,14 +153,13 @@ public class PickDropController : MonoBehaviour
                 print("Sit with cry");
 
                 //GamePlayManager.instance.facewashGlow.Play();
-
-
             }
+           
 
 
             if (faceWash)
             {
-                DropObject();
+              
                 var b = GameObject.FindWithTag("Facewash");
                 Destroy(b);
 
@@ -178,10 +178,11 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
+           
 
             if (shirt)
             {
-                DropObject();
+
                 var s = GameObject.FindWithTag("Shirt");
                 Destroy(s);
 
@@ -200,11 +201,13 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
+            
+          
 
 
             if (toy)
             {
-                DropObject();
+                
                 var t = GameObject.FindWithTag("Toy");
                 Destroy(t);
 
@@ -221,15 +224,16 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
-
-
-
            
+
+
+
+
 
 
             if (fire)
             {
-                DropObject();
+
                 var pump = GameObject.FindWithTag("Fire Extinguisher");
                 Destroy(pump);
 
@@ -251,10 +255,11 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
+          
 
             if (talisman)
             {
-                DropObject();
+               
                 var l = GameObject.FindWithTag("Talisman");
                 Destroy(l);
 
@@ -270,7 +275,7 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(BabyController.instance.LevelComplete());
             }
-
+            
         }
     }
 
