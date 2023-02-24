@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerDetection : MonoBehaviour
 {
+    public FirstPersonController fpc;
 
     public GameObject behoshBanda;
 
@@ -27,9 +28,17 @@ public class PlayerDetection : MonoBehaviour
         {
             print("neck");
 
+            //fpc.isWalking = false;
+
+            fpc.GetComponent<Rigidbody>().isKinematic = true;
+
+            this.GetComponent<AudioSource>().enabled = false;
+
             BabyController.instance.babyAngryVoice.Stop();
 
             behoshBanda.SetActive(true);
+
+            SoundManager.instance.playerFall.Play();
 
             ObjectiveController.instance.UpdateTask(1);
             StartCoroutine(BabyController.instance.LevelComplete());

@@ -185,6 +185,8 @@ public class GamePlayManager : MonoBehaviour
         {
             StartCoroutine(HoshBandaOff());
 
+            SoundManager.instance.playerStandup.Play();
+
             for (int i = 0; i < flyingFurniture.Length; i++)
             {
                 flyingFurniture[i].GetComponent<Rigidbody>().useGravity = false;
@@ -208,6 +210,9 @@ public class GamePlayManager : MonoBehaviour
             baby.GetComponent<Rigidbody>().isKinematic = true;
             baby.GetComponent<Rigidbody>().useGravity = false;
 
+
+            UIManager.instance.nextBtn.SetActive(false);
+
         }
     }
 
@@ -218,7 +223,7 @@ public class GamePlayManager : MonoBehaviour
 
         int currentPlayerPrefs = PlayerPrefs.GetInt("totalUnlockLevel");
 
-        if(currentPlayerPrefs < 9 && GameManager.instance.selectedLevel == currentPlayerPrefs)
+        if(currentPlayerPrefs < 10 && GameManager.instance.selectedLevel == currentPlayerPrefs)
         {
             PlayerPrefs.SetInt("totalUnlockLevel", currentPlayerPrefs+1);
         }

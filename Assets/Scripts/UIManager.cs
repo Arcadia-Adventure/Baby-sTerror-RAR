@@ -29,7 +29,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI detectionTxt;
     public RectTransform rt;
 
- 
+    public GameObject nextBtn;
 
     public FirstPersonController fps;
 

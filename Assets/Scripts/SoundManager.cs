@@ -36,13 +36,26 @@ public class SoundManager : MonoBehaviour
 	public AudioSource doorClose;
 	public AudioSource doorBreak;
 
+	public AudioSource playerFall;
+	public AudioSource playerStandup;
+
 
 	public AudioSource pick;
 	public AudioSource drop;
 	public AudioSource levelComplete;
 
 
+	public void PlayerFall()
+	{
+		playerFall.Play();
+	}
 
+	public void PlayerStandUP()
+    {
+		playerStandup.Play();
+    }
+
+	
     public void BGUISound()
     {
 		BG.Play();

@@ -24,7 +24,7 @@ public class PickDropController : MonoBehaviour
 
     public GameObject detectObj;
     public DoorController doorController;
-
+    public FirstPersonController fpc;
     public void DoorOpenCloaeBtn()
     {
         doorController.DoorOpenClose();
@@ -35,6 +35,10 @@ public class PickDropController : MonoBehaviour
         UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
         UIManager.instance.crossHairDetection.sprite = UIManager.instance.pickImage;
         UIManager.instance.crossHairDetection.DOFade(1, 1);
+
+        fpc.enableZoom = true;
+        fpc.holdToZoom = true;
+        fpc.isZoomed = true;
     }
 
     public void DetectItemsDropUI()
@@ -84,24 +88,46 @@ public class PickDropController : MonoBehaviour
 
             if (prefabe)
             {
-              
+
+                Destroy(BabyController.instance.gameObject);
 
                 if (GameManager.instance.selectedLevel == 1)
                 {
                     PrefabeInstantLvl1();
+
+                    babyPosLvl1.GetComponent<Animator>().enabled = true;
+                    babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
                 }
 
                 if (GameManager.instance.selectedLevel == 6)
                 {
                     PrefabeInstantLvl6();
+
+                    babyPosLvl6.GetComponent<Animator>().enabled = true;
+                    babyPosLvl6.GetComponent<Animator>().SetBool("Happy", true);
                 }
 
+                if(GameManager.instance.selectedLevel == 10)
+                {
+                    PrefabeInstantLvl1();
 
-                var b = GameObject.FindWithTag("Baby");
-                Destroy(b);
+                    babyPosLvl1.GetComponent<Animator>().enabled = true;
+                    babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
 
 
-                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                    ObjectiveController.instance.UpdateTask(3);
+                    SoundManager.instance.BabyHappy();
+
+                    GamePlayManager.instance.cradleGreenGlow.Stop();
+                    GamePlayManager.instance.baby.tag = "Untagged";
+
+                    StartCoroutine(BabyController.instance.LevelComplete());
+                }
+
+                //BabyController.instance.BabyAnim.SetBool("Happy", true);
+
+
+
                 GamePlayManager.instance.cradleGreenGlow.Stop();
                 SoundManager.instance.BabyHappy();
                 ObjectiveController.instance.UpdateTask(2);
@@ -109,14 +135,14 @@ public class PickDropController : MonoBehaviour
                 StartCoroutine(BabyController.instance.LevelComplete());
 
                 print("cradle detection");
+
             }
-           
+
 
             if (feeder)
             {
                 
-                var f = GameObject.FindGameObjectWithTag("Feeder");
-                Destroy(f);
+                Destroy(Items.instance.feeder);
 
 
                 GamePlayManager.instance.baby.tag = "Untagged";
@@ -137,18 +163,24 @@ public class PickDropController : MonoBehaviour
 
             if (washPoint)
             {
-               
+              
+                Destroy(BabyController.instance.gameObject);
+
                 PrefabeInstantLvl3();
 
-                var b = GameObject.FindWithTag("Baby");
-                Destroy(b);
+                babyposLvl3.GetComponent<Animator>().enabled = true;
+                babyposLvl3.GetComponent<Animator>().SetBool("Fly", false); 
+                babyposLvl3.GetComponent<Animator>().SetBool("Sit", true);
 
-                ObjectiveController.instance.UpdateTask(1);
 
-                BabyController.instance.BabyAnim.SetBool("Fly", false);
-                BabyController.instance.BabyAnim.SetBool("Sit", true);
+                babyposLvl3.GetComponent<AudioSource>().enabled = true;
+
+
+                /*  BabyController.instance.BabyAnim.SetBool("Fly", false);
+                  BabyController.instance.BabyAnim.SetBool("Sit", true);*/
 
                 GamePlayManager.instance.washPointGreenGlow.Stop();
+                ObjectiveController.instance.UpdateTask(1);
 
                 print("Sit with cry");
 
@@ -160,8 +192,7 @@ public class PickDropController : MonoBehaviour
             if (faceWash)
             {
               
-                var b = GameObject.FindWithTag("Facewash");
-                Destroy(b);
+                Destroy(Items.instance.facewash);
 
                 BabyController.instance.babyBlueGlow.Play();
                 SoundManager.instance.BabyHappy();
@@ -183,8 +214,7 @@ public class PickDropController : MonoBehaviour
             if (shirt)
             {
 
-                var s = GameObject.FindWithTag("Shirt");
-                Destroy(s);
+                Destroy(Items.instance.dress);
 
                 GamePlayManager.instance.baby.tag = "Untagged";
 
@@ -208,8 +238,7 @@ public class PickDropController : MonoBehaviour
             if (toy)
             {
                 
-                var t = GameObject.FindWithTag("Toy");
-                Destroy(t);
+                Destroy(Items.instance.toy);
 
                 GamePlayManager.instance.baby.tag = "Untagged";
 
@@ -234,14 +263,8 @@ public class PickDropController : MonoBehaviour
             if (fire)
             {
 
-                var pump = GameObject.FindWithTag("Fire Extinguisher");
-                Destroy(pump);
-
-                var f = GameObject.FindGameObjectsWithTag("Fire");
-                for (int i = 0; i < f.Length; i++)
-                {
-                    f[i].gameObject.SetActive(false);
-                }
+                Destroy(Items.instance.fireCylinder);
+                Destroy(Items.instance.fire);
 
                 GamePlayManager.instance.baby.tag = "Untagged";
 
@@ -259,26 +282,42 @@ public class PickDropController : MonoBehaviour
 
             if (talisman)
             {
-               
-                var l = GameObject.FindWithTag("Talisman");
-                Destroy(l);
+
+                //Destroy(Items.instance.telisman);
+                Items.instance.telisman.SetActive(false);
 
                 BabyController.instance.BabyAnim.SetBool("Fly", false);
-                BabyController.instance.BabyAnim.SetBool("Happy", true);
-                SoundManager.instance.BabyHappy();
+
+                //BabyController.instance.BabyAnim.enabled = false;
+                BabyController.instance.GetComponent<Rigidbody>().isKinematic = false;
+                BabyController.instance.GetComponent<Rigidbody>().useGravity = true;
+
+                Destroy(Items.instance.fireLvl10);
+
                 BabyController.instance.babyAngryVoice.Stop();
+
                 BabyController.instance.babyBlueGlow.Play();
+
                 BabyController.instance.babyEyesRed.color = Color.white;
+
                 ObjectiveController.instance.UpdateTask(2);
 
-                GamePlayManager.instance.baby.tag = "Untagged";
+                BabyController.instance.BabyAnim.SetBool("Happy", true);
+                SoundManager.instance.BabyHappy();
 
-                StartCoroutine(BabyController.instance.LevelComplete());
+                GamePlayManager.instance.cradleGreenGlow.Play();
+                //GamePlayManager.instance.baby.tag = "Untagged";
+
+
+               
+                //StartCoroutine(BabyController.instance.LevelComplete());
             }
+           
             
         }
     }
-
+    RaycastHit hit;
+    public string objTag;
     private void Update()
     {
         if (ControlFreak2.CF2Input.GetKeyDown(KeyCode.P))
@@ -295,10 +334,10 @@ public class PickDropController : MonoBehaviour
 
 
 
-        RaycastHit hit;
+        //RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange))
         {
-
+            objTag = hit.transform.tag;
             // door button click
             if (ControlFreak2.CF2Input.GetMouseButtonDown(1))
             {
@@ -306,7 +345,7 @@ public class PickDropController : MonoBehaviour
                 print(hit.transform.name);
                
 
-                if (hit.transform.tag == "Door" || hit.transform.tag == "Fridge")
+                if (objTag == "Door" || objTag == "Fridge")
                 {
                     print("door open and close");
                     hit.transform.GetComponent<DoorController>().DoorOpenClose();
@@ -327,7 +366,7 @@ public class PickDropController : MonoBehaviour
 
 
             // set door button UI 
-            if (hit.transform.tag == "Door" || hit.transform.tag == "Fridge")
+            if (objTag=="Door" || objTag=="Fridge")
             {
               
 
@@ -338,7 +377,7 @@ public class PickDropController : MonoBehaviour
                 if (hit.transform.GetComponent<DoorController>().isDoor == false)
                 {
                     UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
-                    UIManager.instance.detectionTxt.text = "Open " + hit.transform.tag;
+                    UIManager.instance.detectionTxt.text = "Open " + objTag;
                     UIManager.instance.crossHairDetection.DOFade(1, 1);
 
                     UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
@@ -360,7 +399,7 @@ public class PickDropController : MonoBehaviour
                 else
                 {
                     UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorCloseImage;
-                    UIManager.instance.detectionTxt.text = "Close  " + hit.transform.tag;
+                    UIManager.instance.detectionTxt.text = "Close  " + objTag;
 
                     UIManager.instance.door.SetSprite(UIManager.instance.doorCloseImage);
                     BtnFade(UIManager.instance.door, true);
@@ -372,31 +411,36 @@ public class PickDropController : MonoBehaviour
                 UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
                 UIManager.instance.detectionTxt.text = null;
                 BtnFade(UIManager.instance.door, false);
+
+
             }
 
 
 
             // set pick item UI detection
-            string tag = hit.transform.tag;
+           // string objTag = objTag;
 
-            if (tag == "Baby" ||
-                 tag == "Feeder" ||
-                 tag == "Facewash" ||
-                 tag == "Shirt" ||
-                 tag == "Toy" ||
-                 tag == "Fire Extinguisher" ||
-                 tag == "Axe" ||
-                 tag == "Talisman"
+            if (objTag == "Baby" ||
+                 objTag == "Feeder" ||
+                 objTag == "Facewash" ||
+                 objTag == "Shirt" ||
+                 objTag == "Toy" ||
+                 objTag == "Fire Extinguisher" ||
+                 objTag == "Axe" ||
+                 objTag == "Talisman"
                 )
             {
                 DetectItemsPickUI();
                 BtnFade(UIManager.instance.pick, true);
                 UIManager.instance.pick.SetSprite(UIManager.instance.pickImage);
-                UIManager.instance.detectionTxt.text = "Pick " + hit.transform.tag;
+                UIManager.instance.detectionTxt.text = "Pick " + objTag;
+
+             
+
             }
-            else if (tag != "Door")
+            else if (objTag != "Door")
             {
-                if (tag != "Fridge")
+                if (objTag != "Fridge")
                 {
                     if (heldObj != null)
                     {
@@ -409,6 +453,12 @@ public class PickDropController : MonoBehaviour
                     UIManager.instance.crossHairDetection.sprite = UIManager.instance.knobImage;
                     UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
                     UIManager.instance.detectionTxt.text = null;
+
+
+
+                    //fpc.enableZoom = false;
+                    fpc.holdToZoom = false;
+                    fpc.isZoomed = false;
                 }
             }
 
@@ -419,9 +469,9 @@ public class PickDropController : MonoBehaviour
             {
 
 
-                if ((GameManager.instance.selectedLevel == 1) || (GameManager.instance.selectedLevel == 6))
+                if ((GameManager.instance.selectedLevel == 1) || (GameManager.instance.selectedLevel == 6) || (GameManager.instance.selectedLevel == 10))
                 {
-                    if (hit.transform.tag == "Cradle")
+                    if (objTag == "Cradle")
                     {
                         DetectItemsDropUI();
                         BtnFade(UIManager.instance.pick, true);
@@ -438,7 +488,7 @@ public class PickDropController : MonoBehaviour
 
 
 
-                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 2))
+                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 2))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -452,7 +502,7 @@ public class PickDropController : MonoBehaviour
                     feeder = false;
                 }
 
-                if (hit.transform.tag == "WashPoint" && (GameManager.instance.selectedLevel == 3))
+                if (objTag == "WashPoint" && (GameManager.instance.selectedLevel == 3))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -466,7 +516,7 @@ public class PickDropController : MonoBehaviour
                     washPoint = false;
                 }
 
-                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 3))
+                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 3))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -480,7 +530,7 @@ public class PickDropController : MonoBehaviour
                     faceWash = false;
                 }
 
-                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 4))
+                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 4))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -494,7 +544,7 @@ public class PickDropController : MonoBehaviour
                     shirt = false;
                 }
 
-                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 5))
+                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 5))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -508,7 +558,7 @@ public class PickDropController : MonoBehaviour
                     toy = false;
                 }
 
-                if (hit.transform.tag == "Fire" && (GameManager.instance.selectedLevel == 7))
+                if (objTag == "Fire" && (GameManager.instance.selectedLevel == 7))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -523,7 +573,7 @@ public class PickDropController : MonoBehaviour
                 }
 
 
-                if (hit.transform.tag == "Door" && (GameManager.instance.selectedLevel == 8))
+                if (objTag == "Door" && (GameManager.instance.selectedLevel == 8))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -547,7 +597,7 @@ public class PickDropController : MonoBehaviour
 
 
 
-                if (hit.transform.tag == "Baby" && (GameManager.instance.selectedLevel == 10))
+                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 10))
                 {
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
@@ -594,15 +644,15 @@ public class PickDropController : MonoBehaviour
 
 
 
-
+    GameObject babyPosLvl1;
     public void PrefabeInstantLvl1()
     {
-        var babyPos = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
-        babyPos.transform.position = GamePlayManager.instance.babyDropSpwanPoint[0].transform.position;
+        babyPosLvl1 = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
+        babyPosLvl1.transform.position = GamePlayManager.instance.babyDropSpwanPoint[0].transform.position;
 
-        babyPos.tag = "Untagged";
-        babyPos.GetComponent<AudioSource>().enabled = false;
-        print(babyPos);
+        babyPosLvl1.tag = "Untagged";
+        babyPosLvl1.GetComponent<AudioSource>().enabled = false;
+        print(babyPosLvl1);
     }
 
     GameObject babyposLvl3;
@@ -616,15 +666,17 @@ public class PickDropController : MonoBehaviour
         print(babyposLvl3);
     }
 
+    GameObject babyPosLvl6;
     public void PrefabeInstantLvl6()
     {
-        var babyPos = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
-        babyPos.transform.position = GamePlayManager.instance.babyDropSpwanPoint[2].transform.position;
+        babyPosLvl6 = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
+        babyPosLvl6.transform.position = GamePlayManager.instance.babyDropSpwanPoint[2].transform.position;
 
-        babyPos.tag = "Untagged";
-        babyPos.GetComponent<AudioSource>().enabled = false;
-        print(babyPos);
+        babyPosLvl6.tag = "Untagged";
+        babyPosLvl6.GetComponent<AudioSource>().enabled = false;
+        print(babyPosLvl6);
     }
+
 
 
     public void BtnFade(TouchButtonSpriteAnimator t, bool isFade)
@@ -722,6 +774,9 @@ public class PickDropController : MonoBehaviour
 
             if (detectObj.tag == "Feeder" && GameManager.instance.selectedLevel == 2)
             {
+
+               
+
                 GamePlayManager.instance.feederBlueGlow.Stop();
 
                 GamePlayManager.instance.baby.tag = "Baby";
