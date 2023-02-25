@@ -53,6 +53,8 @@ public class GamePlayManager : MonoBehaviour
 
     public GameObject[] Cracker;
 
+   
+
     public void Crack()
     {
         for (int i = 0; i < Cracker.Length; i++)
@@ -141,6 +143,9 @@ public class GamePlayManager : MonoBehaviour
         {
             BabyController.instance.BabyAnim.SetBool("Sit", true);
             baby.tag = "Untagged";
+
+            Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().Play();
+
         }
 
 
@@ -154,6 +159,8 @@ public class GamePlayManager : MonoBehaviour
             axeBlueGlow.transform.parent.tag = "Untagged";
 
             axeBlueGlow.Stop();
+
+            Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().Play();
         }
         else
         {
@@ -183,6 +190,9 @@ public class GamePlayManager : MonoBehaviour
 
         if(GameManager.instance.selectedLevel == 10)
         {
+
+            Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().Play();
+
             StartCoroutine(HoshBandaOff());
 
             SoundManager.instance.playerStandup.Play();
@@ -212,6 +222,8 @@ public class GamePlayManager : MonoBehaviour
 
 
             UIManager.instance.nextBtn.SetActive(false);
+
+            baby.GetComponent<AudioSource>().mute = enabled;
 
         }
     }

@@ -40,23 +40,4 @@ public class BabyController : MonoBehaviour
             clothBody.SetActive(true);
         }
     }
-
-
-    public IEnumerator LevelComplete()
-    {
-        yield return new WaitForSeconds(1.8f);
-        GamePlayManager.instance.LevelComplete();
-
-        GamePlayManager.instance.RainBG.Stop();
-        SoundManager.instance.LevelCompleteSound();
-        StartCoroutine(UIBGSound());
-    }
-
-    public IEnumerator UIBGSound()
-    {
-        yield return new WaitForSeconds(2f);
-        SoundManager.instance.BGUISound();
-        print("BGUISOUND");
-    }
-
 }

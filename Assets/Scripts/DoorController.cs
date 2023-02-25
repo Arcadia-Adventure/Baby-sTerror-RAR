@@ -21,6 +21,10 @@ public class DoorController : MonoBehaviour
                 isDoor = true;
 
                 SoundManager.instance.doorOpen.Play();
+
+                PickDropController.instance.fpc.enableZoom = false;
+                PickDropController.instance.fpc.holdToZoom = false;
+                PickDropController.instance.fpc.isZoomed = false;
             }
             else
             {
@@ -28,12 +32,17 @@ public class DoorController : MonoBehaviour
                 isDoor = false;
 
                 SoundManager.instance.doorClose.Play();
+
+                PickDropController.instance.fpc.enableZoom = false;
+                PickDropController.instance.fpc.holdToZoom = false;
+                PickDropController.instance.fpc.isZoomed = false;
             }
         }
         else
         {
-            transform.DOPunchRotation(Vector3.up*2 , 0.5f).OnComplete(() => {
-                transform.DORotate(doorClose, 0.1f);
+            transform.DOPunchRotation(Vector3.up*2 , 0.5f).OnComplete( ()=> 
+            {
+               transform.DORotate(doorClose, 0.1f);
 
 
             });

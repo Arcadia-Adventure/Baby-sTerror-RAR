@@ -77,49 +77,31 @@ public class UIManager : MonoBehaviour
     public void DoorOpenCloseBtn()
     {
         Debug.Log("door click");
-        PickDropController.instance.DoorOpenCloaeBtn();
+        PickDropController.instance.DoorOpenCloseBtn();
 
     }
 
     public void PauseBtn()
     {
-      
         Time.timeScale = 0;
         pausePanel.SetActive(true);
 
+        Camera.main.GetComponent<AudioListener>().enabled = false;
+
         SoundManager.instance.ClickSound();
-
-        if(GameManager.instance.selectedLevel == 1)
-        {
-            GamePlayManager.instance.doorBell.Stop();
-        }
-
-        GamePlayManager.instance.RainBG.mute = true;
-        BabyController.instance.babyCry.enabled = false;
+        SoundManager.instance.BG.Play();
     }
-
 
 
     public void ResumeBtn()
     {
-        pausePanel.SetActive(false);
         Time.timeScale = 1;
+        pausePanel.SetActive(false);
+
+        Camera.main.GetComponent<AudioListener>().enabled = true;
 
         SoundManager.instance.ClickSound();
-
-      
-
-        GamePlayManager.instance.RainBG.mute = false;
-
-        if(PickDropController.instance.heldObj != true)
-        {
-            if (GameManager.instance.selectedLevel == 1)
-            {
-                GamePlayManager.instance.doorBell.Play();
-            }
-
-            BabyController.instance.babyCry.enabled = true;
-        }
+        SoundManager.instance.BG.Stop();
     }
 
 

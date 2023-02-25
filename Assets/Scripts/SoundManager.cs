@@ -108,4 +108,25 @@ public class SoundManager : MonoBehaviour
 		levelComplete.Play();
 	}
 
+
+	public IEnumerator LevelComplete()
+	{
+		yield return new WaitForSeconds(1.8f);
+		GamePlayManager.instance.LevelComplete();
+
+		Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().Stop();
+		Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().Stop();
+
+		GamePlayManager.instance.RainBG.Stop();
+		SoundManager.instance.LevelCompleteSound();
+		StartCoroutine(UIBGSound());
+	}
+
+	public IEnumerator UIBGSound()
+	{
+		yield return new WaitForSeconds(2f);
+		SoundManager.instance.BGUISound();
+		print("BGUISOUND");
+	}
+
 }

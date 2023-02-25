@@ -21,7 +21,7 @@ public class PlayerDetection : MonoBehaviour
         if (other.gameObject.tag == "Player" && GameManager.instance.selectedLevel == 8)
         {
             ObjectiveController.instance.UpdateTask(3);
-            StartCoroutine(BabyController.instance.LevelComplete());
+            StartCoroutine(SoundManager.instance.LevelComplete());
         }
 
         if (other.gameObject.tag == "Neck" && GameManager.instance.selectedLevel == 9)
@@ -41,7 +41,7 @@ public class PlayerDetection : MonoBehaviour
             SoundManager.instance.playerFall.Play();
 
             ObjectiveController.instance.UpdateTask(1);
-            StartCoroutine(BabyController.instance.LevelComplete());
+            StartCoroutine(SoundManager.instance.LevelComplete());
         }
     }
 

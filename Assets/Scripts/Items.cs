@@ -9,5 +9,5 @@ public class Items : MonoBehaviour
     {
         instance = this;
     }
-    public GameObject facewash, telisman, fire, feeder, toy, fireCylinder, dress, fireLvl10;
+    public GameObject facewash, telisman, feeder, toy, fireCylinder, dress, fireLvl7,fireLvl8,fireLvl10;
 }

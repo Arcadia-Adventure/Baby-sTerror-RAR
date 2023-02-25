@@ -12,6 +12,8 @@ public class PickDropController : MonoBehaviour
         instance = this;
     }
 
+    public LayerMask detectionLayers;
+
     [Header("Pickup Settings")]
     [SerializeField] Transform holdArea;
 
@@ -19,17 +21,19 @@ public class PickDropController : MonoBehaviour
     private Rigidbody heldObjRB;
 
     [Header("Physics Parameters")]
-    [SerializeField] private float pickupRange = 5.0f;
+    [SerializeField] private float pickupRange = 10f;
     [SerializeField] private float pickupForce = 150.0f;
 
     public GameObject detectObj;
     public DoorController doorController;
     public FirstPersonController fpc;
-    public void DoorOpenCloaeBtn()
+
+    public void DoorOpenCloseBtn()
     {
         doorController.DoorOpenClose();
         GamePlayManager.instance.doorBell.Stop();
     }
+
     public void DetectItemsPickUI()
     {
         UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
@@ -46,6 +50,10 @@ public class PickDropController : MonoBehaviour
         UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
         UIManager.instance.crossHairDetection.sprite = UIManager.instance.dropImage;
         UIManager.instance.crossHairDetection.DOFade(1, 1);
+
+      
+        fpc.holdToZoom = false;
+        fpc.isZoomed = false;
     }
 
    
@@ -53,6 +61,10 @@ public class PickDropController : MonoBehaviour
     {
         if (heldObj != null)
         {
+            fpc.holdToZoom = false;
+            fpc.isZoomed = false;
+
+
             DetectItemsPickUI();
            
             SoundManager.instance.DropItem();
@@ -121,7 +133,7 @@ public class PickDropController : MonoBehaviour
                     GamePlayManager.instance.cradleGreenGlow.Stop();
                     GamePlayManager.instance.baby.tag = "Untagged";
 
-                    StartCoroutine(BabyController.instance.LevelComplete());
+                    StartCoroutine(SoundManager.instance.LevelComplete());
                 }
 
                 //BabyController.instance.BabyAnim.SetBool("Happy", true);
@@ -132,7 +144,7 @@ public class PickDropController : MonoBehaviour
                 SoundManager.instance.BabyHappy();
                 ObjectiveController.instance.UpdateTask(2);
 
-                StartCoroutine(BabyController.instance.LevelComplete());
+                StartCoroutine(SoundManager.instance.LevelComplete());
 
                 print("cradle detection");
 
@@ -155,7 +167,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
                 BabyController.instance.BabyAnim.SetBool("Sit", false);
 
-                StartCoroutine(BabyController.instance.LevelComplete());
+                StartCoroutine(SoundManager.instance.LevelComplete());
 
                 print("feeder detection");
             }
@@ -207,7 +219,7 @@ public class PickDropController : MonoBehaviour
 
                 BabyController.instance.babyDirtyFace.SetActive(false);
 
-                StartCoroutine(BabyController.instance.LevelComplete());
+                StartCoroutine(SoundManager.instance.LevelComplete());
             }
            
 
@@ -229,7 +241,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
                 BabyController.instance.BabyAnim.SetBool("Sit", false);
 
-                StartCoroutine(BabyController.instance.LevelComplete());
+                StartCoroutine(SoundManager.instance.LevelComplete());
             }
             
           
@@ -251,7 +263,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance.BabyAnim.SetBool("Sit", false);
 
 
-                StartCoroutine(BabyController.instance.LevelComplete());
+                StartCoroutine(SoundManager.instance.LevelComplete());
             }
            
 
@@ -260,11 +272,11 @@ public class PickDropController : MonoBehaviour
 
 
 
-            if (fire)
+            if (fire) // lvl7
             {
 
                 Destroy(Items.instance.fireCylinder);
-                Destroy(Items.instance.fire);
+                Destroy(Items.instance.fireLvl7);
 
                 GamePlayManager.instance.baby.tag = "Untagged";
 
@@ -276,7 +288,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance.BabyAnim.SetBool("Happy", true);
                 BabyController.instance.BabyAnim.SetBool("Sit", false);
 
-                StartCoroutine(BabyController.instance.LevelComplete());
+                StartCoroutine(SoundManager.instance.LevelComplete());
             }
           
 
@@ -311,11 +323,10 @@ public class PickDropController : MonoBehaviour
 
                
                 //StartCoroutine(BabyController.instance.LevelComplete());
-            }
-           
-            
+            }        
         }
     }
+
     RaycastHit hit;
     public string objTag;
     private void Update()
@@ -335,7 +346,7 @@ public class PickDropController : MonoBehaviour
 
 
         //RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange))
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange, detectionLayers))
         {
             objTag = hit.transform.tag;
             // door button click
@@ -350,6 +361,8 @@ public class PickDropController : MonoBehaviour
                     print("door open and close");
                     hit.transform.GetComponent<DoorController>().DoorOpenClose();
                     GamePlayManager.instance.doorBell.Stop();
+
+
 
                     if ((GameManager.instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
                     {
@@ -405,15 +418,13 @@ public class PickDropController : MonoBehaviour
                     BtnFade(UIManager.instance.door, true);
                 }
             }
-            else
+           /* else
             {
                 UIManager.instance.crossHairDetection.sprite = UIManager.instance.knobImage;
                 UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
                 UIManager.instance.detectionTxt.text = null;
                 BtnFade(UIManager.instance.door, false);
-
-
-            }
+            }*/
 
 
 
@@ -622,6 +633,24 @@ public class PickDropController : MonoBehaviour
                 detectObj = hit.transform.gameObject;
             }
         }
+        else
+        {
+            UIManager.instance.crossHairDetection.sprite = UIManager.instance.knobImage;
+            UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
+            UIManager.instance.detectionTxt.text = null;
+            BtnFade(UIManager.instance.door, false);
+
+            if (heldObj == null)
+            {
+                BtnFade(UIManager.instance.pick, false); // drop image
+
+            }
+
+            fpc.holdToZoom = false;
+            fpc.isZoomed = false;
+
+        }
+
         if (heldObj != null)
         {
             //MoveObject
@@ -873,6 +902,7 @@ public class PickDropController : MonoBehaviour
         heldObjRB.constraints = RigidbodyConstraints.None;
         heldObj.transform.parent = null;
         heldObj = null;
-        heldObjRB.AddForce(transform.forward * 10, ForceMode.Impulse);
+        heldObjRB.AddForce(transform.forward * 1, ForceMode.Impulse);
+        heldObjRB.AddForce(transform.up * 2, ForceMode.Impulse);
     }
 }
