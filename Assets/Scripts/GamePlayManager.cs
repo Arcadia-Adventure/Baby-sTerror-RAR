@@ -232,12 +232,12 @@ public class GamePlayManager : MonoBehaviour
     public void LevelComplete()
     {
         UIManager.instance.LvlCompleteON();
-
         int currentPlayerPrefs = PlayerPrefs.GetInt("totalUnlockLevel");
 
-        if(currentPlayerPrefs < 10 && GameManager.instance.selectedLevel == currentPlayerPrefs)
+        if(currentPlayerPrefs < 9 && GameManager.instance.selectedLevel == currentPlayerPrefs+1)
         {
             PlayerPrefs.SetInt("totalUnlockLevel", currentPlayerPrefs+1);
+        print("level Complete now unlock level is " + PlayerPrefs.GetInt("totalUnlockLevel"));
         }
     }
 

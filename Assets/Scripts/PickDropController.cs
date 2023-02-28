@@ -654,10 +654,17 @@ public class PickDropController : MonoBehaviour
         if (heldObj != null)
         {
             //MoveObject
+            //MoveObject();
+        }
+    }
+    private void FixedUpdate()
+    {
+        if (heldObj != null)
+        {
+            //MoveObject
             MoveObject();
         }
     }
-
 
 
 
@@ -721,14 +728,14 @@ public class PickDropController : MonoBehaviour
             t.transform.parent.GetComponent<TouchButton>().enabled = false;
         }
     }
-
+    Vector3 moveDirection;
     void MoveObject()
     {
-        if (Vector3.Distance(heldObj.transform.position, holdArea.position) > 0.1f)
-        {
-            Vector3 moveDirection = (holdArea.position - heldObj.transform.position);
-            heldObjRB.AddForce(moveDirection * pickupForce);
-        }
+            moveDirection = (holdArea.position - heldObj.transform.position);
+            heldObjRB.AddForce(moveDirection * pickupForce,ForceMode.Force);
+        //if (Vector3.Distance(heldObj.transform.position, holdArea.position) > 0.1f)
+        //{
+        //}
     }
 
     public void PickupObject()
@@ -738,9 +745,11 @@ public class PickDropController : MonoBehaviour
         if (detectObj.GetComponent<Rigidbody>())
         {
             heldObjRB = detectObj.GetComponent<Rigidbody>();
-            heldObjRB.useGravity = false;
+            
             heldObjRB.drag = 10;
             heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
+            heldObjRB.useGravity = true;
+            heldObjRB.useGravity = false;
 
             if (detectObj.transform.tag == "Baby")
             {

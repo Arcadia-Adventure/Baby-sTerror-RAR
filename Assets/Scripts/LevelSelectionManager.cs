@@ -21,6 +21,7 @@ public class LevelSelectionManager : MonoBehaviour
     private void Start()
     {
 		UnlockLevels();
+		print(PlayerPrefs.GetInt("totalUnlockLevel"));
     }
 
 
