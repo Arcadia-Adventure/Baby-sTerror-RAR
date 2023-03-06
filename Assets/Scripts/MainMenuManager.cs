@@ -48,7 +48,27 @@ public class MainMenuManager : MonoBehaviour
 		SetSoundSavedValue();
 	}
 
+	public void MoreGames()
+    {
 
+    }
+	public void RateUs()
+    {
+#if UNITY_ANDROID
+        Application.OpenURL("market://details?id=" + Application.identifier);
+#elif UNITY_IOS
+			Application.OpenURL("itms-apps://itunes.apple.com/app/" + "1672844290");
+#endif
+	
+	}
+	public void PrivacyPolicy()
+    {
+#if UNITY_ANDROID
+		Application.OpenURL("https://sites.google.com/view/arcadia-adventures/home");
+#elif UNITY_IOS
+		Application.OpenURL("https://sites.google.com/view/ommygames/home");
+#endif
+    }
 	public void SetMusicSavedValue()
     {
 		if (PlayerPrefs.GetInt("Music") == 1)

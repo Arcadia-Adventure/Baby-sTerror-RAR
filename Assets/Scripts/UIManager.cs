@@ -83,6 +83,7 @@ public class UIManager : MonoBehaviour
 
     public void PauseBtn()
     {
+        GoogleAdMobController.instance.ShowInterstitialAd();
         Time.timeScale = 0;
         pausePanel.SetActive(true);
 
@@ -116,6 +117,7 @@ public class UIManager : MonoBehaviour
 
     public void ReplayBtn()
     {
+        GoogleAdMobController.instance.ShowRewardedAd();
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
@@ -125,6 +127,7 @@ public class UIManager : MonoBehaviour
    
     public void NextBtn()
     {
+        GoogleAdMobController.instance.ShowRewardedAd();
         GameManager.instance.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 

@@ -669,6 +669,156 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 377097487}
   m_CullTransparentMesh: 1
+--- !u!1 &526955035
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 526955037}
+  - component: {fileID: 526955036}
+  m_Layer: 0
+  m_Name: AdsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &526955036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526955035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728eea23a04a148aea0b98d592ac9a3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardAmount: 0
+  OnAdLoadedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAdFailedToLoadEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAdOpeningEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAdFailedToShowEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUserEarnedRewardEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAdClosedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  useTestIDs: 0
+  tagForChild: 1
+  bannerAdPosition: 0
+  appOpen: 0
+  intersititial: 1
+  rewarded: 1
+  banner: 0
+  rewardedIntersititial: 0
+  bannerID_Android: ca-app-pub-6019321014497002/2578918496
+  intersititialID_Android: ca-app-pub-6019321014497002/6205234512
+  rewardedID_Android: ca-app-pub-6019321014497002/2200209195
+  appOpenID_Android: 
+  rewardedIntersititialID_Android: 
+  bannerID_IOS: ca-app-pub-6019321014497002/1237916662
+  intersititialID_IOS: ca-app-pub-6019321014497002/4083571852
+  rewardedID_IOS: ca-app-pub-6019321014497002/2148238304
+  appOpenID_IOS: 
+  rewardedIntersititialID_IOS: 
+--- !u!4 &526955037
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526955035}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &546303319
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913024, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913038, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: m_Name
+      value: Notification
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913039, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: hour
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913039, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: title
+      value: Hello!
+      objectReference: {fileID: 0}
+    - target: {fileID: 5868823412046913039, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
+      propertyPath: message
+      value: The baby needs a new caretaker. Will you survive the night?
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6d91d82c4a1544ccf9e9d51094496906, type: 3}
 --- !u!1 &612526703
 GameObject:
   m_ObjectHideFlags: 0
