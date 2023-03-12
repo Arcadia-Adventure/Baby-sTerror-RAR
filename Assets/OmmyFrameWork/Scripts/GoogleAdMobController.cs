@@ -141,7 +141,7 @@ public class GoogleAdMobController : MonoBehaviour
         }
         if (banner && PlayerPrefs.GetInt("RemoveAds") != 1)
         {
-         RequestBannerAd();
+         //RequestBannerAd();
         }
     }
     private void HandleInitCompleteAction(InitializationStatus initstatus)
@@ -459,17 +459,17 @@ public class GoogleAdMobController : MonoBehaviour
     {
         //if (isRemoveAds) return;
 
-        if (rewardedAd.CanShowAd())
+        if (rewardedAd != null && rewardedAd.CanShowAd())
         {
             PrintStatus("Reward not null");
             rewardedAd.Show((Reward reward) =>
             {
-                rewardAmount = (float)reward.Amount;
-                if (OnrewardDelegate != null)
+                //rewardAmount = (float)reward.Amount;
+/*                if (OnrewardDelegate != null)
                 {
                     
                     OnrewardDelegate((float)reward.Amount);
-                }
+                }*/
                 PrintStatus("Rewarded ad granted a reward: " + reward.Amount);
             });
             //  RequestAndLoadRewardedAd();

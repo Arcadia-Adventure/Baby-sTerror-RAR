@@ -83,13 +83,21 @@ public class UIManager : MonoBehaviour
 
     public void PauseBtn()
     {
+        GoogleAdMobController.instance.DestroyBannerAd();
         GoogleAdMobController.instance.ShowInterstitialAd();
         Time.timeScale = 0;
         pausePanel.SetActive(true);
 
-        Camera.main.GetComponent<AudioListener>().enabled = false;
+        //Camera.main.GetComponent<AudioListener>().enabled = false;
 
         SoundManager.instance.ClickSound();
+        GamePlayManager.instance.doorBell.mute = true;
+        BabyController.instance.babyCry.mute = true;
+        BabyController.instance.babyAngryVoice.mute = true;
+        GamePlayManager.instance.RainBG.mute = true;
+        Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=true;
+        Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute=true;
+        Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute=true;
         SoundManager.instance.BG.Play();
     }
 
@@ -97,9 +105,17 @@ public class UIManager : MonoBehaviour
     public void ResumeBtn()
     {
         Time.timeScale = 1;
+        GamePlayManager.instance.doorBell.mute = false;
+        BabyController.instance.babyAngryVoice.mute = false;
+        GamePlayManager.instance.RainBG.mute = false;
+        BabyController.instance.babyCry.mute = false;
+        Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=false;
+        Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute = false;
+        Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute = false;
+        GoogleAdMobController.instance.ShowBanner();
         pausePanel.SetActive(false);
 
-        Camera.main.GetComponent<AudioListener>().enabled = true;
+       // Camera.main.GetComponent<AudioListener>().enabled = true;
 
         SoundManager.instance.ClickSound();
         SoundManager.instance.BG.Stop();
@@ -117,8 +133,9 @@ public class UIManager : MonoBehaviour
 
     public void ReplayBtn()
     {
-        GoogleAdMobController.instance.ShowRewardedAd();
         Time.timeScale = 1;
+        GoogleAdMobController.instance.DestroyBannerAd();
+        GoogleAdMobController.instance.ShowRewardedAd();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         SoundManager.instance.ClickSound();
@@ -127,6 +144,8 @@ public class UIManager : MonoBehaviour
    
     public void NextBtn()
     {
+        Time.timeScale = 1;
+        GoogleAdMobController.instance.DestroyBannerAd();
         GoogleAdMobController.instance.ShowRewardedAd();
         GameManager.instance.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

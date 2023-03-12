@@ -29,7 +29,10 @@ public class ObjectiveController : MonoBehaviour
         missionNameTxt.text = Objtive[GameManager.instance.selectedLevel - 1].missionName;
         for (int i = 0; i < Objtive[GameManager.instance.selectedLevel-1].Tasks.Length; i++)
         {
-            taskTxt[i].gameObject.SetActive(true);
+            if(i==0)
+            {
+                taskTxt[i].gameObject.SetActive(true);
+            }
             taskTxt[i].text = Objtive[GameManager.instance.selectedLevel - 1].Tasks[i];
         }
     }
@@ -39,8 +42,11 @@ public class ObjectiveController : MonoBehaviour
         {
             return;
         }
-
-        taskTxt[taskNo-1].text = taskTxt[taskNo-1].text + "(complete)";
+        taskTxt[taskNo-1].text = taskTxt[taskNo-1].text + "  (complete)";
+        if(taskNo < Objtive[GameManager.instance.selectedLevel - 1].Tasks.Length)
+        {
+            taskTxt[taskNo].gameObject.SetActive(true);
+        }
         //taskTxt[currentTask].text.Insert(taskTxt[currentTask].text.Length, " (Complete)"); 
         taskTxt[taskNo-1].color = completeTaskColor;
     }

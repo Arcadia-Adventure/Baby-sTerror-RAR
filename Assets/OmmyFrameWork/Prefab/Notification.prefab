@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bff921331dc241b394f2eacdc6fa0d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  title: Daily Reminder
-  message: Don't forget to take a break!
-  hour: 12
+  title: Hello!
+  message: The baby needs a new caretaker. Will you survive the night?
+  hour: 24
   minute: 0
   second: 0

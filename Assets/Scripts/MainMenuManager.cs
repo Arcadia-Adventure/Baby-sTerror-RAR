@@ -40,6 +40,7 @@ public class MainMenuManager : MonoBehaviour
 
 	private void Start()
 	{
+		GoogleAdMobController.instance.ShowBanner();
 		// set ui slider value from player prefs
 		slider.value = PlayerPrefs.GetFloat("MouseSensitivity");
 
@@ -50,8 +51,12 @@ public class MainMenuManager : MonoBehaviour
 
 	public void MoreGames()
     {
-
-    }
+#if UNITY_ANDROID
+        Application.OpenURL("market://details?id=" + Application.identifier);
+#elif UNITY_IOS
+		Application.OpenURL("https://apps.apple.com/us/developer/muhammad-umar-shafaqat/id1671095846");
+#endif
+	}
 	public void RateUs()
     {
 #if UNITY_ANDROID

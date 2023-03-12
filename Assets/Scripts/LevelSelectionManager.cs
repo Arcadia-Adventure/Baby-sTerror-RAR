@@ -20,8 +20,9 @@ public class LevelSelectionManager : MonoBehaviour
 
     private void Start()
     {
+		GoogleAdMobController.instance.ShowBanner();
 		UnlockLevels();
-		print(PlayerPrefs.GetInt("totalUnlockLevel"));
+		//print(PlayerPrefs.GetInt("totalUnlockLevel"));
     }
 
 

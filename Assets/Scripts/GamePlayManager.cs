@@ -81,6 +81,9 @@ public class GamePlayManager : MonoBehaviour
 
     private void Start()
     {
+       
+
+        GoogleAdMobController.instance.ShowBanner();
         RainBG.volume = 0.2f;
         RainBG.Play();
         SoundManager.instance.BG.Stop();
@@ -213,6 +216,7 @@ public class GamePlayManager : MonoBehaviour
             BabyController.instance.babyEyesRed.color = Color.red;
 
             BabyController.instance.BabyAnim.SetBool("Fly", true);
+            
 
             BabyController.instance.babyAngryVoice.Play();
             BabyController.instance.babyCry.Stop();

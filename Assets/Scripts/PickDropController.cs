@@ -69,7 +69,7 @@ public class PickDropController : MonoBehaviour
            
             SoundManager.instance.DropItem();
             GamePlayManager.instance.GlowOn();
-            print("drop");
+            //print("drop");
 
             //DropObject();
 
@@ -146,7 +146,7 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
 
-                print("cradle detection");
+                //print("cradle detection");
 
             }
 
@@ -353,12 +353,12 @@ public class PickDropController : MonoBehaviour
             if (ControlFreak2.CF2Input.GetMouseButtonDown(1))
             {
 
-                print(hit.transform.name);
+                //print(hit.transform.name);
                
 
                 if (objTag == "Door" || objTag == "Fridge")
                 {
-                    print("door open and close");
+                    //print("door open and close");
                     hit.transform.GetComponent<DoorController>().DoorOpenClose();
                     GamePlayManager.instance.doorBell.Stop();
 
@@ -574,7 +574,7 @@ public class PickDropController : MonoBehaviour
                     DetectItemsDropUI();
                     BtnFade(UIManager.instance.pick, true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Talisman";
+                    UIManager.instance.detectionTxt.text = "Drop Fire Extinguisher";
 
                     fire = true;
                 }
@@ -688,7 +688,7 @@ public class PickDropController : MonoBehaviour
 
         babyPosLvl1.tag = "Untagged";
         babyPosLvl1.GetComponent<AudioSource>().enabled = false;
-        print(babyPosLvl1);
+        //print(babyPosLvl1);
     }
 
     GameObject babyposLvl3;
@@ -699,7 +699,7 @@ public class PickDropController : MonoBehaviour
 
         babyposLvl3.tag = "Untagged";
 
-        print(babyposLvl3);
+        //print(babyposLvl3);
     }
 
     GameObject babyPosLvl6;
@@ -710,7 +710,7 @@ public class PickDropController : MonoBehaviour
 
         babyPosLvl6.tag = "Untagged";
         babyPosLvl6.GetComponent<AudioSource>().enabled = false;
-        print(babyPosLvl6);
+        //print(babyPosLvl6);
     }
 
 
@@ -733,9 +733,6 @@ public class PickDropController : MonoBehaviour
     {
             moveDirection = (holdArea.position - heldObj.transform.position);
             heldObjRB.AddForce(moveDirection * pickupForce,ForceMode.Force);
-        //if (Vector3.Distance(heldObj.transform.position, holdArea.position) > 0.1f)
-        //{
-        //}
     }
 
     public void PickupObject()
@@ -797,9 +794,12 @@ public class PickDropController : MonoBehaviour
                     BabyController.instance.BabyAnim.SetBool("Sit", false);
                 }
 
+                if (GameManager.instance.selectedLevel == 10)
+                {  
+                    BabyController.instance.BabyAnim.SetBool("Happy", false);
+                }
 
                 BabyController.instance.BabyAnim.SetBool("Fly", true);
-
 
 
                 holdArea.localPosition = new Vector3(0.5f, -0.3f, 1);
