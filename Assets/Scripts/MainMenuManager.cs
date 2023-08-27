@@ -37,9 +37,14 @@ public class MainMenuManager : MonoBehaviour
 
 	public GameObject soundOn;
 	public GameObject soundOff;
+	public GameObject restoreButton;
 
 	private void Start()
 	{
+		if (Application.platform == RuntimePlatform.Android)
+        {
+			restoreButton.SetActive(false);
+        }
 		GoogleAdMobController.instance.ShowBanner();
 		// set ui slider value from player prefs
 		slider.value = PlayerPrefs.GetFloat("MouseSensitivity");

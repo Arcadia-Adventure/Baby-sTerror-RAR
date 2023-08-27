@@ -44,7 +44,10 @@ public class GameManager : MonoBehaviour
         {
 			PlayerPrefs.SetInt("Sound", 1);
         }
-
+		if (!PlayerPrefs.HasKey("UnlockAllLevels"))
+        {
+			PlayerPrefs.SetInt("UnlockAllLevels", 0);
+        }
         if (!PlayerPrefs.HasKey("totalUnlockLevel"))
         {
 			PlayerPrefs.SetInt("totalUnlockLevel", 0);
