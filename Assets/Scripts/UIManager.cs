@@ -62,6 +62,7 @@ public class UIManager : MonoBehaviour
 
     public void LvlCompleteON()
     {
+		FirebaseInit.instance.FireBase_Events("complete level",GameManager.instance.selectedLevel.ToString(),"");
         levelCompletePanel.SetActive(true);
     }
 
@@ -73,7 +74,9 @@ public class UIManager : MonoBehaviour
     
  
 
-
+    private void OnApplicationQuit() {
+		FirebaseInit.instance.FireBase_Events("Exit Game Level",GameManager.instance.selectedLevel.ToString(),"");
+    }
     public void DoorOpenCloseBtn()
     {
         Debug.Log("door click");
