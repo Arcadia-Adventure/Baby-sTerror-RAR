@@ -1,0 +1,36 @@
+{
+  "project_info": {
+    "project_number": "320878739219",
+    "project_id": "babys-terror-escape-the-b8bf8",
+    "storage_bucket": "babys-terror-escape-the-b8bf8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320878739219:ios:1395070cd2d64020aba4e6",
+        "android_client_info": {
+          "package_name": "com.OmmyGames.BabysTerror"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhdPERaUl2ZCGby0KDy6V4EKm8SLdGq4w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 0
+        },
+        "appinvite_service": {
+          "status": 1
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320878739219-tfpcsc0vamm2o35oj8tvkmvbf5rgnpk4.apps.googleusercontent.com"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}
