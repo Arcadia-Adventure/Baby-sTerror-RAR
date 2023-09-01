@@ -68,7 +68,7 @@ public class LevelSelectionManager : MonoBehaviour
 
     public void LevelSelectBtn(int selectedLevel)
     {
-        FirebaseInit.instance.FireBase_Events("Selected Level", "level " + selectedLevel.ToString(), "total unlock levels  " + PlayerPrefs.GetInt("totalUnlockLevel").ToString());
+        // FirebaseInit.instance.FireBase_Events("Selected Level", "level " + selectedLevel.ToString(), "total unlock levels  " + PlayerPrefs.GetInt("totalUnlockLevel").ToString());
         GameManager.instance.selectedLevel = selectedLevel;
 
         SceneManager.LoadScene("GamePlay");

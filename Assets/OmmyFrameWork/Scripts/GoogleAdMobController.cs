@@ -69,12 +69,12 @@ public class GoogleAdMobController : MonoBehaviour
 
     public void Start()
     {
-        MobileAds.SetiOSAppPauseOnBackground(true);
 
         List<String> deviceIds = new List<String>() { AdRequest.TestDeviceSimulator };
 
         // Add some test device IDs (replace with your own device IDs).
 #if UNITY_IPHONE
+        MobileAds.SetiOSAppPauseOnBackground(true);
         //deviceIds.Add("D8E71788-08AE-4095-ACE6-F35B24D77298");
         
 
