@@ -112,15 +112,15 @@ Library: /Users/apple/Desktop/Unity/Github/Baby-sTerror-RAR/Temp/StagingArea/tem
 --compilation-defines=TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
 --compilation-defines=UNITY_POST_PROCESSING_STACK_V2
 --compilation-defines=CF_FORCE_MOBILE_MODE
---compilation-defines=CSHARP_7_OR_LATER
---compilation-defines=CSHARP_7_3_OR_NEWER
---compilation-defines=ENABLE_VR_MODULE
---compilation-defines=ENABLE_XR_MODULE
 --compilation-defines=PACKAGE_PHYSICS
 --compilation-defines=PACKAGE_PHYSICS2D
 --compilation-defines=PACKAGE_TILEMAP
 --compilation-defines=PACKAGE_ANIMATION
 --compilation-defines=PACKAGE_UITOOLKIT
+--compilation-defines=CSHARP_7_OR_LATER
+--compilation-defines=CSHARP_7_3_OR_NEWER
+--compilation-defines=ENABLE_VR_MODULE
+--compilation-defines=ENABLE_XR_MODULE
 --compilation-defines=VISUAL_EFFECT_GRAPH_0_0_1_OR_NEWER
 --compilation-defines=ENABLE_BURST_1_0_0_OR_NEWER
 --compilation-defines=USING_ANIMATION_MODULE
@@ -131,6 +131,7 @@ Library: /Users/apple/Desktop/Unity/Github/Baby-sTerror-RAR/Temp/StagingArea/tem
 --compilation-defines=MODULE_PHYSICS_EXISTS
 --compilation-defines=MODULE_PHYSICS_2D_EXISTS
 --compilation-defines=MODULE_PARTICLE_SYSTEM_EXISTS
+--compilation-defines=IAP_ANALYTICS_SERVICE_ENABLED_WITH_SERVICE_COMPONENT
 --compilation-defines=TIMELINE_FRAMEACCURATE
 --compilation-defines=VFX_HAS_TIMELINE
 --compilation-defines=VFX_HAS_TERRAINMODULE
