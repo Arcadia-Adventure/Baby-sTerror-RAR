@@ -11,6 +11,7 @@ public class MainMenuManager : MonoBehaviour
 	public static MainMenuManager instance;
 	void Awake()
 	{
+		print("");
 		if (instance == null)
 		{
 			instance = this;
