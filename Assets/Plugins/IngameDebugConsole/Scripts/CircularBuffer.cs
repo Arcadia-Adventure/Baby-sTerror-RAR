@@ -106,10 +106,9 @@ namespace IngameDebugConsole
 
 		public T RemoveLast()
 		{
-			int index = ( startIndex + Count - 1 ) % arr.Length;
-			T element = arr[index];
+			T element = arr[Count - 1];
 #if RESET_REMOVED_ELEMENTS
-			arr[index] = default( T );
+			arr[Count - 1] = default( T );
 #endif
 
 			Count--;

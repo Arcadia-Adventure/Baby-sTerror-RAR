@@ -10,6 +10,9 @@ EditorBuildSettings:
       Screen Sample.unity
     guid: a2154acf9dc1c46e5a8df649580ad6b9
   - enabled: 1
+    path: Assets/ArcadiaSDK/SDK Scenes/Ad Splash.unity
+    guid: d5d2077ee145948c38a96f9e57674216
+  - enabled: 1
     path: Assets/Scene/Loading.unity
     guid: 7b723701835be4e779c517d2998e64da
   - enabled: 1

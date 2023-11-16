@@ -26,7 +26,8 @@ public class LevelSelectionManager : MonoBehaviour
     }
     private void Start()
     {
-		GoogleAdMobController.instance.DestroyBannerAd();
+        
+		//GoogleAdMobController.instance.DestroyBannerAd();
         if (PlayerPrefs.GetInt("UnlockAllLevels") == 1)
         {
             unlockAllLevelsButton.enabled= false;

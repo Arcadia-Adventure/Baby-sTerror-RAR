@@ -46,7 +46,8 @@ public class MainMenuManager : MonoBehaviour
         {
 			restoreButton.SetActive(false);
         }
-		GoogleAdMobController.instance.ShowBanner();
+		ArcadiaSdkManager.Agent.ShowBanner();
+		//GoogleAdMobController.instance.ShowBanner();
 		// set ui slider value from player prefs
 		slider.value = PlayerPrefs.GetFloat("MouseSensitivity");
 

@@ -64,6 +64,7 @@ public class UIManager : MonoBehaviour
     {
 		//FirebaseInit.instance.FireBase_Events("complete level",GameManager.instance.selectedLevel.ToString(),"");
         levelCompletePanel.SetActive(true);
+        ArcadiaSdkManager.Agent.ShowRateUs();
     }
 
 
@@ -86,8 +87,10 @@ public class UIManager : MonoBehaviour
 
     public void PauseBtn()
     {
-        GoogleAdMobController.instance.DestroyBannerAd();
-        GoogleAdMobController.instance.ShowInterstitialAd();
+        ArcadiaSdkManager.Agent.HideBanner();
+        ArcadiaSdkManager.Agent.ShowInterstitialAd();
+        //GoogleAdMobController.instance.DestroyBannerAd();
+        //GoogleAdMobController.instance.ShowInterstitialAd();
         Time.timeScale = 0;
         pausePanel.SetActive(true);
 
@@ -115,7 +118,8 @@ public class UIManager : MonoBehaviour
         Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=false;
         Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute = false;
         Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute = false;
-        GoogleAdMobController.instance.ShowBanner();
+       // GoogleAdMobController.instance.ShowBanner();
+       ArcadiaSdkManager.Agent.ShowBanner();
         pausePanel.SetActive(false);
 
        // Camera.main.GetComponent<AudioListener>().enabled = true;
@@ -137,8 +141,10 @@ public class UIManager : MonoBehaviour
     public void ReplayBtn()
     {
         Time.timeScale = 1;
-        GoogleAdMobController.instance.DestroyBannerAd();
-        GoogleAdMobController.instance.ShowRewardedAd();
+        //GoogleAdMobController.instance.DestroyBannerAd();        
+        ArcadiaSdkManager.Agent.HideBanner();
+        ArcadiaSdkManager.Agent.ShowRewardedAd();
+        //GoogleAdMobController.instance.ShowRewardedAd();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         SoundManager.instance.ClickSound();
@@ -148,8 +154,11 @@ public class UIManager : MonoBehaviour
     public void NextBtn()
     {
         Time.timeScale = 1;
-        GoogleAdMobController.instance.DestroyBannerAd();
-        GoogleAdMobController.instance.ShowRewardedAd();
+        //GoogleAdMobController.instance.DestroyBannerAd();
+        //GoogleAdMobController.instance.ShowRewardedAd();
+        ArcadiaSdkManager.Agent.HideBanner();
+        ArcadiaSdkManager.Agent.ShowRewardedAd();
+
         GameManager.instance.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 

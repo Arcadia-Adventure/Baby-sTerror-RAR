@@ -2,7 +2,7 @@ mergeInto( LibraryManager.library,
 {
 	IngameDebugConsoleStartCopy: function( textToCopy )
 	{
-		var textToCopyJS = UTF8ToString( textToCopy );
+		var textToCopyJS = Pointer_stringify( textToCopy );
 		
 		// Delete if element exist
 		var copyTextButton = document.getElementById( 'DebugConsoleCopyButtonGL' );
