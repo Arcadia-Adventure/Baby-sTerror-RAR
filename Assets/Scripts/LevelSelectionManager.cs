@@ -18,6 +18,7 @@ public class LevelSelectionManager : MonoBehaviour
         }
     }
     #endregion
+    public GameObject loadingScreen;
     public void OnPurchaseSuccess()
     {
         PlayerPrefs.SetInt("UnlockAllLevels", 1);
@@ -26,7 +27,7 @@ public class LevelSelectionManager : MonoBehaviour
     }
     private void Start()
     {
-		GoogleAdMobController.instance.DestroyBannerAd();
+		ArcadiaSdkManager.Agent.HideBanner();
         if (PlayerPrefs.GetInt("UnlockAllLevels") == 1)
         {
             unlockAllLevelsButton.enabled= false;
@@ -68,14 +69,11 @@ public class LevelSelectionManager : MonoBehaviour
 
     public void LevelSelectBtn(int selectedLevel)
     {
-        FirebaseInit.instance.FireBase_Events("Selected Level", "level " + selectedLevel.ToString(), "total unlock levels  " + PlayerPrefs.GetInt("totalUnlockLevel").ToString());
+        loadingScreen.SetActive(true);
         GameManager.instance.selectedLevel = selectedLevel;
-
         SceneManager.LoadScene("GamePlay");
-
         SoundManager.instance.ClickSound();
-
-
+        AA_AnalyticsManager.Agent.GameStartAnalytics(selectedLevel);
     }
 
     public void UnlockAllLevelBtn()

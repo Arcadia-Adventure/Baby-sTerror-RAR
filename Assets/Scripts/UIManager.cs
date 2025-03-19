@@ -62,7 +62,7 @@ public class UIManager : MonoBehaviour
 
     public void LvlCompleteON()
     {
-		FirebaseInit.instance.FireBase_Events("complete level",GameManager.instance.selectedLevel.ToString(),"");
+        AA_AnalyticsManager.Agent.GameCompleteAnalytics(GameManager.instance.selectedLevel);
         levelCompletePanel.SetActive(true);
     }
 
@@ -74,8 +74,9 @@ public class UIManager : MonoBehaviour
     
  
 
-    private void OnApplicationQuit() {
-		FirebaseInit.instance.FireBase_Events("Exit Game Level",GameManager.instance.selectedLevel.ToString(),"");
+    private void OnApplicationQuit() 
+    {
+		AA_AnalyticsManager.Agent.CustomEvent("Exit Game Level",GameManager.instance.selectedLevel.ToString());
     }
     public void DoorOpenCloseBtn()
     {
@@ -86,8 +87,7 @@ public class UIManager : MonoBehaviour
 
     public void PauseBtn()
     {
-        GoogleAdMobController.instance.DestroyBannerAd();
-        GoogleAdMobController.instance.ShowInterstitialAd();
+        ArcadiaSdkManager.Agent.ShowInterstitialAd();
         Time.timeScale = 0;
         pausePanel.SetActive(true);
 
@@ -115,7 +115,7 @@ public class UIManager : MonoBehaviour
         Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=false;
         Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute = false;
         Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute = false;
-        GoogleAdMobController.instance.ShowBanner();
+        ArcadiaSdkManager.Agent.ShowBanner();
         pausePanel.SetActive(false);
 
        // Camera.main.GetComponent<AudioListener>().enabled = true;
@@ -137,8 +137,7 @@ public class UIManager : MonoBehaviour
     public void ReplayBtn()
     {
         Time.timeScale = 1;
-        GoogleAdMobController.instance.DestroyBannerAd();
-        GoogleAdMobController.instance.ShowRewardedAd();
+        ArcadiaSdkManager.Agent.ShowRewardedAd();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         SoundManager.instance.ClickSound();
@@ -148,14 +147,18 @@ public class UIManager : MonoBehaviour
     public void NextBtn()
     {
         Time.timeScale = 1;
-        GoogleAdMobController.instance.DestroyBannerAd();
-        GoogleAdMobController.instance.ShowRewardedAd();
+        ArcadiaSdkManager.Agent.ShowRewardedAd();
         GameManager.instance.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         SoundManager.instance.ClickSound();
     }
-
+    public void HintClick()
+    {
+        SoundManager.instance.ClickSound();
+        ArcadiaSdkManager.Agent.ShowRewardedAd();
+        HintManager.Instance.ActivateIndicator(GameManager.instance.selectedLevel-1, ObjectiveController.instance.currentTask);
+    }
   
 
  

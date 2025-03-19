@@ -58,7 +58,13 @@ sysinfo.txt
 
 # Builds
 *.apk
+*.aab
 *.unitypackage
 
 ProjectSettings/ProjectSettings.asset
 *.asset
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_6_0.bundle
+Assets/Firebase/Plugins/x86_64/FirebaseCppAnalytics.so
+Assets/Firebase/Plugins/x86_64/FirebaseCppAnalytics.so
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_6_0.so
+/Baby Terror_BackUpThisFolder_ButDontShipItWithYourGame

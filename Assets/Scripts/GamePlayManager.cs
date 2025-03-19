@@ -81,9 +81,7 @@ public class GamePlayManager : MonoBehaviour
 
     private void Start()
     {
-       
-
-        GoogleAdMobController.instance.ShowBanner();
+        ArcadiaSdkManager.Agent.ShowBanner();
         RainBG.volume = 0.2f;
         RainBG.Play();
         SoundManager.instance.BG.Stop();
@@ -235,6 +233,7 @@ public class GamePlayManager : MonoBehaviour
 
     public void LevelComplete()
     {
+        ArcadiaSdkManager.Agent.ShowRateUs();
         UIManager.instance.LvlCompleteON();
         int currentPlayerPrefs = PlayerPrefs.GetInt("totalUnlockLevel");
 
@@ -243,6 +242,7 @@ public class GamePlayManager : MonoBehaviour
             PlayerPrefs.SetInt("totalUnlockLevel", currentPlayerPrefs+1);
         print("level Complete now unlock level is " + PlayerPrefs.GetInt("totalUnlockLevel"));
         }
+        ArcadiaSdkManager.Agent.ShowRateUs();
     }
 
 

@@ -18,6 +18,7 @@ public class ObjectiveController : MonoBehaviour
     public TextMeshProUGUI levelnoTxt, missionNameTxt;
     public TextMeshProUGUI[] taskTxt;
     public Color completeTaskColor;
+    public int currentTask;
 
     public void Start()
     {
@@ -45,6 +46,7 @@ public class ObjectiveController : MonoBehaviour
         taskTxt[taskNo-1].text = taskTxt[taskNo-1].text + "  (complete)";
         if(taskNo < Objtive[GameManager.instance.selectedLevel - 1].Tasks.Length)
         {
+            currentTask++;
             taskTxt[taskNo].gameObject.SetActive(true);
         }
         //taskTxt[currentTask].text.Insert(taskTxt[currentTask].text.Length, " (Complete)"); 

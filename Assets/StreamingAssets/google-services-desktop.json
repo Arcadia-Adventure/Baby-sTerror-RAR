@@ -7,29 +7,40 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:320878739219:ios:1395070cd2d64020aba4e6",
+        "mobilesdk_app_id": "1:320878739219:android:8a0d82b5886d4a67aba4e6",
         "android_client_info": {
           "package_name": "com.OmmyGames.BabysTerror"
         }
       },
+      "oauth_client": [
+        {
+          "client_id": "320878739219-1f6659ve37vu5m2me4j5hs9f2gon2cke.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAhdPERaUl2ZCGby0KDy6V4EKm8SLdGq4w"
+          "current_key": "AIzaSyBdNRyxL60Shaf7cQ4tRjoo792Dd8RJjFg"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 0
-        },
         "appinvite_service": {
-          "status": 1
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320878739219-1f6659ve37vu5m2me4j5hs9f2gon2cke.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "320878739219-tfpcsc0vamm2o35oj8tvkmvbf5rgnpk4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.OmmyGames.BabysTerror",
+                "app_store_id": "1672844290"
+              }
+            }
+          ]
         }
-      },
-      "oauth_client": [
-        {
-          "client_id": "320878739219-tfpcsc0vamm2o35oj8tvkmvbf5rgnpk4.apps.googleusercontent.com"
-        }
-      ]
+      }
     }
   ],
   "configuration_version": "1"

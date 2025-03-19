@@ -1,0 +1,31 @@
+{
+  "id":
+  [
+    {
+        "platform": "Android",
+        "gameName": "BabysTerror",
+        "bundleId": "com.OmmyGames.BabysTerror",
+        "admobAppId": "ca-app-pub-6019321014497002~6518163503",
+        "appOpenAdId": "",
+        "bannerAdId": "ca-app-pub-6019321014497002/2578918496",
+        "mrecAdId": "",
+        "interstitialAdId": "ca-app-pub-6019321014497002/6205234512",
+        "rewardedVideoAdId": "ca-app-pub-6019321014497002/2200209195",
+        "gameKey_GameAnaytics": "41bc208371a27c9266a4c39b7ee16066",
+        "secretKey_GameAnaytics": "81939bccca728165cd764b8eff1d0066d62ce9bf"
+    },
+    {
+        "platform": "IOS",
+        "gameName": "BabysTerror",
+        "bundleId": "com.OmmyGames.BabysTerror",
+        "admobAppId": "ca-app-pub-6019321014497002~2962061875",
+        "appOpenAdId": "",
+        "bannerAdId": "ca-app-pub-6019321014497002/1237916662",
+        "mrecAdId": "",
+        "interstitialAdId": "ca-app-pub-6019321014497002/4083571852",
+        "rewardedVideoAdId": "ca-app-pub-6019321014497002/2148238304",
+        "gameKey_GameAnaytics": "d35feabd510a7301a96588d289938a03",
+        "secretKey_GameAnaytics": "cb73bf14e5372c66afd9e13bdc498180f2ae042b"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ public class Loading : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Time.timeScale=1;
         StartCoroutine("Timer");
     }
     IEnumerator Timer()
