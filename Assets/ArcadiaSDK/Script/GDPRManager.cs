@@ -29,7 +29,7 @@ public class GDPRManager : MonoBehaviour
         // Create a ConsentRequestParameters object.
         ConsentRequestParameters request = new ConsentRequestParameters
         {
-            TagForUnderAgeOfConsent = true,
+            TagForUnderAgeOfConsent = false,
             ConsentDebugSettings = debugSettings,
         };
         ConsentInformation.Update(request, OnConsentInfoUpdated);

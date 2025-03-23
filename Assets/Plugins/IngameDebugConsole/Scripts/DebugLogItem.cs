@@ -87,7 +87,8 @@ namespace IngameDebugConsole
 		public DebugLogEntryTimestamp? Timestamp { get { return logEntryTimestamp; } }
 
 		// Index of the entry in the list of entries
-		[System.NonSerialized] public int Index;
+		private int entryIndex;
+		public int Index { get { return entryIndex; } }
 
 		private bool isExpanded;
 		public bool Expanded { get { return isExpanded; } }
@@ -115,7 +116,7 @@ namespace IngameDebugConsole
 		{
 			this.logEntry = logEntry;
 			this.logEntryTimestamp = logEntryTimestamp;
-			this.Index = entryIndex;
+			this.entryIndex = entryIndex;
 			this.isExpanded = isExpanded;
 
 			Vector2 size = transformComponent.sizeDelta;
@@ -149,7 +150,7 @@ namespace IngameDebugConsole
 			transformComponent.sizeDelta = size;
 
 			SetText( logEntry, logEntryTimestamp, isExpanded );
-			logTypeImage.sprite = DebugLogManager.logSpriteRepresentations[(int) logEntry.logType];
+			logTypeImage.sprite = logEntry.logTypeSpriteRepresentation;
 		}
 
 		// Show the collapsed count of the debug entry

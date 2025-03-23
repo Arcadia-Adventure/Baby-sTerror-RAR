@@ -11,9 +11,9 @@ public class StoreReviewManager : MonoBehaviour
     private ReviewManager _reviewManager;
     private PlayReviewInfo _playReviewInfo;
 #endif
-    public void RateUs(bool force)
+    public void RateUs()
     {
-        if (PlayerPrefs.GetInt("RateUs") == 1 && !force)
+        if (PlayerPrefs.GetInt("RateUs") == 1)
             return;
 
 #if UNITY_ANDROID
@@ -27,6 +27,7 @@ public class StoreReviewManager : MonoBehaviour
 
         PlayerPrefs.SetInt("RateUs", 1);
     }
+
 
     IEnumerator Review()
     {

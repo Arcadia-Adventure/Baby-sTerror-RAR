@@ -435,18 +435,18 @@ public class ArcadiaSdkManager : MonoBehaviour
         return "unknown";
     }
 
-    public void ShowRateUs(bool force = false)
+    public void ShowRateUs()
     {
         StoreReviewManager obj = FindObjectOfType<StoreReviewManager>();
         if (obj == null)
         {
             var rate = new GameObject();
             obj = rate.AddComponent<StoreReviewManager>();
-            obj.RateUs(force);
+            obj.RateUs();
         }
         else
         {
-            obj.RateUs(force);
+            obj.RateUs();
         }
     }
     public void ShowAvailbleUpdate()

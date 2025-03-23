@@ -77,12 +77,6 @@ public class FirebaseManager : MonoBehaviour
             new Parameter(FirebaseAnalytics.ParameterScore, score));
     }
 
-    public static void LogSelectContentEvent(string contentType)
-    {
-        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventSelectContent,
-            new Parameter(FirebaseAnalytics.ParameterContentType, contentType));
-    }
-
     public static void LogSpendVirtualCurrencyEvent(string itemName, string virtualCurrencyName, int value)
     {
         FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventSpendVirtualCurrency,

@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 			Destroy(gameObject);
 			return;
 		}
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 		SetDefaultPlayerPrefs();
 	}
 

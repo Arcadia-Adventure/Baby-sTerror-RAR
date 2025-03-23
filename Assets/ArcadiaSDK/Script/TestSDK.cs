@@ -37,7 +37,7 @@ public class TestSDK : MonoBehaviour
                 AA_AnalyticsManager.Agent.GameFailAnalytics(1);
                 break;
             case 9:
-                ArcadiaSdkManager.Agent.ShowRateUs(false);
+                ArcadiaSdkManager.Agent.ShowRateUs();
                 break;
             case 10:
                 ArcadiaSdkManager.Agent.ShowAvailbleUpdate();

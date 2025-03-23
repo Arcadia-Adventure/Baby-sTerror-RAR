@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using System;
-using UnityEditor;
 using UnityEngine.SceneManagement;
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
@@ -17,10 +16,10 @@ public class AppOpenAdController : MonoBehaviour
     {
         get
         {
-            if(_agent == null)
+            if (_agent == null)
             {
                 _agent = new GameObject(nameof(AppOpenAdController)).AddComponent<AppOpenAdController>();
-                DontDestroyOnLoad(agent.gameObject);
+                DontDestroyOnLoad(_agent.gameObject);
             }
             return _agent;
         }
@@ -28,111 +27,60 @@ public class AppOpenAdController : MonoBehaviour
 
     void Awake()
     {
-        _agent = this;
+        if (_agent == null)
+        {
+            _agent = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
+
     private readonly TimeSpan APPOPEN_TIMEOUT = TimeSpan.FromMinutes(1);
     private DateTime appOpenExpireTime;
     private AppOpenAd appOpenAd;
-    public bool IsAppOpenAdAvailable
-    {
-        get
-        {
-            return (appOpenAd != null
-                    && appOpenAd.CanShowAd()
-                    && DateTime.Now < appOpenExpireTime);
-        }
-    }
-    void RequestAndLoadAppOpenAd(bool useTestIDs=false)
-    {
-        ArcadiaSdkManager.PrintStatus("Requesting App Open ad.");
-        string adUnitId = ArcadiaSdkManager.myGameIds.appOpenAdId;
-        if (useTestIDs)
-        {
+    
+    public bool IsAppOpenAdAvailable => appOpenAd != null && appOpenAd.CanShowAd() && DateTime.Now < appOpenExpireTime;
 
-#if UNITY_ANDROID
-            adUnitId = "ca-app-pub-3940256099942544/3419835294";
-#elif UNITY_IPHONE
-         adUnitId = "ca-app-pub-3940256099942544/5662855259";
-#else
-         adUnitId = "unexpected_platform";
-#endif
-        }
-        // destroy old instance.
-        if (appOpenAd != null)
-        {
-            DestroyAppOpenAd();
-        }
+    void RequestAndLoadAppOpenAd(bool useTestIDs = false)
+    {
+        string adUnitId = useTestIDs ? "ca-app-pub-3940256099942544/3419835294" : ArcadiaSdkManager.myGameIds.appOpenAdId;
 
-        // Create a new app open ad instance.
+        DestroyAppOpenAd();
+
         AppOpenAd.Load(adUnitId, new AdRequest(),
             (AppOpenAd ad, LoadAdError loadError) =>
             {
-                if (loadError != null)
+                if (loadError != null || ad == null)
                 {
-                    ArcadiaSdkManager.PrintStatus("App open ad failed to load with error: " +
-                        loadError.GetMessage());
-                    return;
-                }
-                else if (ad == null)
-                {
-                    ArcadiaSdkManager.PrintStatus("App open ad failed to load.");
+                    ArcadiaSdkManager.PrintStatus("App open ad failed to load: " + loadError?.GetMessage());
                     return;
                 }
 
-                ArcadiaSdkManager.PrintStatus("App Open ad loaded. Please background the app and return.");
                 this.appOpenAd = ad;
                 this.appOpenExpireTime = DateTime.Now + APPOPEN_TIMEOUT;
 
-                ad.OnAdFullScreenContentOpened += () =>
-                {
-                    ArcadiaSdkManager.PrintStatus("App open ad opened.");
-                };
-                ad.OnAdFullScreenContentClosed += () =>
-                {
-                    ArcadiaSdkManager.PrintStatus("App open ad closed.");
-                };
-                ad.OnAdImpressionRecorded += () =>
-                {
-                    ArcadiaSdkManager.PrintStatus("App open ad recorded an impression.");
-                };
-                ad.OnAdClicked += () =>
-                {
-                    ArcadiaSdkManager.PrintStatus("App open ad recorded a click.");
-                };
-                ad.OnAdFullScreenContentFailed += (AdError error) =>
-                {
-                    ArcadiaSdkManager.PrintStatus("App open ad failed to show with error: " +
-                        error.GetMessage());
-                };
-                ad.OnAdPaid += (AdValue adValue) =>
-                {
-                    string msg = string.Format("{0} (currency: {1}, value: {2}",
-                                               "App open ad received a paid event.",
-                                               adValue.CurrencyCode,
-                                               adValue.Value);
-                    ArcadiaSdkManager.PrintStatus(msg);
-                };
+                ad.OnAdFullScreenContentClosed += () => RequestAndLoadAppOpenAd();
             });
     }
 
     public void DestroyAppOpenAd()
     {
-        if (this.appOpenAd != null)
-        {
-            this.appOpenAd.Destroy();
-            this.appOpenAd = null;
-        }
+        appOpenAd?.Destroy();
+        appOpenAd = null;
     }
 
     public void ShowAppOpenAd()
     {
-
         if (!IsAppOpenAdAvailable)
         {
             RequestAndLoadAppOpenAd();
             return;
         }
+
         appOpenAd.Show();
-        RequestAndLoadAppOpenAd();
+        DestroyAppOpenAd();
     }
 }

@@ -3255,12 +3255,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
+      propertyPath: Ids.platform
+      value: IOS
+      objectReference: {fileID: 0}
+    - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.admobAppId
-      value: ca-app-pub-6019321014497002~6518163503
+      value: ca-app-pub-6019321014497002~2962061875
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.bannerAdId
-      value: ca-app-pub-6019321014497002/2578918496
+      value: ca-app-pub-6019321014497002/1237916662
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.appOpenAdId
@@ -3272,19 +3276,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.interstitialAdId
-      value: ca-app-pub-6019321014497002/6205234512
+      value: ca-app-pub-6019321014497002/4083571852
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.rewardedVideoAdId
-      value: ca-app-pub-6019321014497002/2200209195
+      value: ca-app-pub-6019321014497002/2148238304
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.gameKey_GameAnaytics
-      value: 41bc208371a27c9266a4c39b7ee16066
+      value: d35feabd510a7301a96588d289938a03
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.secretKey_GameAnaytics
-      value: 81939bccca728165cd764b8eff1d0066d62ce9bf
+      value: cb73bf14e5372c66afd9e13bdc498180f2ae042b
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
