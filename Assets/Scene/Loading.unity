@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 10
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -42,8 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
-  m_GIWorkflowMode: 1
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -66,9 +66,6 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
-    m_FinalGather: 0
-    m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -165,6 +162,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: cc078fc4b02f18b44b5923bdb8951f13, type: 3}
+  m_Resource: {fileID: 8300000, guid: cc078fc4b02f18b44b5923bdb8951f13, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -307,6 +305,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 3fde9e043f93449748dbba67cca7cc2c, type: 3}
+  m_Resource: {fileID: 8300000, guid: 3fde9e043f93449748dbba67cca7cc2c, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: -0.14
@@ -1374,6 +1373,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 2827b5b55d830974486a2902c122ae79, type: 3}
+  m_Resource: {fileID: 8300000, guid: 2827b5b55d830974486a2902c122ae79, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1502,6 +1502,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 98bbec60636773e4c9508593ca89e157, type: 3}
+  m_Resource: {fileID: 8300000, guid: 98bbec60636773e4c9508593ca89e157, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1705,6 +1706,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 5d694249ecd8d0f47b97dd193206cf46, type: 3}
+  m_Resource: {fileID: 8300000, guid: 5d694249ecd8d0f47b97dd193206cf46, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1909,6 +1911,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 2de84581f6c2f3e44b04f60718516c01, type: 3}
+  m_Resource: {fileID: 8300000, guid: 2de84581f6c2f3e44b04f60718516c01, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2037,6 +2040,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 9e09b051eefbe1d4fa422b727b9be8aa, type: 3}
+  m_Resource: {fileID: 8300000, guid: 9e09b051eefbe1d4fa422b727b9be8aa, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2268,6 +2272,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 89df9faf9e1d2be479d8a9e63d735df2, type: 3}
+  m_Resource: {fileID: 8300000, guid: 89df9faf9e1d2be479d8a9e63d735df2, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2396,6 +2401,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 2c3c8e33579177e4ca4319fd4ac36f48, type: 3}
+  m_Resource: {fileID: 8300000, guid: 2c3c8e33579177e4ca4319fd4ac36f48, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2524,6 +2530,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 22cad0654b0c39f448bb5840e7289544, type: 3}
+  m_Resource: {fileID: 8300000, guid: 22cad0654b0c39f448bb5840e7289544, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2652,6 +2659,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: ad8d9836b73ddb042a22a19f82420426, type: 3}
+  m_Resource: {fileID: 8300000, guid: ad8d9836b73ddb042a22a19f82420426, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2837,6 +2845,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 7be76d81cea29cd41827426b14fb0cf8, type: 3}
+  m_Resource: {fileID: 8300000, guid: 7be76d81cea29cd41827426b14fb0cf8, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2965,6 +2974,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 4b7407d24935fe144b4dfc4b11f4f8ec, type: 3}
+  m_Resource: {fileID: 8300000, guid: 4b7407d24935fe144b4dfc4b11f4f8ec, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -3093,6 +3103,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 68a6129d29c92a94fb6f15ec580ffdf8, type: 3}
+  m_Resource: {fileID: 8300000, guid: 68a6129d29c92a94fb6f15ec580ffdf8, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -3256,15 +3267,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.platform
-      value: IOS
+      value: Android
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.admobAppId
-      value: ca-app-pub-6019321014497002~2962061875
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.bannerAdId
-      value: ca-app-pub-6019321014497002/1237916662
+      value: ec0f01309b16816c
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.appOpenAdId
@@ -3275,20 +3286,24 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
+      propertyPath: Ids.appLovinSdkKey
+      value: XdgfHQhF49ClT22ZVzmJqQAELwp3ReQ9Kp2NiykF8Sy2ggDGV1X26ELaX3kguL7DKPiwU4bxB8ByDO98KMVARC
+      objectReference: {fileID: 0}
+    - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.interstitialAdId
-      value: ca-app-pub-6019321014497002/4083571852
+      value: e5bab4e15b2cee85
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.rewardedVideoAdId
-      value: ca-app-pub-6019321014497002/2148238304
+      value: 2c3d2fc2362565c1
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.gameKey_GameAnaytics
-      value: d35feabd510a7301a96588d289938a03
+      value: 2cdedb4c4be3969f0b55026347bcaa08
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.secretKey_GameAnaytics
-      value: cb73bf14e5372c66afd9e13bdc498180f2ae042b
+      value: cdea76d46957e5a05b56cde39326344ccc627496
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3356,6 +3371,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 804a8261552fd4625868be0fc42e7e02, type: 3}
+--- !u!1001 &8062291164163917932
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 851.9758
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 460.1421
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.4829297
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 385253893541239567, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635133239125118184, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
+      propertyPath: m_Name
+      value: AgeScreenService
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ac6e8fdb44610445a80e9910eb924cb0, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3370,3 +3442,4 @@ SceneRoots:
   - {fileID: 6497652546326546259}
   - {fileID: 2008786138}
   - {fileID: 8057489845302446136}
+  - {fileID: 8062291164163917932}

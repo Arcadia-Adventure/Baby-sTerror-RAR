@@ -1,0 +1,5 @@
+/Users/macbook/Desktop/Unity/Github/Baby-sTerror-RAR/.utmp/RelWithDebInfo/5di39d6t/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/macbook/Desktop/Unity/Github/Baby-sTerror-RAR/.utmp/RelWithDebInfo/5di39d6t/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/Users/macbook/Desktop/Unity/Github/Baby-sTerror-RAR/.utmp/RelWithDebInfo/5di39d6t/armeabi-v7a/FramePacing/CMakeFiles/swappywrapper.dir
+/Users/macbook/Desktop/Unity/Github/Baby-sTerror-RAR/.utmp/RelWithDebInfo/5di39d6t/armeabi-v7a/FramePacing/CMakeFiles/edit_cache.dir
+/Users/macbook/Desktop/Unity/Github/Baby-sTerror-RAR/.utmp/RelWithDebInfo/5di39d6t/armeabi-v7a/FramePacing/CMakeFiles/rebuild_cache.dir

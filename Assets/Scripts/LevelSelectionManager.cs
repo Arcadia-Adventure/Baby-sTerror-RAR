@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Purchasing;
+using UnityEngine.Events;
 public class LevelSelectionManager : MonoBehaviour
 {
     #region Singleton
@@ -19,11 +20,12 @@ public class LevelSelectionManager : MonoBehaviour
     }
     #endregion
     public GameObject loadingScreen;
+    public UnityEvent onPurchaseAllLevels;
     public void OnPurchaseSuccess()
     {
         PlayerPrefs.SetInt("UnlockAllLevels", 1);
-        unlockAllLevelsButton.enabled=false;
-        UnlockLevels();
+        unlockAllLevelsButton.enabled = false;
+        UnlockLevelsIfNeeded();
     }
     private void Start()
     {
@@ -33,7 +35,7 @@ public class LevelSelectionManager : MonoBehaviour
             unlockAllLevelsButton.enabled= false;
         }
         //GoogleAdMobController.instance.ShowBanner();
-        UnlockLevels();
+        UnlockLevelsIfNeeded();
         //print(PlayerPrefs.GetInt("totalUnlockLevel"));
     }
 
@@ -44,11 +46,12 @@ public class LevelSelectionManager : MonoBehaviour
 
 
 
-    public void UnlockLevels()
+    void UnlockLevelsIfNeeded()
     {
         int totalUnlockLevel = PlayerPrefs.GetInt("totalUnlockLevel");
         if (PlayerPrefs.GetInt("UnlockAllLevels") == 1)
         {
+            onPurchaseAllLevels?.Invoke();
             totalUnlockLevel = lockSprite.Length;
         }
         for (int i = 0; i < totalUnlockLevel; i++)
@@ -74,10 +77,5 @@ public class LevelSelectionManager : MonoBehaviour
         SceneManager.LoadScene("GamePlay");
         SoundManager.instance.ClickSound();
         AA_AnalyticsManager.Agent.GameStartAnalytics(selectedLevel);
-    }
-
-    public void UnlockAllLevelBtn()
-    {
-        SoundManager.instance.ClickSound();
     }
 }

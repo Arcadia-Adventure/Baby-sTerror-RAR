@@ -743,7 +743,7 @@ public class PickDropController : MonoBehaviour
         {
             heldObjRB = detectObj.GetComponent<Rigidbody>();
             
-            heldObjRB.drag = 10;
+            heldObjRB.linearDamping = 10;
             heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
             heldObjRB.useGravity = true;
             heldObjRB.useGravity = false;
@@ -907,7 +907,7 @@ public class PickDropController : MonoBehaviour
     {
         heldObj.tag = handObjTag;
         heldObjRB.useGravity = true;
-        heldObjRB.drag = 1;
+        heldObjRB.linearDamping = 1;
         heldObjRB.constraints = RigidbodyConstraints.None;
         heldObj.transform.parent = null;
         heldObj = null;

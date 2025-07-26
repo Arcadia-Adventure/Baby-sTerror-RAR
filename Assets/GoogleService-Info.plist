@@ -2,22 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>320878739219-tfpcsc0vamm2o35oj8tvkmvbf5rgnpk4.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.320878739219-tfpcsc0vamm2o35oj8tvkmvbf5rgnpk4</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAhdPERaUl2ZCGby0KDy6V4EKm8SLdGq4w</string>
+	<string>AIzaSyDx2rFSPrTVUuTjvFS7jl_rmd_KK56tAIg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>320878739219</string>
+	<string>318098927030</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.OmmyGames.BabysTerror</string>
+	<string>com.aa.arcadiaadventuresdk</string>
 	<key>PROJECT_ID</key>
-	<string>babys-terror-escape-the-b8bf8</string>
+	<string>test-646d1</string>
 	<key>STORAGE_BUCKET</key>
-	<string>babys-terror-escape-the-b8bf8.appspot.com</string>
+	<string>test-646d1.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:320878739219:ios:1395070cd2d64020aba4e6</string>
-	<key>ADMOB_APP_ID</key>
-	<string>ca-app-pub-6019321014497002~2962061875</string>
+	<string>1:318098927030:ios:8d796f6d8cf91f874ca517</string>
 </dict>
 </plist>

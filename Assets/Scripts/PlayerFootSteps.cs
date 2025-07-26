@@ -18,7 +18,7 @@ public class PlayerFootSteps : MonoBehaviour
     {
         if (fpc.playerCanMove)
         {
-            if (fpc.isWalking && footSteps.isPlaying == false&& rb.velocity.magnitude>1)
+            if (fpc.isWalking && footSteps.isPlaying == false&& rb.linearVelocity.magnitude>1)
             {
                 
                 footSteps.volume = Random.Range(0.8f, 1);

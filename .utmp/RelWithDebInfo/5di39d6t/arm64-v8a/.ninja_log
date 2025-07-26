@@ -1,0 +1,5 @@
+# ninja log v5
+0	545	1753531512712740288	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	d7677e3b947c64d8
+545	792	1753531512961007378	/Users/macbook/Desktop/Unity/Github/Baby-sTerror-RAR/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5di39d6t/obj/arm64-v8a/libswappywrapper.so	50323c3e1d6dc241
+0	445	1753531649481350052	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	d7677e3b947c64d8
+445	694	1753531649731568343	/Users/macbook/Desktop/Unity/Github/Baby-sTerror-RAR/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5di39d6t/obj/arm64-v8a/libswappywrapper.so	50323c3e1d6dc241

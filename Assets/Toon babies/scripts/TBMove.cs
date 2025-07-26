@@ -176,7 +176,7 @@ public class TBMove : MonoBehaviour
             forcedir.Normalize();           
                         
             //APLY THE SPEED
-            if (grounded) rigidbo.velocity = forcedir * anim.GetFloat("speed") * -1f;                
+            if (grounded) rigidbo.linearVelocity = forcedir * anim.GetFloat("speed") * -1f;                
         }
     }
 
