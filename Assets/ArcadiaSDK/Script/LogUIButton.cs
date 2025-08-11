@@ -37,16 +37,6 @@ public class LogUIButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void ActivateLogsPanel()
     {
-        // Activate the logs panel
-        if(ArcadiaSdkManager.Agent.GetLog())
-        {
-            ArcadiaSdkManager.Agent.SetLog(false);
-            LogsSetting.OnAfterSceneLoadRuntimeMethod();
-        }
-        else
-        {
-            ArcadiaSdkManager.Agent.SetLog(true);
-            LogsSetting.OnAfterSceneLoadRuntimeMethod();
-        }
+        LogsSetting.ToggleLogs();
     }
 }

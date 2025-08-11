@@ -91,12 +91,13 @@ public class ArcadiaSdkManager : MonoBehaviour
     
     public void SetLog(bool value)
     {
-        PlayerPrefs.SetInt(nameof(enableLogs), value ? 1 : 0);
+        PlayerPrefs.SetInt("enableLogs", value ? 1 : 0);
+        PlayerPrefs.Save();
         enableLogs = value;
     }
     public bool GetLog()
     {
-        enableLogs = (PlayerPrefs.GetInt(nameof(enableLogs), enableLogs ? 1 : 0) == 1) ? true : false;
+        enableLogs = (PlayerPrefs.GetInt("enableLogs") == 1) ? true : false;
         return enableLogs;
     }
     
@@ -105,6 +106,8 @@ public class ArcadiaSdkManager : MonoBehaviour
 
     void Start()
     {
+		Debug.Log($"Logs are now {(ArcadiaSdkManager.Agent.GetLog() ? "enabled" : "disabled")}");
+
         removeAds = PlayerPrefs.GetInt(nameof(removeAds), 0) == 1;
         LoadGameIds();
         
