@@ -66,8 +66,8 @@ public class MainMenuManager : MonoBehaviour
 	public void RateUs()
     {
 #if UNITY_ANDROID
-        //Application.OpenURL("market://details?id=" + Application.identifier);
-		ArcadiaSdkManager.Agent.ShowRateUs();
+		try { ArcadiaSdkManager.Agent.ShowRateUs(); } 
+		catch { Application.OpenURL("market://details?id=" + Application.identifier); }
 #elif UNITY_IOS
 			Application.OpenURL("itms-apps://itunes.apple.com/app/" + "1672844290");
 #endif
