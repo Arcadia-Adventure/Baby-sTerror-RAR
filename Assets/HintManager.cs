@@ -17,7 +17,8 @@ public class HintManager : Singleton<HintManager>
         {
             foreach (var levelTask in levelObject.levelTasks)
             {
-                levelTask.indicator.SetActive(false);
+                if(levelTask.indicator!=null) 
+                    levelTask.indicator.SetActive(false);
             }
         }
     }

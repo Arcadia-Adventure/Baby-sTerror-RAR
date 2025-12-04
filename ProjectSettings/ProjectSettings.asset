@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Arcadia Adventure
-  productName: Babys Terror
+  productName: BabysTerror
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -175,9 +175,9 @@ PlayerSettings:
     iPhone: 1
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 13
+  AndroidBundleVersionCode: 15
   AndroidMinSdkVersion: 24
-  AndroidTargetSdkVersion: 35
+  AndroidTargetSdkVersion: 36
   AndroidPreferredInstallLocation: 1
   aotOptions: 
   stripEngineCode: 1
@@ -269,7 +269,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: '{dedicated}: Downloads/ArcadiaAdventure.keystore'
+  AndroidKeystoreName: '{inproject}: ArcadiaAdventure.keystore'
   AndroidKeyaliasName: arcadiaadventure
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
