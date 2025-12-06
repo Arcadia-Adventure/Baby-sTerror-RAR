@@ -115,7 +115,14 @@ public class UserAgeService : MonoBehaviour
     {
         if (ageDisplayText != null && ageSlider != null)
         {
-            ageDisplayText.text = $"Age: {(int)ageSlider.value}";
+            if(ageSlider.value == maximumAge)
+            {
+                ageDisplayText.text = $"Age: {maximumAge}+";
+            }
+            else
+            {
+                ageDisplayText.text = $"Age: {(int)ageSlider.value}";
+            }
         }
     }
     
