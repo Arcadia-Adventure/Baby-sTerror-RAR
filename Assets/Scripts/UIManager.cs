@@ -62,7 +62,6 @@ public class UIManager : MonoBehaviour
 
     public void LvlCompleteON()
     {
-        AA_AnalyticsManager.Agent.GameCompleteAnalytics(GameManager.instance.selectedLevel);
         levelCompletePanel.SetActive(true);
     }
 

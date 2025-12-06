@@ -51,12 +51,11 @@ public class PickDropController : MonoBehaviour
         UIManager.instance.crossHairDetection.sprite = UIManager.instance.dropImage;
         UIManager.instance.crossHairDetection.DOFade(1, 1);
 
-      
+
         fpc.holdToZoom = false;
         fpc.isZoomed = false;
     }
 
-   
     public void Drop()
     {
         if (heldObj != null)
@@ -64,28 +63,17 @@ public class PickDropController : MonoBehaviour
             fpc.holdToZoom = false;
             fpc.isZoomed = false;
 
-
             DetectItemsPickUI();
-           
-            SoundManager.instance.DropItem();
-            GamePlayManager.instance.GlowOn();
-            //print("drop");
 
-            //DropObject();
-
-
+            SoundManager.instance?.DropItem();
+            GamePlayManager.instance?.GlowOn();
 
             if (doorLock)
             {
-                heldObjRB.GetComponent<DOTweenAnimation>().DORestart();
-
-                this.transform.DOShakePosition(0.5f,1, 10, 30);
-
-                SoundManager.instance.drop.Stop();
-
-
+                heldObjRB.GetComponent<DOTweenAnimation>()?.DORestart();
+                this.transform.DOShakePosition(0.5f, 1, 10, 30);
+                SoundManager.instance?.drop?.Stop();
                 print("hitting axe");
-
             }
             else
             {
@@ -94,94 +82,94 @@ public class PickDropController : MonoBehaviour
 
             if (GameManager.instance.selectedLevel == 2)
             {
-                GamePlayManager.instance.baby.tag = "Untagged";
+                if (GamePlayManager.instance?.baby != null)
+                    GamePlayManager.instance.baby.tag = "Untagged";
             }
-           
 
             if (prefabe)
             {
-
-                Destroy(BabyController.instance.gameObject);
+                if (BabyController.instance != null)
+                    Destroy(BabyController.instance.gameObject);
 
                 if (GameManager.instance.selectedLevel == 1)
                 {
                     PrefabeInstantLvl1();
-
-                    babyPosLvl1.GetComponent<Animator>().enabled = true;
-                    babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
+                    if (babyPosLvl1 != null)
+                    {
+                        babyPosLvl1.GetComponent<Animator>().enabled = true;
+                        babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
+                    }
                 }
 
                 if (GameManager.instance.selectedLevel == 6)
                 {
                     PrefabeInstantLvl6();
-
-                    babyPosLvl6.GetComponent<Animator>().enabled = true;
-                    babyPosLvl6.GetComponent<Animator>().SetBool("Happy", true);
+                    if (babyPosLvl6 != null)
+                    {
+                        babyPosLvl6.GetComponent<Animator>().enabled = true;
+                        babyPosLvl6.GetComponent<Animator>().SetBool("Happy", true);
+                    }
                 }
 
-                if(GameManager.instance.selectedLevel == 10)
+                if (GameManager.instance.selectedLevel == 10)
                 {
                     PrefabeInstantLvl1();
+                    if (babyPosLvl1 != null)
+                    {
+                        babyPosLvl1.GetComponent<Animator>().enabled = true;
+                        babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
+                    }
 
-                    babyPosLvl1.GetComponent<Animator>().enabled = true;
-                    babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
+                    ObjectiveController.instance?.UpdateTask(3);
+                    SoundManager.instance?.BabyHappy();
 
-
-                    ObjectiveController.instance.UpdateTask(3);
-                    SoundManager.instance.BabyHappy();
-
-                    GamePlayManager.instance.cradleGreenGlow.Stop();
-                    GamePlayManager.instance.baby.tag = "Untagged";
+                    GamePlayManager.instance?.cradleGreenGlow?.Stop();
+                    if (GamePlayManager.instance?.baby != null)
+                        GamePlayManager.instance.baby.tag = "Untagged";
 
                     StartCoroutine(SoundManager.instance.LevelComplete());
                 }
 
-                //BabyController.instance.BabyAnim.SetBool("Happy", true);
-
-
-
-                GamePlayManager.instance.cradleGreenGlow.Stop();
-                SoundManager.instance.BabyHappy();
-                ObjectiveController.instance.UpdateTask(2);
+                GamePlayManager.instance?.cradleGreenGlow?.Stop();
+                SoundManager.instance?.BabyHappy();
+                ObjectiveController.instance?.UpdateTask(2);
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
-
-                //print("cradle detection");
-
             }
-
 
             if (feeder)
             {
-                
-                Destroy(Items.instance.feeder);
+                if (Items.instance?.feeder != null)
+                    Destroy(Items.instance.feeder);
 
+                if (GamePlayManager.instance?.baby != null)
+                    GamePlayManager.instance.baby.tag = "Untagged";
 
-                GamePlayManager.instance.baby.tag = "Untagged";
+                BabyController.instance?.babyCry?.Stop();
+                SoundManager.instance?.BabyHappy();
+                BabyController.instance?.babyBlueGlow?.Play();
+                ObjectiveController.instance?.UpdateTask(2);
 
-
-                BabyController.instance.babyCry.Stop();
-                SoundManager.instance.BabyHappy();
-                BabyController.instance.babyBlueGlow.Play();
-                ObjectiveController.instance.UpdateTask(2);
-                BabyController.instance.BabyAnim.SetBool("Happy", true);
-                BabyController.instance.BabyAnim.SetBool("Sit", false);
+                if (BabyController.instance?.BabyAnim != null)
+                {
+                    BabyController.instance.BabyAnim.SetBool("Happy", true);
+                    BabyController.instance.BabyAnim.SetBool("Sit", false);
+                }
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
-
                 print("feeder detection");
             }
-           
+
 
             if (washPoint)
             {
-              
+
                 Destroy(BabyController.instance.gameObject);
 
                 PrefabeInstantLvl3();
 
                 babyposLvl3.GetComponent<Animator>().enabled = true;
-                babyposLvl3.GetComponent<Animator>().SetBool("Fly", false); 
+                babyposLvl3.GetComponent<Animator>().SetBool("Fly", false);
                 babyposLvl3.GetComponent<Animator>().SetBool("Sit", true);
 
 
@@ -198,12 +186,12 @@ public class PickDropController : MonoBehaviour
 
                 //GamePlayManager.instance.facewashGlow.Play();
             }
-           
+
 
 
             if (faceWash)
             {
-              
+
                 Destroy(Items.instance.facewash);
 
                 BabyController.instance.babyBlueGlow.Play();
@@ -221,7 +209,7 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
             }
-           
+
 
             if (shirt)
             {
@@ -243,13 +231,13 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
             }
-            
-          
+
+
 
 
             if (toy)
             {
-                
+
                 Destroy(Items.instance.toy);
 
                 GamePlayManager.instance.baby.tag = "Untagged";
@@ -265,7 +253,7 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
             }
-           
+
 
 
 
@@ -290,7 +278,7 @@ public class PickDropController : MonoBehaviour
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
             }
-          
+
 
             if (talisman)
             {
@@ -321,12 +309,11 @@ public class PickDropController : MonoBehaviour
                 //GamePlayManager.instance.baby.tag = "Untagged";
 
 
-               
+
                 //StartCoroutine(BabyController.instance.LevelComplete());
-            }        
+            }
         }
     }
-
     RaycastHit hit;
     public string objTag;
     private void Update()
@@ -342,9 +329,6 @@ public class PickDropController : MonoBehaviour
                 PickupObject();
             }
         }
-
-
-
         //RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange, detectionLayers))
         {
@@ -354,7 +338,7 @@ public class PickDropController : MonoBehaviour
             {
 
                 //print(hit.transform.name);
-               
+
 
                 if (objTag == "Door" || objTag == "Fridge")
                 {
@@ -375,13 +359,10 @@ public class PickDropController : MonoBehaviour
                 }
             }
 
-
-
-
             // set door button UI 
-            if (objTag=="Door" || objTag=="Fridge")
+            if (objTag == "Door" || objTag == "Fridge")
             {
-              
+
 
                 UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
                 UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
@@ -405,7 +386,7 @@ public class PickDropController : MonoBehaviour
 
                         UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
                         BtnFade(UIManager.instance.door, true);
-                       
+
                         GamePlayManager.instance.axeBlueGlow.Play();
                     }
                 }
@@ -418,18 +399,6 @@ public class PickDropController : MonoBehaviour
                     BtnFade(UIManager.instance.door, true);
                 }
             }
-           /* else
-            {
-                UIManager.instance.crossHairDetection.sprite = UIManager.instance.knobImage;
-                UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
-                UIManager.instance.detectionTxt.text = null;
-                BtnFade(UIManager.instance.door, false);
-            }*/
-
-
-
-            // set pick item UI detection
-           // string objTag = objTag;
 
             if (objTag == "Baby" ||
                  objTag == "Feeder" ||
@@ -446,7 +415,7 @@ public class PickDropController : MonoBehaviour
                 UIManager.instance.pick.SetSprite(UIManager.instance.pickImage);
                 UIManager.instance.detectionTxt.text = "Pick " + objTag;
 
-             
+
 
             }
             else if (objTag != "Door")
@@ -624,9 +593,6 @@ public class PickDropController : MonoBehaviour
 
 
             }
-
-
-
             //PickupObject
             if (heldObj == null)
             {
@@ -731,8 +697,8 @@ public class PickDropController : MonoBehaviour
     Vector3 moveDirection;
     void MoveObject()
     {
-            moveDirection = (holdArea.position - heldObj.transform.position);
-            heldObjRB.AddForce(moveDirection * pickupForce,ForceMode.Force);
+        moveDirection = (holdArea.position - heldObj.transform.position);
+        heldObjRB.AddForce(moveDirection * pickupForce, ForceMode.Force);
     }
 
     public void PickupObject()
@@ -742,7 +708,7 @@ public class PickDropController : MonoBehaviour
         if (detectObj.GetComponent<Rigidbody>())
         {
             heldObjRB = detectObj.GetComponent<Rigidbody>();
-            
+
             heldObjRB.linearDamping = 10;
             heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
             heldObjRB.useGravity = true;
@@ -795,7 +761,7 @@ public class PickDropController : MonoBehaviour
                 }
 
                 if (GameManager.instance.selectedLevel == 10)
-                {  
+                {
                     BabyController.instance.BabyAnim.SetBool("Happy", false);
                 }
 
@@ -812,8 +778,6 @@ public class PickDropController : MonoBehaviour
 
             if (detectObj.tag == "Feeder" && GameManager.instance.selectedLevel == 2)
             {
-
-               
 
                 GamePlayManager.instance.feederBlueGlow.Stop();
 
