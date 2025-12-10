@@ -64,15 +64,9 @@ public class UIManager : MonoBehaviour
     {
         levelCompletePanel.SetActive(true);
     }
-
-
     /// <summary>
     /// UI BUTTONS
     /// </summary>
-
-    
- 
-
     private void OnApplicationQuit() 
     {
 		AA_AnalyticsManager.Agent.CustomEvent("Exit Game Level",GameManager.instance.selectedLevel.ToString());
