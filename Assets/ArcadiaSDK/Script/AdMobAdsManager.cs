@@ -69,70 +69,13 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
             return;
         }
         
-        // Wait for age verification before initializing
-        if (UserAgeService.Instance != null && !UserAgeService.Instance.IsAgeVerified)
+        // Configure AdMob settings
+        RequestConfiguration requestConfiguration = new RequestConfiguration
         {
-            UserAgeService.OnAgeVerified += OnAgeVerified;
-            Debug.Log("Waiting for age verification before initializing AdMob SDK...");
-            return;
-        }
-        
-        InitializeWithAgeData(appId, enableLogs);
-    }
-    
-    private void OnAgeVerified(int userAge)
-    {
-        UserAgeService.OnAgeVerified -= OnAgeVerified;
-        string appId = GetAppId(); // You may need to store this or get it from ArcadiaSdkManager
-        InitializeWithAgeData(appId, true); // enableLogs can be retrieved from ArcadiaSdkManager if needed
-    }
-    
-    private void InitializeWithAgeData(string appId, bool enableLogs)
-    {
-        // Get COPPA settings from UserAgeService
-        COPPASettings coppaSettings = null;
-        if (UserAgeService.Instance != null)
-        {
-            coppaSettings = UserAgeService.Instance.GetCOPPASettings();
-        }
-        
-        // Configure AdMob settings based on age verification
-        RequestConfiguration requestConfiguration = new RequestConfiguration();
-        
-        if (coppaSettings != null)
-        {
-            requestConfiguration.TagForChildDirectedTreatment = coppaSettings.tagForChildDirectedTreatment 
-                ? TagForChildDirectedTreatment.True 
-                : TagForChildDirectedTreatment.False;
-                
-            requestConfiguration.TagForUnderAgeOfConsent = coppaSettings.tagForUnderAgeOfConsent 
-                ? TagForUnderAgeOfConsent.True 
-                : TagForUnderAgeOfConsent.False;
-                
-            // Set appropriate content rating based on age
-            if (coppaSettings.isChildDirected)
-            {
-                requestConfiguration.MaxAdContentRating = MaxAdContentRating.G;
-            }
-            else if (coppaSettings.userAge < 17)
-            {
-                requestConfiguration.MaxAdContentRating = MaxAdContentRating.PG;
-            }
-            else
-            {
-                requestConfiguration.MaxAdContentRating = MaxAdContentRating.T;
-            }
-            
-            Debug.Log($"AdMob configured for age: {coppaSettings.userAge}, Child Directed: {coppaSettings.isChildDirected}, Content Rating: {requestConfiguration.MaxAdContentRating}");
-        }
-        else
-        {
-            // Fallback to safe defaults if no age verification
-            requestConfiguration.TagForChildDirectedTreatment = TagForChildDirectedTreatment.Unspecified;
-            requestConfiguration.TagForUnderAgeOfConsent = TagForUnderAgeOfConsent.Unspecified;
-            requestConfiguration.MaxAdContentRating = MaxAdContentRating.G;
-            Debug.LogWarning("No age verification found, using safe default AdMob settings");
-        }
+            TagForChildDirectedTreatment = TagForChildDirectedTreatment.Unspecified,
+            TagForUnderAgeOfConsent = TagForUnderAgeOfConsent.Unspecified,
+            MaxAdContentRating = MaxAdContentRating.G
+        };
         
         MobileAds.SetRequestConfiguration(requestConfiguration);
         
@@ -140,26 +83,14 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
         MobileAds.Initialize(initStatus =>
         {
             _isInitialized = true;
-            Debug.Log("AdMob SDK initialized successfully with age-appropriate settings.");
+            Debug.Log("AdMob SDK initialized successfully.");
         });
         
         // Set verbose logging
         MobileAds.SetApplicationMuted(false);
         MobileAds.SetApplicationVolume(1.0f);
         
-        Debug.Log("AdMob SDK initialization started with COPPA compliance...");
-    }
-    
-    private string GetAppId()
-    {
-        // Try to get the app ID from ArcadiaSdkManager or return a default
-        if (ArcadiaSdkManager.Agent != null)
-        {
-            // You may need to expose the app ID from ArcadiaSdkManager
-            // For now, return a placeholder - this should be properly implemented
-            return "YOUR_ADMOB_APP_ID";
-        }
-        return "YOUR_ADMOB_APP_ID";
+        Debug.Log("AdMob SDK initialization started...");
     }
     
     private AdRequest CreateAdRequest()

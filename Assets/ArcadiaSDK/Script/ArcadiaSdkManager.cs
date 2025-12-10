@@ -46,7 +46,6 @@ public class ArcadiaSdkManager : MonoBehaviour
     public AdPosition mRecBannerAdPosition = AdPosition.BottomRight;
     public BannerType mRecBannerType = BannerType.MediumRectangle;
     [Header("Ads Setting")]
-    public int agelimitForAds = 13; // Age limit for showing ads, default is 13
     public Audience audience;
     public GameObject loadingScreen;
     Text loadingText;
@@ -91,13 +90,12 @@ public class ArcadiaSdkManager : MonoBehaviour
     
     public void SetLog(bool value)
     {
-        PlayerPrefs.SetInt("enableLogs", value ? 1 : 0);
-        PlayerPrefs.Save();
+        PlayerPrefs.SetInt(nameof(enableLogs), value ? 1 : 0);
         enableLogs = value;
     }
     public bool GetLog()
     {
-        enableLogs = (PlayerPrefs.GetInt("enableLogs") == 1) ? true : false;
+        enableLogs = (PlayerPrefs.GetInt(nameof(enableLogs), enableLogs ? 1 : 0) == 1) ? true : false;
         return enableLogs;
     }
     
@@ -106,69 +104,11 @@ public class ArcadiaSdkManager : MonoBehaviour
 
     void Start()
     {
-		Debug.Log($"Logs are now {(ArcadiaSdkManager.Agent.GetLog() ? "enabled" : "disabled")}");
-
         removeAds = PlayerPrefs.GetInt(nameof(removeAds), 0) == 1;
-        LoadGameIds();
-        
-        // Initialize age verification first
-        InitializeAgeVerification();
-        
+        InitializeAdsManager();
         InternetCheckerInit();
         if (loadingText == null) loadingText = GetComponentInChildren<Text>(true);
         if (showAvaiableUpdateInStart) ShowAvailbleUpdate();
-    }
-    
-    private void InitializeAgeVerification()
-    {
-        // Check if UserAgeService already exists (user might have set it up manually)
-        if (UserAgeService.Instance == null)
-        {
-            Debug.LogWarning("UserAgeService not found! Make sure to create UserAgeService GameObject with UI components assigned in the Inspector before ArcadiaSdkManager starts.");
-            Debug.LogWarning("Creating UserAgeService automatically, but UI components must be assigned manually in the Inspector.");
-            
-            GameObject ageServiceGO = new GameObject("UserAgeService");
-            ageServiceGO.AddComponent<UserAgeService>();
-        }
-        
-        // Subscribe to age verification events
-        UserAgeService.OnAgeVerified += OnAgeVerified;
-        UserAgeService.OnCoppaStatusDetermined += OnCoppaStatusDetermined;
-        
-        // If age is already verified, proceed with initialization
-        if (UserAgeService.Instance != null && UserAgeService.Instance.IsAgeVerified)
-        {
-            InitializeAdsManager();
-        }
-        else
-        {
-            Debug.Log("Waiting for age verification before initializing SDK...");
-        }
-    }
-    
-    private void OnAgeVerified(int userAge)
-    {
-        Debug.Log($"Age verified in ArcadiaSdkManager: {userAge}");
-        if(UserAgeService.Instance.UserAge >= agelimitForAds)
-            InitializeAdsManager();
-    }
-    
-    private void OnCoppaStatusDetermined(bool isUnderCoppaAge)
-    {
-        Debug.Log($"COPPA status determined: {(isUnderCoppaAge ? "Child" : "Adult")}");
-        
-        // Update audience setting based on age
-        if (isUnderCoppaAge)
-        {
-            audience = Audience.Child;
-        }
-        else
-        {
-            // You can set this to General, Teen, or Mature based on your app's content
-            audience = Audience.General;
-        }
-        
-        Debug.Log($"Audience setting updated to: {audience}");
     }
     
     private void InitializeAdsManager()
@@ -218,6 +158,13 @@ public class ArcadiaSdkManager : MonoBehaviour
         {
             return AppLovinAdsManager.Instance;
         }
+        else
+        {
+            //Create AppLovinAdsManager if not found
+            GameObject applovinManagerObj = new ("AppLovinAdsManager");
+            AppLovinAdsManager applovinManager = applovinManagerObj.AddComponent<AppLovinAdsManager>();
+            DontDestroyOnLoad(applovinManagerObj);
+        }
 #endif
 
 #if UNITY_ADMOB
@@ -225,6 +172,13 @@ public class ArcadiaSdkManager : MonoBehaviour
         if (AdMobAdsManager.Instance != null)
         {
             return AdMobAdsManager.Instance;
+        }
+        else
+        {
+            //Create AdMobAdsManager if not found
+            GameObject admobManagerObj = new ("AdMobAdsManager");
+            AdMobAdsManager admobManager = admobManagerObj.AddComponent<AdMobAdsManager>();
+            DontDestroyOnLoad(admobManagerObj);
         }
 #endif
 
@@ -614,18 +568,18 @@ public class ArcadiaSdkManager : MonoBehaviour
 #endif
     }
 
-    public void ShowRateUs(bool forceFull)
+    public void ShowRateUs()
     {
         StoreReviewManager obj = FindFirstObjectByType<StoreReviewManager>();
         if (obj == null)
         {
             var rate = new GameObject("StoreReviewManager");
             obj = rate.AddComponent<StoreReviewManager>();
-            obj.RateUs(forceFull);
+            obj.RateUs();
         }
         else
         {
-            obj.RateUs(forceFull);
+            obj.RateUs();
         }
     }
     

@@ -241,7 +241,7 @@ public class GamePlayManager : MonoBehaviour
             PlayerPrefs.SetInt("totalUnlockLevel", currentPlayerPrefs+1);
         print("level Complete now unlock level is " + PlayerPrefs.GetInt("totalUnlockLevel"));
         }
-        ArcadiaSdkManager.Agent.ShowRateUs(false);
+        ArcadiaSdkManager.Agent.ShowRateUs();
         AA_AnalyticsManager.Agent.GameCompleteAnalytics(GameManager.instance.selectedLevel);
     }
 

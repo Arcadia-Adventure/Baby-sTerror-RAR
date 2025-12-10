@@ -143,7 +143,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 25.12.7
+  bundleVersion: 25.12.10
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -875,7 +875,7 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Android: UNITY_POST_PROCESSING_STACK_V2;CF_FORCE_MOBILE_MODE;gameanalytics_enabled;gameanalytics_max_enabled;UNITY_APPLOVIN
+    Android: UNITY_POST_PROCESSING_STACK_V2;CF_FORCE_MOBILE_MODE;gameanalytics_enabled;gameanalytics_admob_enabled;UNITY_ADMOB
     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
     GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2
     LinuxHeadlessSimulation: UNITY_POST_PROCESSING_STACK_V2
@@ -890,7 +890,7 @@ PlayerSettings:
     WebGL: UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: UNITY_POST_PROCESSING_STACK_V2;CF_FORCE_MOBILE_MODE
     XboxOne: UNITY_POST_PROCESSING_STACK_V2
-    iPhone: CF_FORCE_MOBILE_MODE;gameanalytics_enabled;gameanalytics_max_enabled;UNITY_APPLOVIN
+    iPhone: CF_FORCE_MOBILE_MODE;gameanalytics_enabled;gameanalytics_admob_enabled;UNITY_ADMOB
     tvOS: UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture: {}

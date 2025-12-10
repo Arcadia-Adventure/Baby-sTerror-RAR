@@ -2,6 +2,9 @@
 
 using IngameDebugConsole;
 using UnityEngine;
+using System;
+using System.Collections;
+using Object = System.Object;
 
 public static class LogsSetting
 {
@@ -10,27 +13,22 @@ public static class LogsSetting
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
 	public static void OnAfterSceneLoadRuntimeMethod()
 	{
-		Debug.Log($"Logs are now {(ArcadiaSdkManager.Agent.GetLog() ? "enabled" : "disabled")}");
-		ShowLogs(ArcadiaSdkManager.Agent.GetLog());
-	}
-	public static void ToggleLogs()
-	{
-		ShowLogs(!ArcadiaSdkManager.Agent.GetLog());
-	}
-	public static void ShowLogs(bool value)
-	{
-		ArcadiaSdkManager.Agent.SetLog(value);
-		if (value)
+		//ArcadiaSdkManager.Agent.SetupLog();
+		if (ArcadiaSdkManager.Agent.GetLog())
 		{
-			fpsLabelGO = GameObject.FindFirstObjectByType<FPSLabel>()?.gameObject;
-			ingamedebuger = GameObject.FindFirstObjectByType<DebugLogManager>(FindObjectsInactive.Include)?.gameObject;
-			if (fpsLabelGO == null)
+			FPSLabel fpsLabel = GameObject.FindObjectOfType<FPSLabel>();
+			DebugLogManager InGameLogs = GameObject.FindObjectOfType<DebugLogManager>();
+			if (fpsLabel == null)
 			{
 				fpsLabelGO = new GameObject("FPS Label");
 				fpsLabelGO.AddComponent<FPSLabel>();
+				Application.targetFrameRate = 60;
 			}
-			if (ingamedebuger) ingamedebuger.SetActive(true);
-			if (fpsLabelGO) fpsLabelGO.SetActive(true);
+			if (InGameLogs==null)
+			{
+				GameObject obj=Resources.Load<GameObject>("IngameDebugConsole");
+				ingamedebuger=GameObject.Instantiate(obj);
+			}
 		}
 		else
 		{
