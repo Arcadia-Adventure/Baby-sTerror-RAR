@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerDetection : MonoBehaviour
 {
     public FirstPersonController fpc;
 
     public GameObject behoshBanda;
+    public UnityEvent<Collider> onTrigger;
 
     private void OnTriggerEnter(Collider other)
     {
+        onTrigger.Invoke(other);
         if(other.gameObject.tag == "Player" && GameManager.instance.selectedLevel == 6)
         {
             GamePlayManager.instance.babyCryingCradle.Stop();
