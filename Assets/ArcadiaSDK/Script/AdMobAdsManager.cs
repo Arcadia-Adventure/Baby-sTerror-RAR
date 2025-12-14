@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GoogleMobileAds.Api;
-using System.IO;
-using System.Threading;
 
 public class AdMobAdsManager : MonoBehaviour, IAdsManager
 {
@@ -32,21 +30,6 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     private Action _currentInterstitialFailCallback;
     private Action _currentAppOpenSuccessCallback;
     private Action _currentAppOpenFailCallback;
-    
-    // #region agent log
-    private static readonly string _debugLogPath = "/storage/emulated/0/Download/admob_debug.log";
-    private static void DebugLog(string hypothesisId, string location, string message, string data)
-    {
-        try
-        {
-            string threadInfo = $"ThreadId={Thread.CurrentThread.ManagedThreadId},IsMainThread={Thread.CurrentThread.ManagedThreadId == 1}";
-            string logEntry = $"{{\"timestamp\":\"{DateTime.Now:O}\",\"hypothesisId\":\"{hypothesisId}\",\"location\":\"{location}\",\"message\":\"{message}\",\"data\":\"{data}\",\"thread\":\"{threadInfo}\"}}\n";
-            File.AppendAllText(_debugLogPath, logEntry);
-            Debug.Log($"[DEBUG] {hypothesisId}: {message} | {data} | {threadInfo}");
-        }
-        catch (Exception ex) { Debug.LogError($"[DEBUG LOG ERROR] {ex.Message}"); }
-    }
-    // #endregion
 
     public static AdMobAdsManager Instance
     {
@@ -248,9 +231,12 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
                 _currentInterstitialSuccessCallback = null;
                 _currentInterstitialFailCallback = null;
                 
-                // Destroy after showing
-                _interstitialAd.Destroy();
-                _interstitialAd = null;
+                // Destroy after showing (with null check to prevent race conditions)
+                if (_interstitialAd != null)
+                {
+                    _interstitialAd.Destroy();
+                    _interstitialAd = null;
+                }
             };
             _interstitialAd.OnAdFullScreenContentFailed += (AdError adError) => 
             {
@@ -291,9 +277,6 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     
     public void LoadRewarded(string adUnitId)
     {
-        // #region agent log
-        DebugLog("H2", "LoadRewarded:ENTRY", "LoadRewarded called", $"adUnitId={adUnitId ?? "NULL"},_isInitialized={_isInitialized}");
-        // #endregion
         if (!_isInitialized)
         {
             Debug.LogError("[AdMob] SDK not initialized. Call Initialize() first.");
@@ -327,54 +310,23 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
             // Register events
             _rewardedAd.OnAdFullScreenContentOpened += () => 
             {
-                // #region agent log
-                DebugLog("H1", "LoadRewarded:OnOpened", "Rewarded ad opened callback entered", $"adUnitId={adUnitId ?? "NULL"},_instance={(_instance != null ? "OK" : "NULL")}");
-                // #endregion
                 Debug.Log("[AdMob] Rewarded ad opened.");
                 OnAdShown?.Invoke(adUnitId);
             };
             _rewardedAd.OnAdFullScreenContentClosed += () => 
             {
-                // #region agent log
-                DebugLog("H1,H2,H3,H5", "LoadRewarded:OnClosed:ENTRY", "Rewarded ad closed callback ENTERED", $"adUnitId={adUnitId ?? "NULL"},_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")},_instance={(_instance != null ? "OK" : "NULL")},this={(this != null ? "OK" : "NULL")}");
-                // #endregion
-                try
-                {
                     Debug.Log("[AdMob] Rewarded ad closed.");
-                    // #region agent log
-                    DebugLog("H4", "LoadRewarded:OnClosed:BeforeOnAdClosed", "About to invoke OnAdClosed", $"OnAdClosed={(OnAdClosed != null ? "HAS_SUBSCRIBERS" : "NULL")},adUnitId={adUnitId ?? "NULL"}");
-                    // #endregion
                     OnAdClosed?.Invoke(adUnitId);
-                    // #region agent log
-                    DebugLog("H4", "LoadRewarded:OnClosed:AfterOnAdClosed", "OnAdClosed invoked successfully", "OK");
-                    // #endregion
                     
                     // Destroy after showing
-                    // #region agent log
-                    DebugLog("H3", "LoadRewarded:OnClosed:BeforeDestroy", "About to destroy _rewardedAd", $"_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")}");
-                    // #endregion
                     if (_rewardedAd != null)
                     {
                         _rewardedAd.Destroy();
                         _rewardedAd = null;
                     }
-                    // #region agent log
-                    DebugLog("H3", "LoadRewarded:OnClosed:AfterDestroy", "Destroy completed", "OK");
-                    // #endregion
-                }
-                catch (Exception ex)
-                {
-                    // #region agent log
-                    DebugLog("ALL", "LoadRewarded:OnClosed:EXCEPTION", "Exception caught in OnClosed", $"ExType={ex.GetType().Name},ExMsg={ex.Message.Replace("\"", "'")},StackTrace={ex.StackTrace?.Replace("\"", "'").Replace("\n", " ") ?? "NULL"}");
-                    // #endregion
-                    throw;
-                }
             };
             _rewardedAd.OnAdFullScreenContentFailed += (AdError adError) => 
             {
-                // #region agent log
-                DebugLog("H3", "LoadRewarded:OnFailed", "Rewarded ad FAILED callback", $"adError={adError?.GetMessage() ?? "NULL"},_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")}");
-                // #endregion
                 Debug.LogError($"[AdMob] Rewarded ad failed to show: {adError.GetMessage()}");
                 _currentRewardedFailCallback?.Invoke();
                 _currentRewardedCallback = null;
@@ -388,9 +340,6 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     
     public void ShowRewarded(string adUnitId, Action<int> onSuccess = null, Action onFail = null)
     {
-        // #region agent log
-        DebugLog("H2,H3", "ShowRewarded:ENTRY", "ShowRewarded called", $"adUnitId={adUnitId ?? "NULL"},_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")},onSuccess={(onSuccess != null ? "SET" : "NULL")},onFail={(onFail != null ? "SET" : "NULL")}");
-        // #endregion
         if (IsRewardedLoaded(adUnitId))
         {
             _currentRewardedCallback = onSuccess;
@@ -398,30 +347,11 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
             
             _rewardedAd.Show((Reward reward) =>
             {
-                // #region agent log
-                DebugLog("H1,H5", "ShowRewarded:RewardCallback:ENTRY", "Reward callback ENTERED", $"reward.Amount={reward.Amount},_instance={(_instance != null ? "OK" : "NULL")},this={(this != null ? "OK" : "NULL")}");
-                // #endregion
-                try
-                {
                     Debug.Log($"[AdMob] Rewarded ad completed. Reward: {reward.Amount}");
-                    // #region agent log
-                    DebugLog("H4", "ShowRewarded:RewardCallback:BeforeEvents", "About to invoke reward events", $"OnRewardedAdRewarded={(OnRewardedAdRewarded != null ? "HAS_SUBSCRIBERS" : "NULL")},_currentRewardedCallback={(_currentRewardedCallback != null ? "SET" : "NULL")}");
-                    // #endregion
                     OnRewardedAdRewarded?.Invoke(adUnitId, (int)reward.Amount);
                     _currentRewardedCallback?.Invoke((int)reward.Amount);
                     _currentRewardedCallback = null;
                     _currentRewardedFailCallback = null;
-                    // #region agent log
-                    DebugLog("H4", "ShowRewarded:RewardCallback:AfterEvents", "Reward events invoked successfully", "OK");
-                    // #endregion
-                }
-                catch (Exception ex)
-                {
-                    // #region agent log
-                    DebugLog("ALL", "ShowRewarded:RewardCallback:EXCEPTION", "Exception in reward callback", $"ExType={ex.GetType().Name},ExMsg={ex.Message.Replace("\"", "'")},StackTrace={ex.StackTrace?.Replace("\"", "'").Replace("\n", " ") ?? "NULL"}");
-                    // #endregion
-                    throw;
-                }
             });
         }
         else
@@ -558,8 +488,12 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
                 _currentAppOpenSuccessCallback = null;
                 _currentAppOpenFailCallback = null;
                 
-                _appOpenAd.Destroy();
-                _appOpenAd = null;
+                // Destroy after showing (with null check to prevent race conditions)
+                if (_appOpenAd != null)
+                {
+                    _appOpenAd.Destroy();
+                    _appOpenAd = null;
+                }
             };
             _appOpenAd.OnAdFullScreenContentFailed += (AdError adError) => 
             {
