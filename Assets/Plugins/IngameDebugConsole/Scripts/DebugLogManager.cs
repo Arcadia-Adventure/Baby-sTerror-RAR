@@ -239,6 +239,8 @@ namespace IngameDebugConsole
 
 		[SerializeField]
 		private Button hideButton;
+		[SerializeField]
+		private Button hideButtonExtra;
 
 		[SerializeField]
 		private Button clearButton;
@@ -504,6 +506,7 @@ namespace IngameDebugConsole
 			commandInputField.onValueChanged.AddListener( OnEditCommand );
 			commandInputField.onEndEdit.AddListener( OnEndEditCommand );
 			hideButton.onClick.AddListener( HideLogWindow );
+			hideButtonExtra.onClick.AddListener( HideLogWindow );
 			clearButton.onClick.AddListener( ClearLogs );
 			collapseButton.GetComponent<Button>().onClick.AddListener( CollapseButtonPressed );
 			filterInfoButton.GetComponent<Button>().onClick.AddListener( FilterLogButtonPressed );

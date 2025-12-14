@@ -56,36 +56,24 @@ public class CullingManager : MonoBehaviour
 
     /// <summary>
     /// Called when player enters a trigger collider.
-    /// Finds the matching CullingArea and activates it.
+    /// Checks all CullingAreas for activator/deactivator triggers.
     /// </summary>
     public void OnPlayerTriggerEnter(Collider triggerCollider)
     {
-        CullingArea area = FindAreaByTrigger(triggerCollider);
-        if (area != null)
+        foreach (var area in cullingAreas)
         {
-            if (exclusiveMode)
+            if (area == null) continue;
+            
+            int triggerType = area.CheckTrigger(triggerCollider);
+            
+            if (triggerType == 1) // Activator
             {
-                SetActiveArea(area);
+                area.SetEnabled(true);
             }
-            else
+            else if (triggerType == -1) // Deactivator
             {
-                area.OnTriggerEnter();
+                area.SetEnabled(false);
             }
-        }
-    }
-
-    /// <summary>
-    /// Called when player exits a trigger collider.
-    /// Finds the matching CullingArea and handles the exit logic.
-    /// </summary>
-    public void OnPlayerTriggerExit(Collider triggerCollider)
-    {
-        if (exclusiveMode) return; // In exclusive mode, we don't disable on exit
-        
-        CullingArea area = FindAreaByTrigger(triggerCollider);
-        if (area != null)
-        {
-            area.OnTriggerExit();
         }
     }
 
@@ -146,18 +134,6 @@ public class CullingManager : MonoBehaviour
                 area.SetEnabled(false);
             }
         }
-    }
-
-    private CullingArea FindAreaByTrigger(Collider triggerCollider)
-    {
-        foreach (var area in cullingAreas)
-        {
-            if (area != null && area.AreaTrigger == triggerCollider)
-            {
-                return area;
-            }
-        }
-        return null;
     }
 
     public CullingArea GetCurrentActiveArea()

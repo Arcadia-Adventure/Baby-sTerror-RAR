@@ -6,7 +6,7 @@ public interface IAdsManager
     // Initialization
     void Initialize(string sdkKey, bool enableLogs = false);
     bool IsInitialized { get; }
-    
+    event Action OnAdsInitialized;
     // Banner Ads
     void LoadBanner(string adUnitId, BannerPosition position = BannerPosition.Bottom);
     void ShowBanner(string adUnitId);

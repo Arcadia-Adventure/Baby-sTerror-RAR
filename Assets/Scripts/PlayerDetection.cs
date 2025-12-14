@@ -8,11 +8,11 @@ public class PlayerDetection : MonoBehaviour
     public FirstPersonController fpc;
 
     public GameObject behoshBanda;
-    public UnityEvent<Collider> onTrigger;
+    public UnityEvent<Collider> onTriggerEnter,onTriggerExit;
 
     private void OnTriggerEnter(Collider other)
     {
-        onTrigger.Invoke(other);
+        onTriggerEnter.Invoke(other);
         if(other.gameObject.tag == "Player" && GameManager.instance.selectedLevel == 6)
         {
             GamePlayManager.instance.babyCryingCradle.Stop();
@@ -46,6 +46,11 @@ public class PlayerDetection : MonoBehaviour
             ObjectiveController.instance.UpdateTask(1);
             StartCoroutine(SoundManager.instance.LevelComplete());
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        onTriggerExit.Invoke(other);
     }
 
     IEnumerator DelaySoundStart()

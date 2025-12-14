@@ -130,16 +130,16 @@ public class ArcadiaSdkManager : MonoBehaviour
         
         // Initialize the ads manager
         string sdkKey = GetSdkKey();
-        adsManager.Initialize(sdkKey, enableLogs);
-        
-        // Subscribe to events
-        adsManager.OnAdLoaded += OnAdLoaded;
+        adsManager.OnAdsInitialized+=LoadAds;
         adsManager.OnAdFailedToLoad += OnAdFailedToLoad;
         adsManager.OnAdShown += OnAdShown;
         adsManager.OnAdClosed += OnAdClosed;
+        adsManager.OnAdLoaded += OnAdLoaded;
+        adsManager.Initialize(sdkKey, enableLogs);
+        
+        // Subscribe to events
         
         // Load ads and proceed
-        LoadAds();
         LoadNextScene();
         
         if (Application.internetReachability != NetworkReachability.ReachableViaLocalAreaNetwork && 

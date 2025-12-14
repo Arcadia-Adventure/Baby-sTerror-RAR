@@ -3,24 +3,51 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GoogleMobileAds.Api;
-using GoogleMobileAds.Common;
+using System.IO;
+using System.Threading;
 
 public class AdMobAdsManager : MonoBehaviour, IAdsManager
 {
     private static AdMobAdsManager _instance;
     private bool _isInitialized = false;
-    private Dictionary<string, BannerView> _bannerAds = new Dictionary<string, BannerView>();
-    private Dictionary<string, InterstitialAd> _interstitialAds = new Dictionary<string, InterstitialAd>();
-    private Dictionary<string, RewardedAd> _rewardedAds = new Dictionary<string, RewardedAd>();
-    private Dictionary<string, AppOpenAd> _appOpenAds = new Dictionary<string, AppOpenAd>();
-    private Dictionary<string, BannerView> _mrecAds = new Dictionary<string, BannerView>();
     
+    // Simple single ad references (no dictionaries)
+    private BannerView _bannerAd;
+    private InterstitialAd _interstitialAd;
+    private RewardedAd _rewardedAd;
+    private AppOpenAd _appOpenAd;
+    private BannerView _mrecAd;
+    
+    // Store ad unit IDs
+    private string _bannerAdUnitId;
+    private string _interstitialAdUnitId;
+    private string _rewardedAdUnitId;
+    private string _appOpenAdUnitId;
+    private string _mrecAdUnitId;
+    
+    // Callbacks
     private Action<int> _currentRewardedCallback;
+    private Action _currentRewardedFailCallback;
     private Action _currentInterstitialSuccessCallback;
     private Action _currentInterstitialFailCallback;
     private Action _currentAppOpenSuccessCallback;
     private Action _currentAppOpenFailCallback;
     
+    // #region agent log
+    private static readonly string _debugLogPath = "/storage/emulated/0/Download/admob_debug.log";
+    private static void DebugLog(string hypothesisId, string location, string message, string data)
+    {
+        try
+        {
+            string threadInfo = $"ThreadId={Thread.CurrentThread.ManagedThreadId},IsMainThread={Thread.CurrentThread.ManagedThreadId == 1}";
+            string logEntry = $"{{\"timestamp\":\"{DateTime.Now:O}\",\"hypothesisId\":\"{hypothesisId}\",\"location\":\"{location}\",\"message\":\"{message}\",\"data\":\"{data}\",\"thread\":\"{threadInfo}\"}}\n";
+            File.AppendAllText(_debugLogPath, logEntry);
+            Debug.Log($"[DEBUG] {hypothesisId}: {message} | {data} | {threadInfo}");
+        }
+        catch (Exception ex) { Debug.LogError($"[DEBUG LOG ERROR] {ex.Message}"); }
+    }
+    // #endregion
+
     public static AdMobAdsManager Instance
     {
         get
@@ -38,6 +65,7 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     public bool IsInitialized => _isInitialized;
     
     // Events
+    public event Action OnAdsInitialized;
     public event Action<string> OnAdLoaded;
     public event Action<string, string> OnAdFailedToLoad;
     public event Action<string> OnAdShown;
@@ -65,37 +93,35 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     {
         if (_isInitialized)
         {
-            Debug.LogWarning("AdMob SDK is already initialized.");
+            Debug.LogWarning("[AdMob] SDK is already initialized.");
             return;
         }
         
-        // Configure AdMob settings
-        RequestConfiguration requestConfiguration = new RequestConfiguration
-        {
-            TagForChildDirectedTreatment = TagForChildDirectedTreatment.Unspecified,
-            TagForUnderAgeOfConsent = TagForUnderAgeOfConsent.Unspecified,
-            MaxAdContentRating = MaxAdContentRating.G
-        };
-        
-        MobileAds.SetRequestConfiguration(requestConfiguration);
+        Debug.Log("[AdMob] SDK initialization started...");
         
         // Initialize AdMob SDK
-        MobileAds.Initialize(initStatus =>
+        MobileAds.Initialize((InitializationStatus initializationStatus) =>
         {
+            Dictionary<string, AdapterStatus> map = initializationStatus.getAdapterStatusMap();
+            foreach (KeyValuePair<string, AdapterStatus> keyValuePair in map)
+            {
+                string className = keyValuePair.Key;
+                AdapterStatus status = keyValuePair.Value;
+                switch (status.InitializationState)
+                {
+                    case AdapterState.NotReady:
+                        Debug.Log($"[AdMob] Adapter: {className} is not ready.");
+                        break;
+                    case AdapterState.Ready:
+                        Debug.Log($"[AdMob] Adapter: {className} is initialized.");
+                        break;
+                }
+            }
+            
             _isInitialized = true;
-            Debug.Log("AdMob SDK initialized successfully.");
+            OnAdsInitialized?.Invoke();
+            Debug.Log("[AdMob] SDK initialized successfully.");
         });
-        
-        // Set verbose logging
-        MobileAds.SetApplicationMuted(false);
-        MobileAds.SetApplicationVolume(1.0f);
-        
-        Debug.Log("AdMob SDK initialization started...");
-    }
-    
-    private AdRequest CreateAdRequest()
-    {
-        return new AdRequest();
     }
     
     #endregion
@@ -106,64 +132,70 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     {
         if (!_isInitialized)
         {
-            Debug.LogError("AdMob SDK not initialized. Call Initialize() first.");
+            Debug.LogError("[AdMob] SDK not initialized. Call Initialize() first.");
             return;
         }
         
-        // Destroy existing banner if it exists
-        if (_bannerAds.ContainsKey(adUnitId))
+        // Destroy existing banner
+        DestroyBanner(adUnitId);
+        
+        _bannerAdUnitId = adUnitId;
+        
+        Debug.Log($"[AdMob] Loading Banner: {adUnitId}");
+        
+        _bannerAd = new BannerView(adUnitId, AdSize.Banner, ConvertBannerPosition(position));
+        
+        _bannerAd.OnBannerAdLoaded += () => 
         {
-            _bannerAds[adUnitId].Destroy();
-            _bannerAds.Remove(adUnitId);
-        }
+            Debug.Log("[AdMob] Banner loaded successfully.");
+            OnAdLoaded?.Invoke(adUnitId);
+        };
+        _bannerAd.OnBannerAdLoadFailed += (LoadAdError error) => 
+        {
+            Debug.LogError($"[AdMob] Banner failed to load: {error.GetMessage()}");
+            OnAdFailedToLoad?.Invoke(adUnitId, error.GetMessage());
+        };
+        _bannerAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
+        _bannerAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
         
-        GoogleMobileAds.Api.AdPosition adPosition = ConvertBannerPosition(position);
-        BannerView bannerView = new BannerView(adUnitId, AdSize.Banner, adPosition);
-        
-        // Register for ad events
-        bannerView.OnBannerAdLoaded += () => OnAdLoaded?.Invoke(adUnitId);
-        bannerView.OnBannerAdLoadFailed += (LoadAdError error) => OnAdFailedToLoad?.Invoke(adUnitId, error.GetMessage());
-        bannerView.OnAdFullScreenContentOpened += () => OnAdShown?.Invoke(adUnitId);
-        bannerView.OnAdFullScreenContentClosed += () => OnAdClosed?.Invoke(adUnitId);
-        bannerView.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
-        bannerView.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
-        
-        _bannerAds[adUnitId] = bannerView;
-        bannerView.LoadAd(CreateAdRequest());
+        _bannerAd.LoadAd(new AdRequest());
     }
     
     public void ShowBanner(string adUnitId)
     {
-        if (_bannerAds.ContainsKey(adUnitId))
+        if (_bannerAd != null)
         {
-            _bannerAds[adUnitId].Show();
+            _bannerAd.Show();
+            Debug.Log("[AdMob] Banner shown.");
         }
         else
         {
-            Debug.LogWarning($"Banner with ID {adUnitId} is not loaded.");
+            Debug.LogWarning("[AdMob] Banner is not loaded.");
         }
     }
     
     public void HideBanner(string adUnitId)
     {
-        if (_bannerAds.ContainsKey(adUnitId))
+        if (_bannerAd != null)
         {
-            _bannerAds[adUnitId].Hide();
+            _bannerAd.Hide();
+            Debug.Log("[AdMob] Banner hidden.");
         }
     }
     
     public void DestroyBanner(string adUnitId)
     {
-        if (_bannerAds.ContainsKey(adUnitId))
+        if (_bannerAd != null)
         {
-            _bannerAds[adUnitId].Destroy();
-            _bannerAds.Remove(adUnitId);
+            _bannerAd.Destroy();
+            _bannerAd = null;
+            Debug.Log("[AdMob] Banner destroyed.");
         }
     }
     
     public bool IsBannerLoaded(string adUnitId)
     {
-        return _bannerAds.ContainsKey(adUnitId);
+        return _bannerAd != null;
     }
     
     #endregion
@@ -174,48 +206,62 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     {
         if (!_isInitialized)
         {
-            Debug.LogError("AdMob SDK not initialized. Call Initialize() first.");
+            Debug.LogError("[AdMob] SDK not initialized. Call Initialize() first.");
             return;
         }
         
-        // Destroy existing interstitial if it exists
-        if (_interstitialAds.ContainsKey(adUnitId))
+        // Destroy existing interstitial
+        if (_interstitialAd != null)
         {
-            _interstitialAds[adUnitId].Destroy();
-            _interstitialAds.Remove(adUnitId);
+            _interstitialAd.Destroy();
+            _interstitialAd = null;
         }
         
-        InterstitialAd.Load(adUnitId, CreateAdRequest(), (InterstitialAd ad, LoadAdError error) =>
+        _interstitialAdUnitId = adUnitId;
+        
+        Debug.Log($"[AdMob] Loading Interstitial: {adUnitId}");
+        
+        InterstitialAd.Load(adUnitId, new AdRequest(), (InterstitialAd ad, LoadAdError error) =>
         {
             if (error != null || ad == null)
             {
-                Debug.LogError($"Interstitial ad failed to load: {error}");
+                Debug.LogError($"[AdMob] Interstitial failed to load: {error?.GetMessage()}");
                 OnAdFailedToLoad?.Invoke(adUnitId, error?.GetMessage() ?? "Unknown error");
                 return;
             }
             
-            _interstitialAds[adUnitId] = ad;
+            Debug.Log("[AdMob] Interstitial loaded successfully.");
+            _interstitialAd = ad;
             OnAdLoaded?.Invoke(adUnitId);
             
-            // Register for ad events
-            ad.OnAdFullScreenContentOpened += () => OnAdShown?.Invoke(adUnitId);
-            ad.OnAdFullScreenContentClosed += () => 
+            // Register events
+            _interstitialAd.OnAdFullScreenContentOpened += () => 
             {
+                Debug.Log("[AdMob] Interstitial opened.");
+                OnAdShown?.Invoke(adUnitId);
+            };
+            _interstitialAd.OnAdFullScreenContentClosed += () => 
+            {
+                Debug.Log("[AdMob] Interstitial closed.");
                 OnAdClosed?.Invoke(adUnitId);
                 _currentInterstitialSuccessCallback?.Invoke();
                 _currentInterstitialSuccessCallback = null;
                 _currentInterstitialFailCallback = null;
-                _interstitialAds.Remove(adUnitId);
+                
+                // Destroy after showing
+                _interstitialAd.Destroy();
+                _interstitialAd = null;
             };
-            ad.OnAdFullScreenContentFailed += (AdError adError) => 
+            _interstitialAd.OnAdFullScreenContentFailed += (AdError adError) => 
             {
+                Debug.LogError($"[AdMob] Interstitial failed to show: {adError.GetMessage()}");
                 _currentInterstitialFailCallback?.Invoke();
                 _currentInterstitialSuccessCallback = null;
                 _currentInterstitialFailCallback = null;
-                _interstitialAds.Remove(adUnitId);
+                _interstitialAd = null;
             };
-            ad.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
-            ad.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+            _interstitialAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
+            _interstitialAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
         });
     }
     
@@ -225,18 +271,18 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
         {
             _currentInterstitialSuccessCallback = onSuccess;
             _currentInterstitialFailCallback = onFail;
-            _interstitialAds[adUnitId].Show();
+            _interstitialAd.Show();
         }
         else
         {
-            Debug.LogWarning($"Interstitial with ID {adUnitId} is not loaded.");
+            Debug.LogWarning("[AdMob] Interstitial is not loaded.");
             onFail?.Invoke();
         }
     }
     
     public bool IsInterstitialLoaded(string adUnitId)
     {
-        return _interstitialAds.ContainsKey(adUnitId) && _interstitialAds[adUnitId] != null && _interstitialAds[adUnitId].CanShowAd();
+        return _interstitialAd != null && _interstitialAd.CanShowAd();
     }
     
     #endregion
@@ -245,69 +291,149 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     
     public void LoadRewarded(string adUnitId)
     {
+        // #region agent log
+        DebugLog("H2", "LoadRewarded:ENTRY", "LoadRewarded called", $"adUnitId={adUnitId ?? "NULL"},_isInitialized={_isInitialized}");
+        // #endregion
         if (!_isInitialized)
         {
-            Debug.LogError("AdMob SDK not initialized. Call Initialize() first.");
+            Debug.LogError("[AdMob] SDK not initialized. Call Initialize() first.");
             return;
         }
         
-        // Destroy existing rewarded ad if it exists
-        if (_rewardedAds.ContainsKey(adUnitId))
+        // Destroy existing rewarded ad
+        if (_rewardedAd != null)
         {
-            _rewardedAds[adUnitId].Destroy();
-            _rewardedAds.Remove(adUnitId);
+            _rewardedAd.Destroy();
+            _rewardedAd = null;
         }
         
-        RewardedAd.Load(adUnitId, CreateAdRequest(), (RewardedAd ad, LoadAdError error) =>
+        _rewardedAdUnitId = adUnitId;
+        
+        Debug.Log($"[AdMob] Loading Rewarded: {adUnitId}");
+        
+        RewardedAd.Load(adUnitId, new AdRequest(), (RewardedAd ad, LoadAdError error) =>
         {
             if (error != null || ad == null)
             {
-                Debug.LogError($"Rewarded ad failed to load: {error}");
+                Debug.LogError($"[AdMob] Rewarded ad failed to load: {error?.GetMessage()}");
                 OnAdFailedToLoad?.Invoke(adUnitId, error?.GetMessage() ?? "Unknown error");
                 return;
             }
             
-            _rewardedAds[adUnitId] = ad;
+            Debug.Log("[AdMob] Rewarded ad loaded successfully.");
+            _rewardedAd = ad;
             OnAdLoaded?.Invoke(adUnitId);
             
-            // Register for ad events
-            ad.OnAdFullScreenContentOpened += () => OnAdShown?.Invoke(adUnitId);
-            ad.OnAdFullScreenContentClosed += () => 
+            // Register events
+            _rewardedAd.OnAdFullScreenContentOpened += () => 
             {
-                OnAdClosed?.Invoke(adUnitId);
-                _rewardedAds.Remove(adUnitId);
+                // #region agent log
+                DebugLog("H1", "LoadRewarded:OnOpened", "Rewarded ad opened callback entered", $"adUnitId={adUnitId ?? "NULL"},_instance={(_instance != null ? "OK" : "NULL")}");
+                // #endregion
+                Debug.Log("[AdMob] Rewarded ad opened.");
+                OnAdShown?.Invoke(adUnitId);
             };
-            ad.OnAdFullScreenContentFailed += (AdError adError) => 
+            _rewardedAd.OnAdFullScreenContentClosed += () => 
             {
-                _rewardedAds.Remove(adUnitId);
+                // #region agent log
+                DebugLog("H1,H2,H3,H5", "LoadRewarded:OnClosed:ENTRY", "Rewarded ad closed callback ENTERED", $"adUnitId={adUnitId ?? "NULL"},_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")},_instance={(_instance != null ? "OK" : "NULL")},this={(this != null ? "OK" : "NULL")}");
+                // #endregion
+                try
+                {
+                    Debug.Log("[AdMob] Rewarded ad closed.");
+                    // #region agent log
+                    DebugLog("H4", "LoadRewarded:OnClosed:BeforeOnAdClosed", "About to invoke OnAdClosed", $"OnAdClosed={(OnAdClosed != null ? "HAS_SUBSCRIBERS" : "NULL")},adUnitId={adUnitId ?? "NULL"}");
+                    // #endregion
+                    OnAdClosed?.Invoke(adUnitId);
+                    // #region agent log
+                    DebugLog("H4", "LoadRewarded:OnClosed:AfterOnAdClosed", "OnAdClosed invoked successfully", "OK");
+                    // #endregion
+                    
+                    // Destroy after showing
+                    // #region agent log
+                    DebugLog("H3", "LoadRewarded:OnClosed:BeforeDestroy", "About to destroy _rewardedAd", $"_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")}");
+                    // #endregion
+                    if (_rewardedAd != null)
+                    {
+                        _rewardedAd.Destroy();
+                        _rewardedAd = null;
+                    }
+                    // #region agent log
+                    DebugLog("H3", "LoadRewarded:OnClosed:AfterDestroy", "Destroy completed", "OK");
+                    // #endregion
+                }
+                catch (Exception ex)
+                {
+                    // #region agent log
+                    DebugLog("ALL", "LoadRewarded:OnClosed:EXCEPTION", "Exception caught in OnClosed", $"ExType={ex.GetType().Name},ExMsg={ex.Message.Replace("\"", "'")},StackTrace={ex.StackTrace?.Replace("\"", "'").Replace("\n", " ") ?? "NULL"}");
+                    // #endregion
+                    throw;
+                }
             };
-            ad.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
-            ad.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+            _rewardedAd.OnAdFullScreenContentFailed += (AdError adError) => 
+            {
+                // #region agent log
+                DebugLog("H3", "LoadRewarded:OnFailed", "Rewarded ad FAILED callback", $"adError={adError?.GetMessage() ?? "NULL"},_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")}");
+                // #endregion
+                Debug.LogError($"[AdMob] Rewarded ad failed to show: {adError.GetMessage()}");
+                _currentRewardedFailCallback?.Invoke();
+                _currentRewardedCallback = null;
+                _currentRewardedFailCallback = null;
+                _rewardedAd = null;
+            };
+            _rewardedAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
+            _rewardedAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
         });
     }
     
     public void ShowRewarded(string adUnitId, Action<int> onSuccess = null, Action onFail = null)
     {
+        // #region agent log
+        DebugLog("H2,H3", "ShowRewarded:ENTRY", "ShowRewarded called", $"adUnitId={adUnitId ?? "NULL"},_rewardedAd={(_rewardedAd != null ? "OK" : "NULL")},onSuccess={(onSuccess != null ? "SET" : "NULL")},onFail={(onFail != null ? "SET" : "NULL")}");
+        // #endregion
         if (IsRewardedLoaded(adUnitId))
         {
             _currentRewardedCallback = onSuccess;
-            _rewardedAds[adUnitId].Show((Reward reward) =>
+            _currentRewardedFailCallback = onFail;
+            
+            _rewardedAd.Show((Reward reward) =>
             {
-                OnRewardedAdRewarded?.Invoke(adUnitId, (int)reward.Amount);
-                _currentRewardedCallback?.Invoke((int)reward.Amount);
-                _currentRewardedCallback = null;
+                // #region agent log
+                DebugLog("H1,H5", "ShowRewarded:RewardCallback:ENTRY", "Reward callback ENTERED", $"reward.Amount={reward.Amount},_instance={(_instance != null ? "OK" : "NULL")},this={(this != null ? "OK" : "NULL")}");
+                // #endregion
+                try
+                {
+                    Debug.Log($"[AdMob] Rewarded ad completed. Reward: {reward.Amount}");
+                    // #region agent log
+                    DebugLog("H4", "ShowRewarded:RewardCallback:BeforeEvents", "About to invoke reward events", $"OnRewardedAdRewarded={(OnRewardedAdRewarded != null ? "HAS_SUBSCRIBERS" : "NULL")},_currentRewardedCallback={(_currentRewardedCallback != null ? "SET" : "NULL")}");
+                    // #endregion
+                    OnRewardedAdRewarded?.Invoke(adUnitId, (int)reward.Amount);
+                    _currentRewardedCallback?.Invoke((int)reward.Amount);
+                    _currentRewardedCallback = null;
+                    _currentRewardedFailCallback = null;
+                    // #region agent log
+                    DebugLog("H4", "ShowRewarded:RewardCallback:AfterEvents", "Reward events invoked successfully", "OK");
+                    // #endregion
+                }
+                catch (Exception ex)
+                {
+                    // #region agent log
+                    DebugLog("ALL", "ShowRewarded:RewardCallback:EXCEPTION", "Exception in reward callback", $"ExType={ex.GetType().Name},ExMsg={ex.Message.Replace("\"", "'")},StackTrace={ex.StackTrace?.Replace("\"", "'").Replace("\n", " ") ?? "NULL"}");
+                    // #endregion
+                    throw;
+                }
             });
         }
         else
         {
-            Debug.LogWarning($"Rewarded ad with ID {adUnitId} is not loaded.");
+            Debug.LogWarning("[AdMob] Rewarded ad is not loaded.");
             onFail?.Invoke();
         }
     }
     
     public bool IsRewardedLoaded(string adUnitId)
     {
-        return _rewardedAds.ContainsKey(adUnitId) && _rewardedAds[adUnitId] != null && _rewardedAds[adUnitId].CanShowAd();
+        return _rewardedAd != null && _rewardedAd.CanShowAd();
     }
     
     #endregion
@@ -318,64 +444,69 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     {
         if (!_isInitialized)
         {
-            Debug.LogError("AdMob SDK not initialized. Call Initialize() first.");
+            Debug.LogError("[AdMob] SDK not initialized. Call Initialize() first.");
             return;
         }
         
-        // Destroy existing MRec if it exists
-        if (_mrecAds.ContainsKey(adUnitId))
+        DestroyMRec(adUnitId);
+        
+        _mrecAdUnitId = adUnitId;
+        
+        Debug.Log($"[AdMob] Loading MRec: {adUnitId}");
+        
+        _mrecAd = new BannerView(adUnitId, AdSize.MediumRectangle, ConvertBannerPosition(position));
+        
+        _mrecAd.OnBannerAdLoaded += () => 
         {
-            _mrecAds[adUnitId].Destroy();
-            _mrecAds.Remove(adUnitId);
-        }
+            Debug.Log("[AdMob] MRec loaded successfully.");
+            OnAdLoaded?.Invoke(adUnitId);
+        };
+        _mrecAd.OnBannerAdLoadFailed += (LoadAdError error) => 
+        {
+            Debug.LogError($"[AdMob] MRec failed to load: {error.GetMessage()}");
+            OnAdFailedToLoad?.Invoke(adUnitId, error.GetMessage());
+        };
+        _mrecAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
+        _mrecAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
         
-        GoogleMobileAds.Api.AdPosition adPosition = ConvertBannerPosition(position);
-        BannerView mrecView = new BannerView(adUnitId, AdSize.MediumRectangle, adPosition);
-        
-        // Register for ad events
-        mrecView.OnBannerAdLoaded += () => OnAdLoaded?.Invoke(adUnitId);
-        mrecView.OnBannerAdLoadFailed += (LoadAdError error) => OnAdFailedToLoad?.Invoke(adUnitId, error.GetMessage());
-        mrecView.OnAdFullScreenContentOpened += () => OnAdShown?.Invoke(adUnitId);
-        mrecView.OnAdFullScreenContentClosed += () => OnAdClosed?.Invoke(adUnitId);
-        mrecView.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
-        mrecView.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
-        
-        _mrecAds[adUnitId] = mrecView;
-        mrecView.LoadAd(CreateAdRequest());
+        _mrecAd.LoadAd(new AdRequest());
     }
     
     public void ShowMRec(string adUnitId)
     {
-        if (_mrecAds.ContainsKey(adUnitId))
+        if (_mrecAd != null)
         {
-            _mrecAds[adUnitId].Show();
+            _mrecAd.Show();
+            Debug.Log("[AdMob] MRec shown.");
         }
         else
         {
-            Debug.LogWarning($"MRec with ID {adUnitId} is not loaded.");
+            Debug.LogWarning("[AdMob] MRec is not loaded.");
         }
     }
     
     public void HideMRec(string adUnitId)
     {
-        if (_mrecAds.ContainsKey(adUnitId))
+        if (_mrecAd != null)
         {
-            _mrecAds[adUnitId].Hide();
+            _mrecAd.Hide();
+            Debug.Log("[AdMob] MRec hidden.");
         }
     }
     
     public void DestroyMRec(string adUnitId)
     {
-        if (_mrecAds.ContainsKey(adUnitId))
+        if (_mrecAd != null)
         {
-            _mrecAds[adUnitId].Destroy();
-            _mrecAds.Remove(adUnitId);
+            _mrecAd.Destroy();
+            _mrecAd = null;
+            Debug.Log("[AdMob] MRec destroyed.");
         }
     }
     
     public bool IsMRecLoaded(string adUnitId)
     {
-        return _mrecAds.ContainsKey(adUnitId);
+        return _mrecAd != null;
     }
     
     #endregion
@@ -386,48 +517,60 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     {
         if (!_isInitialized)
         {
-            Debug.LogError("AdMob SDK not initialized. Call Initialize() first.");
+            Debug.LogError("[AdMob] SDK not initialized. Call Initialize() first.");
             return;
         }
         
-        // Destroy existing app open ad if it exists
-        if (_appOpenAds.ContainsKey(adUnitId))
+        if (_appOpenAd != null)
         {
-            _appOpenAds[adUnitId].Destroy();
-            _appOpenAds.Remove(adUnitId);
+            _appOpenAd.Destroy();
+            _appOpenAd = null;
         }
         
-        AppOpenAd.Load(adUnitId, CreateAdRequest(), (AppOpenAd ad, LoadAdError error) =>
+        _appOpenAdUnitId = adUnitId;
+        
+        Debug.Log($"[AdMob] Loading App Open: {adUnitId}");
+        
+        AppOpenAd.Load(adUnitId, new AdRequest(), (AppOpenAd ad, LoadAdError error) =>
         {
             if (error != null || ad == null)
             {
-                Debug.LogError($"App open ad failed to load: {error}");
+                Debug.LogError($"[AdMob] App Open ad failed to load: {error?.GetMessage()}");
                 OnAdFailedToLoad?.Invoke(adUnitId, error?.GetMessage() ?? "Unknown error");
                 return;
             }
             
-            _appOpenAds[adUnitId] = ad;
+            Debug.Log("[AdMob] App Open ad loaded successfully.");
+            _appOpenAd = ad;
             OnAdLoaded?.Invoke(adUnitId);
             
-            // Register for ad events
-            ad.OnAdFullScreenContentOpened += () => OnAdShown?.Invoke(adUnitId);
-            ad.OnAdFullScreenContentClosed += () => 
+            // Register events
+            _appOpenAd.OnAdFullScreenContentOpened += () => 
             {
+                Debug.Log("[AdMob] App Open ad opened.");
+                OnAdShown?.Invoke(adUnitId);
+            };
+            _appOpenAd.OnAdFullScreenContentClosed += () => 
+            {
+                Debug.Log("[AdMob] App Open ad closed.");
                 OnAdClosed?.Invoke(adUnitId);
                 _currentAppOpenSuccessCallback?.Invoke();
                 _currentAppOpenSuccessCallback = null;
                 _currentAppOpenFailCallback = null;
-                _appOpenAds.Remove(adUnitId);
+                
+                _appOpenAd.Destroy();
+                _appOpenAd = null;
             };
-            ad.OnAdFullScreenContentFailed += (AdError adError) => 
+            _appOpenAd.OnAdFullScreenContentFailed += (AdError adError) => 
             {
+                Debug.LogError($"[AdMob] App Open ad failed to show: {adError.GetMessage()}");
                 _currentAppOpenFailCallback?.Invoke();
                 _currentAppOpenSuccessCallback = null;
                 _currentAppOpenFailCallback = null;
-                _appOpenAds.Remove(adUnitId);
+                _appOpenAd = null;
             };
-            ad.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
-            ad.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+            _appOpenAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
+            _appOpenAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
         });
     }
     
@@ -437,18 +580,18 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
         {
             _currentAppOpenSuccessCallback = onSuccess;
             _currentAppOpenFailCallback = onFail;
-            _appOpenAds[adUnitId].Show();
+            _appOpenAd.Show();
         }
         else
         {
-            Debug.LogWarning($"App Open ad with ID {adUnitId} is not loaded.");
+            Debug.LogWarning("[AdMob] App Open ad is not loaded.");
             onFail?.Invoke();
         }
     }
     
     public bool IsAppOpenLoaded(string adUnitId)
     {
-        return _appOpenAds.ContainsKey(adUnitId) && _appOpenAds[adUnitId] != null && _appOpenAds[adUnitId].CanShowAd();
+        return _appOpenAd != null && _appOpenAd.CanShowAd();
     }
     
     #endregion
@@ -482,36 +625,11 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
     
     void OnDestroy()
     {
-        // Clean up all ads
-        foreach (var banner in _bannerAds.Values)
-        {
-            banner?.Destroy();
-        }
-        _bannerAds.Clear();
-        
-        foreach (var interstitial in _interstitialAds.Values)
-        {
-            interstitial?.Destroy();
-        }
-        _interstitialAds.Clear();
-        
-        foreach (var rewarded in _rewardedAds.Values)
-        {
-            rewarded?.Destroy();
-        }
-        _rewardedAds.Clear();
-        
-        foreach (var appOpen in _appOpenAds.Values)
-        {
-            appOpen?.Destroy();
-        }
-        _appOpenAds.Clear();
-        
-        foreach (var mrec in _mrecAds.Values)
-        {
-            mrec?.Destroy();
-        }
-        _mrecAds.Clear();
+        _bannerAd?.Destroy();
+        _interstitialAd?.Destroy();
+        _rewardedAd?.Destroy();
+        _appOpenAd?.Destroy();
+        _mrecAd?.Destroy();
     }
 }
 #endif

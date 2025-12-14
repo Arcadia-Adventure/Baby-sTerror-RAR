@@ -8,23 +8,13 @@ public class CullingArea : MonoBehaviour
     public bool startEnabled = true;
     public bool justDisableMeshRenderers = true;
     
+    [Header("Triggers")]
+    public Collider activatorTrigger;
+    public Collider deactivatorTrigger;
+    
     [Header("References")]
-    public Collider areaTrigger;
     public GameObject areaRoot;
     public List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
-    
-    private bool isEnabled = true;
-    
-    public Collider AreaTrigger => areaTrigger;
-    public bool IsEnabled => isEnabled;
-
-    private void Awake()
-    {
-        if (areaTrigger == null)
-        {
-            areaTrigger = GetComponent<Collider>();
-        }
-    }
 
     private void Start()
     {
@@ -58,8 +48,7 @@ public class CullingArea : MonoBehaviour
 
     public void SetEnabled(bool enabled)
     {
-        isEnabled = enabled;
-        
+   
         if (justDisableMeshRenderers)
         {
             foreach (var mr in meshRenderers)
@@ -76,14 +65,17 @@ public class CullingArea : MonoBehaviour
         }
     }
 
-    public void OnTriggerEnter()
+    /// <summary>
+    /// Check if the given collider belongs to this culling area.
+    /// Returns 1 if activator, -1 if deactivator, 0 if neither.
+    /// </summary>
+    public int CheckTrigger(Collider triggerCollider)
     {
-        SetEnabled(true);
-    }
-
-    public void OnTriggerExit()
-    {
-        SetEnabled(false);
+        if (activatorTrigger != null && triggerCollider == activatorTrigger)
+            return 1;
+        if (deactivatorTrigger != null && triggerCollider == deactivatorTrigger)
+            return -1;
+        return 0;
     }
 }
 
