@@ -62,6 +62,14 @@ public class ArcadiaSdkManager : MonoBehaviour
     private Action<int> rewardedCallBack;
     
     private IAdsManager adsManager;
+    
+    // App Open Ad Best Practices (per AdMob documentation)
+    private DateTime _appOpenAdLoadTime;
+    private DateTime _lastFullScreenAdShownTime = DateTime.MinValue;
+    private const int APP_OPEN_AD_EXPIRATION_HOURS = 4; // AdMob docs: 4-hour timeout
+    private const int COOLDOWN_AFTER_FULLSCREEN_AD_SECONDS = 5; // Prevent back-to-back ads
+    private bool _isBannerVisible = false; // Track banner visibility
+    private bool _wasBannerVisibleBeforeAppOpen = false; // Restore banner after App Open Ad
     #endregion
 
     //============================== Singleton_Region ============================== 
@@ -256,6 +264,7 @@ public class ArcadiaSdkManager : MonoBehaviour
             if (showBannerInStart)
             {
                 adsManager.ShowBanner(myGameIds.bannerAdId);
+                _isBannerVisible = true;
             }
         }
         
@@ -292,15 +301,69 @@ public class ArcadiaSdkManager : MonoBehaviour
     public void OnAppStateChanged(AppState state)
     {
         ArcadiaSdkManager.PrintStatus("App State is " + state);
+        
         if (removeAds || adsManager == null)
         {
             return;
         }
         
-        if (state == AppState.Foreground && ArcadiaSdkManager.myGameIds.appOpenAdId.Length > 1)
+        if (state == AppState.Foreground)
         {
+            // Check if ad unit ID is valid
+            if (string.IsNullOrEmpty(myGameIds.appOpenAdId) || myGameIds.appOpenAdId.Length <= 1)
+            {
+                return;
+            }
+            
+            // Check if we recently showed a fullscreen ad (prevents back-to-back ads)
+            TimeSpan timeSinceLastAd = DateTime.Now - _lastFullScreenAdShownTime;
+            if (timeSinceLastAd.TotalSeconds < COOLDOWN_AFTER_FULLSCREEN_AD_SECONDS)
+            {
+                PrintStatus($"App Open Ad skipped - fullscreen ad shown {timeSinceLastAd.TotalSeconds:F1}s ago");
+                return;
+            }
+            
+            // Check if ad is available and not expired (4-hour timeout per AdMob docs)
+            if (!IsAppOpenAdAvailable())
+            {
+                PrintStatus("App Open Ad not available or expired - reloading");
+                adsManager.LoadAppOpen(myGameIds.appOpenAdId);
+                return;
+            }
+            
+            // Hide banner before showing App Open Ad to prevent overlap
+            _wasBannerVisibleBeforeAppOpen = _isBannerVisible;
+            if (_isBannerVisible)
+            {
+                adsManager.HideBanner(myGameIds.bannerAdId);
+                PrintStatus("Banner hidden before App Open Ad");
+            }
+            
             adsManager.ShowAppOpen(myGameIds.appOpenAdId);
         }
+    }
+    
+    /// <summary>
+    /// Checks if the App Open Ad is available and not expired.
+    /// Per AdMob documentation, App Open Ads have a 4-hour timeout.
+    /// </summary>
+    private bool IsAppOpenAdAvailable()
+    {
+        if (adsManager == null || !adsManager.IsAppOpenLoaded(myGameIds.appOpenAdId))
+        {
+            return false;
+        }
+        
+        // Check 4-hour expiration (AdMob documentation requirement)
+        TimeSpan timeSinceLoad = DateTime.Now - _appOpenAdLoadTime;
+        bool isExpired = timeSinceLoad.TotalHours >= APP_OPEN_AD_EXPIRATION_HOURS;
+        
+        if (isExpired)
+        {
+            PrintStatus($"App Open Ad expired after {timeSinceLoad.TotalHours:F1} hours");
+        }
+        
+        return !isExpired;
     }
     
     // Banner Methods
@@ -308,18 +371,21 @@ public class ArcadiaSdkManager : MonoBehaviour
     {
         if (removeAds || adsManager == null) return;
         adsManager.ShowBanner(myGameIds.bannerAdId);
+        _isBannerVisible = true;
     }
     
     public void HideBanner()
     {
         if (adsManager == null) return;
         adsManager.HideBanner(myGameIds.bannerAdId);
+        _isBannerVisible = false;
     }
     
     public void DestroyBannerAd()
     {
         if (adsManager == null) return;
         adsManager.DestroyBanner(myGameIds.bannerAdId);
+        _isBannerVisible = false;
     }
     
     // MRec Methods
@@ -446,6 +512,13 @@ public class ArcadiaSdkManager : MonoBehaviour
     private void OnAdLoaded(string adUnitId)
     {
         PrintStatus($"Ad loaded: {adUnitId}");
+        
+        // Track when app open ad was loaded for 4-hour expiration check
+        if (adUnitId == myGameIds.appOpenAdId)
+        {
+            _appOpenAdLoadTime = DateTime.Now;
+            PrintStatus($"App Open Ad load time recorded: {_appOpenAdLoadTime}");
+        }
     }
     
     private void OnAdFailedToLoad(string adUnitId, string error)
@@ -462,6 +535,16 @@ public class ArcadiaSdkManager : MonoBehaviour
     {
         PrintStatus($"Ad closed: {adUnitId}");
         
+        // Track when fullscreen ads are closed to prevent back-to-back ads
+        // This is when the app returns to foreground, so we start cooldown here
+        if (adUnitId == myGameIds.interstitialAdId || 
+            adUnitId == myGameIds.rewardedVideoAdId ||
+            adUnitId == myGameIds.appOpenAdId)
+        {
+            _lastFullScreenAdShownTime = DateTime.Now;
+            PrintStatus($"Fullscreen ad close time recorded: {_lastFullScreenAdShownTime}");
+        }
+        
         // Reload ads after they're closed
         if (adUnitId == myGameIds.interstitialAdId)
         {
@@ -474,6 +557,14 @@ public class ArcadiaSdkManager : MonoBehaviour
         else if (adUnitId == myGameIds.appOpenAdId)
         {
             adsManager.LoadAppOpen(myGameIds.appOpenAdId);
+            
+            // Restore banner if it was visible before App Open Ad
+            if (_wasBannerVisibleBeforeAppOpen && !removeAds)
+            {
+                adsManager.ShowBanner(myGameIds.bannerAdId);
+                PrintStatus("Banner restored after App Open Ad");
+            }
+            _wasBannerVisibleBeforeAppOpen = false;
         }
     }
     

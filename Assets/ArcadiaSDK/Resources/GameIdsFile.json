@@ -3,10 +3,10 @@
   [
     {
         "platform": "Android",
-        "gameName": "BabysTerror",
+        "gameName": "Babys Terror: Escape the Nanny",
         "bundleId": "com.OmmyGames.BabysTerror",
         "admobAppId": "ca-app-pub-6019321014497002~6518163503",
-        "appOpenAdId": "",
+        "appOpenAdId": "ca-app-pub-6019321014497002/7712470415",
         "bannerAdId": "ca-app-pub-6019321014497002/2578918496",
         "mrecAdId": "",
         "interstitialAdId": "ca-app-pub-6019321014497002/6205234512",
@@ -16,7 +16,7 @@
     },
     {
         "platform": "IOS",
-        "gameName": "BabysTerror",
+        "gameName": "Babys Terror: Escape the Nanny",
         "bundleId": "com.OmmyGames.BabysTerror",
         "admobAppId": "ca-app-pub-6019321014497002~2962061875",
         "appOpenAdId": "ca-app-pub-6019321014497002/2328135078",

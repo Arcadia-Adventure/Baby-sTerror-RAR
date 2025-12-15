@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class ArcadiaIAP : MonoBehaviour
 {
     public IAPType iAPType;
-    public Text priceTxt;
+    public TMPro.TMP_Text priceTxt;
     
     void OnEnable()
     {
