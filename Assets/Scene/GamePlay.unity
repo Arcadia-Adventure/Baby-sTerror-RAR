@@ -52012,6 +52012,7 @@ GameObject:
   - component: {fileID: 1404964820}
   - component: {fileID: 1404964819}
   - component: {fileID: 1404964822}
+  - component: {fileID: 1404964823}
   m_Layer: 0
   m_Name: Hint Button
   m_TagString: Untagged
@@ -52242,6 +52243,19 @@ MonoBehaviour:
   optionalScrambleMode: 0
   optionalShakeRandomnessMode: 0
   optionalString: 
+--- !u!114 &1404964823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404964817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009b3ff0223944dd6821a0534a45decb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 0}
 --- !u!1 &1431262743
 GameObject:
   m_ObjectHideFlags: 0
@@ -52655,7 +52669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17ca18356016b4170b04e87fc1898485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startEnabled: 1
+  startEnabled: 0
   justDisableMeshRenderers: 1
   activatorTrigger: {fileID: 1625464196}
   deactivatorTrigger: {fileID: 104578302}

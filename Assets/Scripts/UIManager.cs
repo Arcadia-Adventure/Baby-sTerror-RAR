@@ -146,17 +146,6 @@ public class UIManager : MonoBehaviour
 
         SoundManager.instance.ClickSound();
     }
-    public void HintClick()
-    {
-        SoundManager.instance.ClickSound();
-        ArcadiaSdkManager.Agent.ShowRewardedAd((int x) =>
-        {
-            HintManager.Instance.ActivateIndicator(GameManager.instance.selectedLevel-1, ObjectiveController.instance.currentTask);
-        });
-    }
-  
-
- 
     public void SensivitySlider()
     {
         PlayerPrefs.SetFloat("MouseSensitivity", sl.value);
