@@ -9,7 +9,7 @@ namespace Ommy.Prefs
         static readonly string OpenLevelPrefs = "OpenLevels";
         static readonly string SoundPrefs = "Sound";
         static readonly string VibrationPrefs = "Vibration";
-
+        static readonly string HintCountPrefs = "HintCount";
         public static readonly string removeAdsID = "com.removeads.animalhunting";
         public static int Coins
         {
@@ -26,6 +26,11 @@ namespace Ommy.Prefs
                 //if(value>9)return;
                 PlayerPrefs.SetInt(OpenLevelPrefs, value);
             }
+        }
+        public static int hintCount
+        {
+            get => PlayerPrefs.GetInt(HintCountPrefs, 2);
+            set => PlayerPrefs.SetInt(HintCountPrefs, value);
         }
         public static int GetRandomLevel()
         {

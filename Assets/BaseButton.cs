@@ -1,10 +1,20 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Ommy.Audio;
 public class BaseButton : MonoBehaviour
 {
+    public Button button;
     public AudioClip clickSound;
-    public void OnClick()
+    private void OnEnable() {
+        button.onClick.AddListener(OnClick);
+    }
+    private void OnDisable() {
+        button.onClick.RemoveListener(OnClick);
+    }
+    public virtual void OnClick()
     {
-        AudioManager.Instance.PlaySFX(SFX.Click);
+        if(clickSound != null) {
+            AudioManager.Instance.PlaySFX(clickSound);
+        }
     }
 }

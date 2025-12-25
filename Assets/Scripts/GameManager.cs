@@ -49,10 +49,6 @@ public class GameManager : MonoBehaviour
         {
 			PlayerPrefs.SetInt("UnlockAllLevels", 0);
         }
-        if (!PlayerPrefs.HasKey("totalUnlockLevel"))
-        {
-			PlayerPrefs.SetInt("totalUnlockLevel", 0);
-        }
     }
 
    

@@ -9,6 +9,7 @@ using ControlFreak2;
 public class UIManager : MonoBehaviour
 {
 
+    public GameObject nextButton, rateusButton;
     public GameObject levelCompletePanel;
     public GameObject pausePanel;
  
@@ -28,9 +29,6 @@ public class UIManager : MonoBehaviour
     public Image crossHairDetection;
     public TextMeshProUGUI detectionTxt;
     public RectTransform rt;
-
-    public GameObject nextBtn;
-
     public FirstPersonController fps;
 
     public static UIManager instance;
@@ -49,17 +47,17 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-       sl.value = PlayerPrefs.GetFloat("MouseSensitivity");
-
+        Time.timeScale = 1f;
+        sl.value = PlayerPrefs.GetFloat("MouseSensitivity");
         fps.mouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity");
-
         crossHairDetection.sprite = knobImage;
         detectionTxt.text = null;
-
-       
     }
 
-
+    public void RateUsClick()
+    {
+        Application.OpenURL("market://details?id=" + Application.identifier);
+    }
     public void LvlCompleteON()
     {
         levelCompletePanel.SetActive(true);
@@ -122,7 +120,6 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene("MainMenu");
-
         SoundManager.instance.ClickSound();
     }
 
@@ -130,7 +127,7 @@ public class UIManager : MonoBehaviour
     public void ReplayBtn()
     {
         Time.timeScale = 1;
-        ArcadiaSdkManager.Agent.ShowRewardedAd();
+        if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         SoundManager.instance.ClickSound();
@@ -140,10 +137,9 @@ public class UIManager : MonoBehaviour
     public void NextBtn()
     {
         Time.timeScale = 1;
-        ArcadiaSdkManager.Agent.ShowRewardedAd();
+        if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
         GameManager.instance.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
         SoundManager.instance.ClickSound();
     }
     public void SensivitySlider()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Ommy.Prefs;
 using UnityEngine;
 
 public class GamePlayManager : MonoBehaviour
@@ -223,7 +224,8 @@ public class GamePlayManager : MonoBehaviour
             baby.GetComponent<Rigidbody>().useGravity = false;
 
 
-            UIManager.instance.nextBtn.SetActive(false);
+            UIManager.instance.nextButton.SetActive(false);
+            UIManager.instance.rateusButton.SetActive(true);
 
             baby.GetComponent<AudioSource>().mute = enabled;
 
@@ -234,12 +236,11 @@ public class GamePlayManager : MonoBehaviour
     public void LevelComplete()
     {
         UIManager.instance.LvlCompleteON();
-        int currentPlayerPrefs = PlayerPrefs.GetInt("totalUnlockLevel");
+        int currentPlayerPrefs = GamePreference.openLevels;
 
         if(currentPlayerPrefs < 9 && GameManager.instance.selectedLevel == currentPlayerPrefs+1)
         {
-            PlayerPrefs.SetInt("totalUnlockLevel", currentPlayerPrefs+1);
-        print("level Complete now unlock level is " + PlayerPrefs.GetInt("totalUnlockLevel"));
+            GamePreference.openLevels = currentPlayerPrefs+1;
         }
         ArcadiaSdkManager.Agent.ShowRateUs();
         AA_AnalyticsManager.Agent.GameCompleteAnalytics(GameManager.instance.selectedLevel);

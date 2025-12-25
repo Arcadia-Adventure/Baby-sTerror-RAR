@@ -1,26 +1,25 @@
-using System.Net.Mime;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.Purchasing;
 using UnityEngine.Events;
-public class LevelSelectionManager : MonoBehaviour
-{
-    #region Singleton
+using Ommy.Singleton;
+using Ommy.Prefs;
+using DG.Tweening;
+using Ommy.Attributes;
 
-    public static LevelSelectionManager instance;
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-    }
-    #endregion
+public class LevelSelectionManager : Singleton<LevelSelectionManager>
+{
+    public ScrollRect scrollView;
+    
+    [Header("Scroll Animation")]
+    public float scrollDuration = 0.8f;
+    public Ease scrollEase = Ease.OutCubic;
+    public float startDelay = 0.3f;
     public GameObject loadingScreen;
     public UnityEvent onPurchaseAllLevels;
+    public Image unlockAllLevelsButton;
+    public GameObject[] lockSprite;
+    public GameObject[] barImg;
     public void OnPurchaseSuccess()
     {
         PlayerPrefs.SetInt("UnlockAllLevels", 1);
@@ -34,21 +33,47 @@ public class LevelSelectionManager : MonoBehaviour
         {
             unlockAllLevelsButton.enabled= false;
         }
-        //GoogleAdMobController.instance.ShowBanner();
+        ArcadiaSdkManager.Agent.ShowBanner();
         UnlockLevelsIfNeeded();
-        //print(PlayerPrefs.GetInt("totalUnlockLevel"));
+        MoveContentView();
     }
 
-
-    public Image unlockAllLevelsButton;
-    public GameObject[] lockSprite;
-    public GameObject[] barImg;
-
-
-
+    [InspectorButton("MoveContentView")]
+    public void MoveContentView()
+    {
+        int openLevel = GamePreference.openLevels;
+        int totalLevels = lockSprite.Length;
+        
+        // Safety check
+        if (totalLevels <= 1)
+        {
+            scrollView.horizontalNormalizedPosition = 0f;
+            return;
+        }
+        
+        // Last unlocked level index (0-based)
+        int lastUnlockedIndex = Mathf.Clamp(openLevel - 1, 0, totalLevels - 1);
+        
+        // For horizontal scroll: 0 = left, 1 = right
+        float targetPosition = (float)lastUnlockedIndex / (totalLevels - 1);
+        targetPosition = Mathf.Clamp01(targetPosition);
+        
+        // Start from left (0) and animate to target position
+        scrollView.horizontalNormalizedPosition = 0f;
+        
+        // Animate scroll with DOTween
+        DOTween.To(
+            () => scrollView.horizontalNormalizedPosition,
+            x => scrollView.horizontalNormalizedPosition = x,
+            targetPosition,
+            scrollDuration
+        )
+        .SetDelay(startDelay)
+        .SetEase(scrollEase);
+    }
     void UnlockLevelsIfNeeded()
     {
-        int totalUnlockLevel = PlayerPrefs.GetInt("totalUnlockLevel");
+        int totalUnlockLevel = GamePreference.openLevels;
         if (PlayerPrefs.GetInt("UnlockAllLevels") == 1)
         {
             onPurchaseAllLevels?.Invoke();
@@ -59,6 +84,8 @@ public class LevelSelectionManager : MonoBehaviour
             lockSprite[i].SetActive(false);
             barImg[i].SetActive(true);
         }
+        if (totalUnlockLevel > 0 && totalUnlockLevel <= lockSprite.Length)
+        lockSprite[totalUnlockLevel-1].GetComponentInParent<Image>().color = Color.red;
     }
 
 

@@ -8,6 +8,11 @@ public class ArcadiaIAP : MonoBehaviour
     
     void OnEnable()
     {
+        if(iAPType == IAPType.removeAds && PlayerPrefs.GetInt("removeAds") == 1)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
         GetComponent<CodelessIAPButton>().onProductFetched.AddListener(UpdatePriceText);
         GetComponent<CodelessIAPButton>().onOrderConfirmed.AddListener(OnPurchase);
     }
@@ -22,6 +27,7 @@ public class ArcadiaIAP : MonoBehaviour
         {
             case IAPType.removeAds:
                 ArcadiaSdkManager.Agent.OnRemoveAds();
+                gameObject.SetActive(false);
             break;
         }
     }
