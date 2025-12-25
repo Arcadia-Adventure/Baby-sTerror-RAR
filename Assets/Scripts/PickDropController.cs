@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using ControlFreak2;
+
 public class PickDropController : MonoBehaviour
 {
     public static PickDropController instance;
@@ -36,10 +37,7 @@ public class PickDropController : MonoBehaviour
 
     public void DetectItemsPickUI()
     {
-        UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
-        UIManager.instance.crossHairDetection.sprite = UIManager.instance.pickImage;
-        UIManager.instance.crossHairDetection.DOFade(1, 1);
-
+        UIManager.instance.SetCrosshair(CrosshairState.Pick);
         fpc.enableZoom = true;
         fpc.holdToZoom = true;
         fpc.isZoomed = true;
@@ -47,11 +45,7 @@ public class PickDropController : MonoBehaviour
 
     public void DetectItemsDropUI()
     {
-        UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
-        UIManager.instance.crossHairDetection.sprite = UIManager.instance.dropImage;
-        UIManager.instance.crossHairDetection.DOFade(1, 1);
-
-
+        UIManager.instance.SetCrosshair(CrosshairState.Drop);
         fpc.holdToZoom = false;
         fpc.isZoomed = false;
     }
@@ -417,41 +411,25 @@ public class PickDropController : MonoBehaviour
             // set door button UI 
             if (objTag == "Door" || objTag == "Fridge")
             {
-
-
-                UIManager.instance.rt.sizeDelta = new Vector2(50, 50);
-                UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
-
-
                 if (hit.transform.GetComponent<DoorController>().isDoor == false)
                 {
-                    UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
+                    UIManager.instance.SetCrosshair(CrosshairState.DoorOpen);
                     UIManager.instance.detectionTxt.text = "Open " + objTag;
-                    UIManager.instance.crossHairDetection.DOFade(1, 1);
-
                     UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
-                    BtnFade(UIManager.instance.door, true);
-
+                    UIManager.instance.SetDoorButtonVisible(true);
 
                     if ((GameManager.instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
                     {
-                        UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorOpenImage;
                         UIManager.instance.detectionTxt.text = "Door Lock";
-                        UIManager.instance.crossHairDetection.DOFade(1, 1);
-
-                        UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
-                        BtnFade(UIManager.instance.door, true);
-
                         GamePlayManager.instance.axeBlueGlow.Play();
                     }
                 }
                 else
                 {
-                    UIManager.instance.crossHairDetection.sprite = UIManager.instance.doorCloseImage;
+                    UIManager.instance.SetCrosshair(CrosshairState.DoorClose);
                     UIManager.instance.detectionTxt.text = "Close  " + objTag;
-
                     UIManager.instance.door.SetSprite(UIManager.instance.doorCloseImage);
-                    BtnFade(UIManager.instance.door, true);
+                    UIManager.instance.SetDoorButtonVisible(true);
                 }
             }
 
@@ -466,7 +444,7 @@ public class PickDropController : MonoBehaviour
                 )
             {
                 DetectItemsPickUI();
-                BtnFade(UIManager.instance.pick, true);
+                UIManager.instance.SetPickButtonVisible(true);
                 UIManager.instance.pick.SetSprite(UIManager.instance.pickImage);
                 UIManager.instance.detectionTxt.text = "Pick " + objTag;
 
@@ -483,15 +461,10 @@ public class PickDropController : MonoBehaviour
                     }
                     else
                     {
-                        BtnFade(UIManager.instance.pick, false);
+                        UIManager.instance.SetPickButtonVisible(false);
                     }
-                    UIManager.instance.crossHairDetection.sprite = UIManager.instance.knobImage;
-                    UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
-                    UIManager.instance.detectionTxt.text = null;
+                    UIManager.instance.SetCrosshair(CrosshairState.None);
 
-
-
-                    //fpc.enableZoom = false;
                     fpc.holdToZoom = false;
                     fpc.isZoomed = false;
                 }
@@ -509,7 +482,7 @@ public class PickDropController : MonoBehaviour
                     if (objTag == "Cradle")
                     {
                         DetectItemsDropUI();
-                        BtnFade(UIManager.instance.pick, true);
+                        UIManager.instance.SetPickButtonVisible(true);
                         UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                         UIManager.instance.detectionTxt.text = "Drop Baby";
 
@@ -526,7 +499,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "Baby" && (GameManager.instance.selectedLevel == 2))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Drop Feeder";
 
@@ -540,7 +513,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "WashPoint" && (GameManager.instance.selectedLevel == 3))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Drop Baby";
 
@@ -554,7 +527,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "Baby" && (GameManager.instance.selectedLevel == 3))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Drop Facewash";
 
@@ -568,7 +541,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "Baby" && (GameManager.instance.selectedLevel == 4))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Drop Shirt";
 
@@ -582,7 +555,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "Baby" && (GameManager.instance.selectedLevel == 5))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Drop Toy";
 
@@ -596,7 +569,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "Fire" && (GameManager.instance.selectedLevel == 7))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Drop Fire Extinguisher";
 
@@ -611,7 +584,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "Door" && (GameManager.instance.selectedLevel == 8))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Door Break";
 
@@ -621,7 +594,7 @@ public class PickDropController : MonoBehaviour
                     {
                         UIManager.instance.detectionTxt.text = "Door Close";
 
-                        BtnFade(UIManager.instance.pick, false);
+                        UIManager.instance.SetPickButtonVisible(false);
                     }
 
                 }
@@ -635,7 +608,7 @@ public class PickDropController : MonoBehaviour
                 if (objTag == "Baby" && (GameManager.instance.selectedLevel == 10))
                 {
                     DetectItemsDropUI();
-                    BtnFade(UIManager.instance.pick, true);
+                    UIManager.instance.SetPickButtonVisible(true);
                     UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
                     UIManager.instance.detectionTxt.text = "Drop Talisman";
 
@@ -656,20 +629,16 @@ public class PickDropController : MonoBehaviour
         }
         else
         {
-            UIManager.instance.crossHairDetection.sprite = UIManager.instance.knobImage;
-            UIManager.instance.rt.sizeDelta = new Vector2(20, 20);
-            UIManager.instance.detectionTxt.text = null;
-            BtnFade(UIManager.instance.door, false);
+            UIManager.instance.SetCrosshair(CrosshairState.None);
+            UIManager.instance.SetDoorButtonVisible(false);
 
             if (heldObj == null)
             {
-                BtnFade(UIManager.instance.pick, false); // drop image
-
+                UIManager.instance.SetPickButtonVisible(false);
             }
 
             fpc.holdToZoom = false;
             fpc.isZoomed = false;
-
         }
 
         if (heldObj != null)
@@ -736,19 +705,6 @@ public class PickDropController : MonoBehaviour
 
 
 
-    public void BtnFade(TouchButtonSpriteAnimator t, bool isFade)
-    {
-        if (isFade)
-        {
-            t.image.DOFade(1, 1);
-            t.transform.parent.GetComponent<TouchButton>().enabled = true;
-        }
-        else
-        {
-            t.image.DOFade(0, 1);
-            t.transform.parent.GetComponent<TouchButton>().enabled = false;
-        }
-    }
     Vector3 moveDirection;
     void MoveObject()
     {

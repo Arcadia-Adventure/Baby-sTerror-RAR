@@ -37,7 +37,11 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
         UnlockLevelsIfNeeded();
         MoveContentView();
     }
-
+    void OnDisable()
+    {
+        int killedTweens = DOTween.KillAll(); // for kill scroll animation tween when user start game during animation
+        Debug.Log("killed " + killedTweens + " tweens");
+    }
     [InspectorButton("MoveContentView")]
     public void MoveContentView()
     {

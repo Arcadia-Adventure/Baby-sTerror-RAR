@@ -6,24 +6,24 @@ using TMPro;
 using UnityEngine.UI;
 using ControlFreak2.UI;
 using ControlFreak2;
+using DG.Tweening;
+
+public enum CrosshairState { None, Pick, Drop, DoorOpen, DoorClose }
+
 public class UIManager : MonoBehaviour
 {
-
     public GameObject nextButton, rateusButton;
     public GameObject levelCompletePanel;
     public GameObject pausePanel;
- 
 
-   // course sprite
+    // Crosshair sprites
     public Sprite knobImage;
     public Sprite doorOpenImage;
     public Sprite doorCloseImage;
     public Sprite pickImage;
     public Sprite dropImage;
 
-    
     public TouchButtonSpriteAnimator door;
-
     public TouchButtonSpriteAnimator pick;
 
     public Image crossHairDetection;
@@ -32,18 +32,21 @@ public class UIManager : MonoBehaviour
     public FirstPersonController fps;
 
     public static UIManager instance;
+
+    // Tween state tracking (optimized - only creates tweens when state changes)
+    private CrosshairState currentCrosshairState = CrosshairState.None;
+    private bool doorButtonVisible = false;
+    private bool pickButtonVisible = false;
+
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
-
     }
 
-
     public Slider sl;
-
 
     private void Start()
     {
@@ -54,6 +57,102 @@ public class UIManager : MonoBehaviour
         detectionTxt.text = null;
     }
 
+    #region Optimized Crosshair Methods
+    
+    /// <summary>
+    /// Sets crosshair state with optimized tween (only creates tween if state changed)
+    /// </summary>
+    public void SetCrosshair(CrosshairState state)
+    {
+        if (currentCrosshairState == state) return;
+        
+        currentCrosshairState = state;
+        crossHairDetection.DOKill();
+        
+        switch (state)
+        {
+            case CrosshairState.None:
+                rt.sizeDelta = new Vector2(20, 20);
+                crossHairDetection.sprite = knobImage;
+                detectionTxt.text = null;
+                break;
+            case CrosshairState.Pick:
+                rt.sizeDelta = new Vector2(50, 50);
+                crossHairDetection.sprite = pickImage;
+                crossHairDetection.DOFade(1, 1);
+                break;
+            case CrosshairState.Drop:
+                rt.sizeDelta = new Vector2(50, 50);
+                crossHairDetection.sprite = dropImage;
+                crossHairDetection.DOFade(1, 1);
+                break;
+            case CrosshairState.DoorOpen:
+                rt.sizeDelta = new Vector2(50, 50);
+                crossHairDetection.sprite = doorOpenImage;
+                crossHairDetection.DOFade(1, 1);
+                break;
+            case CrosshairState.DoorClose:
+                rt.sizeDelta = new Vector2(50, 50);
+                crossHairDetection.sprite = doorCloseImage;
+                crossHairDetection.DOFade(1, 1);
+                break;
+        }
+    }
+
+    #endregion
+
+    #region Optimized Button Methods
+
+    /// <summary>
+    /// Shows/hides door button with fade animation (only if state changed)
+    /// </summary>
+    public void SetDoorButtonVisible(bool visible)
+    {
+        if (doorButtonVisible == visible) return;
+        
+        doorButtonVisible = visible;
+        door.image.DOKill();
+        
+        if (visible)
+        {
+            door.image.DOFade(1, 1);
+            door.transform.parent.GetComponent<TouchButton>().enabled = true;
+        }
+        else
+        {
+            door.image.DOFade(0, 1);
+            door.transform.parent.GetComponent<TouchButton>().enabled = false;
+        }
+    }
+
+    /// <summary>
+    /// Shows/hides pick button with fade animation (only if state changed)
+    /// </summary>
+    public void SetPickButtonVisible(bool visible)
+    {
+        if (pickButtonVisible == visible) return;
+        
+        pickButtonVisible = visible;
+        pick.image.DOKill();
+        
+        if (visible)
+        {
+            pick.image.DOFade(1, 1);
+            pick.transform.parent.GetComponent<TouchButton>().enabled = true;
+        }
+        else
+        {
+            pick.image.DOFade(0, 1);
+            pick.transform.parent.GetComponent<TouchButton>().enabled = false;
+        }
+    }
+
+    #endregion
+    public void OnDisable() 
+    {
+        int killedTweens = DOTween.KillAll();
+        Debug.Log("killed " + killedTweens + " tweens");
+    }
     public void RateUsClick()
     {
         Application.OpenURL("market://details?id=" + Application.identifier);
