@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Ommy.Singleton;
+
 #if UNITY_ANDROID
 using Unity.Notifications.Android;
 #endif
@@ -19,10 +21,8 @@ namespace Ommy.Notifications
         public string emoji; // Optional emoji to make it more attractive
     }
 
-    public class NotificationManager : MonoBehaviour
+    public class NotificationManager : Singleton<NotificationManager>
     {
-        public static NotificationManager Instance { get; private set; }
-
         [Header("=== Notification Settings ===")]
         [Tooltip("Enable/Disable notification system")]
         public bool enableNotifications = true;
@@ -69,20 +69,6 @@ namespace Ommy.Notifications
 
         private const string LAST_PLAY_TIME_KEY = "LastPlayTime";
         private const string NOTIFICATION_SCHEDULED_KEY = "NotificationsScheduled";
-
-        void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-                return;
-            }
-        }
 
         void Start()
         {
@@ -207,7 +193,6 @@ namespace Ommy.Notifications
             AndroidNotificationCenter.RegisterNotificationChannel(streakChannel);
         }
 #endif
-
         void ScheduleDailyNotification()
         {
             var randomMessage = dailyMessages[UnityEngine.Random.Range(0, dailyMessages.Count)];

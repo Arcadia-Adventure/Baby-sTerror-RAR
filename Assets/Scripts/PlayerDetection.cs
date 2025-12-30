@@ -13,21 +13,21 @@ public class PlayerDetection : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         onTriggerEnter.Invoke(other);
-        if(other.gameObject.tag == "Player" && GameManager.instance.selectedLevel == 6)
+        if(other.gameObject.tag == "Player" && GameManager.Instance.selectedLevel == 6)
         {
             GamePlayManager.instance.babyCryingCradle.Stop();
-            ObjectiveController.instance.UpdateTask(1);
+            ObjectiveController.Instance.UpdateTask(1);
             StartCoroutine(DelaySoundStart());
         }
 
 
-        if (other.gameObject.tag == "Player" && GameManager.instance.selectedLevel == 8)
+        if (other.gameObject.tag == "Player" && GameManager.Instance.selectedLevel == 8)
         {
-            ObjectiveController.instance.UpdateTask(3);
+            ObjectiveController.Instance.UpdateTask(3);
             StartCoroutine(SoundManager.instance.LevelComplete());
         }
 
-        if (other.gameObject.tag == "Neck" && GameManager.instance.selectedLevel == 9)
+        if (other.gameObject.tag == "Neck" && GameManager.Instance.selectedLevel == 9)
         {
             print("neck");
 
@@ -43,7 +43,7 @@ public class PlayerDetection : MonoBehaviour
 
             SoundManager.instance.playerFall.Play();
 
-            ObjectiveController.instance.UpdateTask(1);
+            ObjectiveController.Instance.UpdateTask(1);
             StartCoroutine(SoundManager.instance.LevelComplete());
         }
     }

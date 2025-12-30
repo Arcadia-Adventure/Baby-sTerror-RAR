@@ -8,11 +8,11 @@ public class HintManager : Singleton<HintManager>
     public List<LevelObject> levelObjects;
     public void ShowCurrentHint()
     {
-        ActivateIndicator(GameManager.instance.selectedLevel-1, ObjectiveController.instance.currentTask);
+        ActivateIndicator(GameManager.Instance.selectedLevel-1, ObjectiveController.Instance.currentTask);
     }
     public bool IsCurrentHintActive()
     {
-        return IsIndicatorActivated(GameManager.instance.selectedLevel-1, ObjectiveController.instance.currentTask);
+        return IsIndicatorActivated(GameManager.Instance.selectedLevel-1, ObjectiveController.Instance.currentTask);
     }
     public void ActivateIndicator(int level, int task=0)
     {

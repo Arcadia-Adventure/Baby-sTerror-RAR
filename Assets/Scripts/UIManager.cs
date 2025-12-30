@@ -166,7 +166,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnApplicationQuit() 
     {
-		AA_AnalyticsManager.Agent.CustomEvent("Exit Game Level",GameManager.instance.selectedLevel.ToString());
+		AA_AnalyticsManager.Agent.CustomEvent("Exit Game Level",GameManager.Instance.selectedLevel.ToString());
     }
     public void DoorOpenCloseBtn()
     {
@@ -237,7 +237,7 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1;
         if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
-        GameManager.instance.selectedLevel++;
+        GameManager.Instance.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         SoundManager.instance.ClickSound();
     }

@@ -3,18 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Ommy.Singleton;
 
-public class ObjectiveController : MonoBehaviour
+public class ObjectiveController : Singleton<ObjectiveController>
 {
-    public static ObjectiveController instance; 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }    
-    }
-
+    public TasksDetail tasksDetail;
     public TextMeshProUGUI levelnoTxt, missionNameTxt;
     public TextMeshProUGUI[] taskTxt;
     public Color completeTaskColor;
@@ -26,15 +19,15 @@ public class ObjectiveController : MonoBehaviour
     }
     public void SetObjective()
     {
-        levelnoTxt.text = Objtive[GameManager.instance.selectedLevel - 1].levelNO;
-        missionNameTxt.text = Objtive[GameManager.instance.selectedLevel - 1].missionName;
-        for (int i = 0; i < Objtive[GameManager.instance.selectedLevel-1].Tasks.Length; i++)
+        levelnoTxt.text = tasksDetail.Objectives[GameManager.Instance.selectedLevel - 1].levelNO;
+        missionNameTxt.text = tasksDetail.Objectives[GameManager.Instance.selectedLevel - 1].missionName;
+        for (int i = 0; i < tasksDetail.Objectives[GameManager.Instance.selectedLevel-1].Tasks.Length; i++)
         {
             if(i==0)
             {
                 taskTxt[i].gameObject.SetActive(true);
             }
-            taskTxt[i].text = Objtive[GameManager.instance.selectedLevel - 1].Tasks[i];
+            taskTxt[i].text = tasksDetail.Objectives[GameManager.Instance.selectedLevel - 1].Tasks[i];
         }
     }
     public void UpdateTask(int taskNo)
@@ -44,7 +37,7 @@ public class ObjectiveController : MonoBehaviour
             return;
         }
         taskTxt[taskNo-1].text = taskTxt[taskNo-1].text + "  (complete)";
-        if(taskNo < Objtive[GameManager.instance.selectedLevel - 1].Tasks.Length)
+        if(taskNo < tasksDetail.Objectives[GameManager.Instance.selectedLevel - 1].Tasks.Length)
         {
             currentTask++;
             taskTxt[taskNo].gameObject.SetActive(true);
@@ -59,17 +52,5 @@ public class ObjectiveController : MonoBehaviour
             objectiveText.text += item;
             yield return new WaitForSeconds(0.1f);
         }
-    }
-
-
-
-    public Objective[] Objtive;
-    [System.Serializable]
-    public class Objective
-    {
-        public string levelNO;
-        public string missionName;
-        [TextArea(3,6)]
-        public string[] Tasks;
     }
 }

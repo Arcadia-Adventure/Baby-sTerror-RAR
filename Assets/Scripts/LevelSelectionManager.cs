@@ -104,7 +104,7 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
     public void LevelSelectBtn(int selectedLevel)
     {
         loadingScreen.SetActive(true);
-        GameManager.instance.selectedLevel = selectedLevel;
+        GameManager.Instance.selectedLevel = selectedLevel;
         SceneManager.LoadScene("GamePlay");
         SoundManager.instance.ClickSound();
         AA_AnalyticsManager.Agent.GameStartAnalytics(selectedLevel);

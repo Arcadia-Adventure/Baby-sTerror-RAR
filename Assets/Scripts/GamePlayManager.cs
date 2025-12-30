@@ -67,7 +67,7 @@ public class GamePlayManager : MonoBehaviour
                
                 var g = PickDropController.instance.heldObj;
                 Destroy(g);
-                ObjectiveController.instance.UpdateTask(2);
+                ObjectiveController.Instance.UpdateTask(2);
 
             }
             if (!Cracker[i].activeInHierarchy)
@@ -87,19 +87,19 @@ public class GamePlayManager : MonoBehaviour
         RainBG.Play();
         SoundManager.instance.BG.Stop();
 
-        player.transform.position = playerSpawnPoint[GameManager.instance.selectedLevel - 1].position;    
-        player.transform.rotation = playerSpawnPoint[GameManager.instance.selectedLevel - 1].rotation;
+        player.transform.position = playerSpawnPoint[GameManager.Instance.selectedLevel - 1].position;    
+        player.transform.rotation = playerSpawnPoint[GameManager.Instance.selectedLevel - 1].rotation;
 
-        baby.transform.position = BabySpawnPoint[GameManager.instance.selectedLevel - 1].position;
-        baby.transform.rotation = BabySpawnPoint[GameManager.instance.selectedLevel - 1].rotation;
+        baby.transform.position = BabySpawnPoint[GameManager.Instance.selectedLevel - 1].position;
+        baby.transform.rotation = BabySpawnPoint[GameManager.Instance.selectedLevel - 1].rotation;
 
-        levelObjects[GameManager.instance.selectedLevel - 1].SetActive(true);
+        levelObjects[GameManager.Instance.selectedLevel - 1].SetActive(true);
 
        
 
         BabyController.instance.babyCry.Play();
 
-        if (GameManager.instance.selectedLevel == 1)
+        if (GameManager.Instance.selectedLevel == 1)
         {   
             doorBell.Play();
             BabyController.instance.BabyAnim.SetBool("Cry", true);
@@ -111,37 +111,37 @@ public class GamePlayManager : MonoBehaviour
             houseExitDoor.isDoorLock = true;
         }
 
-        if (GameManager.instance.selectedLevel == 2)
+        if (GameManager.Instance.selectedLevel == 2)
         {
             BabyController.instance.BabyAnim.SetBool("Sit", true);
             baby.tag = "Untagged";
         }
 
-        if (GameManager.instance.selectedLevel == 3)
+        if (GameManager.Instance.selectedLevel == 3)
         {
             BabyController.instance.BabyAnim.SetBool("Sit", true);
             BabyController.instance.babyDirtyFace.SetActive(true);
         }
 
-        if (GameManager.instance.selectedLevel == 4)
+        if (GameManager.Instance.selectedLevel == 4)
         {
             BabyController.instance.BabyAnim.SetBool("Sit", true);
             baby.tag = "Untagged";
         }
 
-        if (GameManager.instance.selectedLevel == 5)
+        if (GameManager.Instance.selectedLevel == 5)
         {
             BabyController.instance.BabyAnim.SetBool("Sit", true);
             baby.tag = "Untagged";
         }
 
-        if (GameManager.instance.selectedLevel == 6)
+        if (GameManager.Instance.selectedLevel == 6)
         { 
             babyCryingCradle.Play();
             baby.SetActive(false);
         }
 
-        if (GameManager.instance.selectedLevel == 7)
+        if (GameManager.Instance.selectedLevel == 7)
         {
             BabyController.instance.BabyAnim.SetBool("Sit", true);
             baby.tag = "Untagged";
@@ -152,7 +152,7 @@ public class GamePlayManager : MonoBehaviour
 
 
 
-        if (GameManager.instance.selectedLevel == 8)
+        if (GameManager.Instance.selectedLevel == 8)
         {
             babyRoomDoor.isDoorLock = true;
             BabyController.instance.babyCry.Play();
@@ -170,7 +170,7 @@ public class GamePlayManager : MonoBehaviour
         }
 
 
-        if(GameManager.instance.selectedLevel == 9)
+        if(GameManager.Instance.selectedLevel == 9)
         {
             BabyController.instance.babyEyesRed.color = Color.red;
 
@@ -190,7 +190,7 @@ public class GamePlayManager : MonoBehaviour
             BabyController.instance.babyEyesRed.color = Color.white;
         }
 
-        if(GameManager.instance.selectedLevel == 10)
+        if(GameManager.Instance.selectedLevel == 10)
         {
 
             Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().Play();
@@ -238,12 +238,12 @@ public class GamePlayManager : MonoBehaviour
         UIManager.instance.LvlCompleteON();
         int currentPlayerPrefs = GamePreference.openLevels;
 
-        if(currentPlayerPrefs < 9 && GameManager.instance.selectedLevel == currentPlayerPrefs+1)
+        if(currentPlayerPrefs < 9 && GameManager.Instance.selectedLevel == currentPlayerPrefs+1)
         {
             GamePreference.openLevels = currentPlayerPrefs+1;
         }
         ArcadiaSdkManager.Agent.ShowRateUs();
-        AA_AnalyticsManager.Agent.GameCompleteAnalytics(GameManager.instance.selectedLevel);
+        AA_AnalyticsManager.Agent.GameCompleteAnalytics(GameManager.Instance.selectedLevel);
     }
 
 

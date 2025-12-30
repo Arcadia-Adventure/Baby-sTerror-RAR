@@ -1,31 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using Ommy.Notifications;
+using Ommy.Prefs;
+using Ommy.Singleton;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-	#region Singleton
-
-	public static GameManager instance;
-	void Awake()
+	[Header("Tasks Details override daily notification")]
+	public TasksDetail tasksDetail;
+	protected override void Awake()
 	{
-		if (instance == null)
-		{
-			instance = this;
-			DontDestroyOnLoad(gameObject);
-		}
-		else
-		{
-			Destroy(gameObject);
-			return;
-		}
+		base.Awake();
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 		SetDefaultPlayerPrefs();
 	}
-
-	#endregion
-
-
+	private void Start() 
+	{
+		OverrideDailyNotification();
+	}
+	private void OverrideDailyNotification()
+	{
+		var currentObjective = tasksDetail.Objectives[GamePreference.openLevels];
+		var notificationData = new NotificationData
+		{
+			title = currentObjective.levelNO,
+			message = currentObjective.missionName
+		};
+		NotificationManager.Instance.dailyMessages = new List<NotificationData>{ notificationData };
+	}
 	public int selectedLevel;
 
 	
@@ -50,6 +54,4 @@ public class GameManager : MonoBehaviour
 			PlayerPrefs.SetInt("UnlockAllLevels", 0);
         }
     }
-
-   
 }

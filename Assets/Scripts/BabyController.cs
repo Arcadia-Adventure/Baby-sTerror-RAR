@@ -33,7 +33,7 @@ public class BabyController : MonoBehaviour
 
     private void Start()
     {
-        if (GameManager.instance.selectedLevel > 4)
+        if (GameManager.Instance.selectedLevel > 4)
         {
             body.SetActive(false);
             diaper.SetActive(false);

@@ -24,6 +24,10 @@ public class PickDropController : MonoBehaviour
     [Header("Physics Parameters")]
     [SerializeField] private float pickupRange = 10f;
     [SerializeField] private float pickupForce = 150.0f;
+    
+    [Header("Wall Stuck Prevention")]
+    [SerializeField] private float maxDistanceFromHoldArea = 1.5f;
+    private Collider heldObjCollider;
 
     public GameObject detectObj;
     public DoorController doorController;
@@ -74,7 +78,7 @@ public class PickDropController : MonoBehaviour
                 DropObject();
             }
 
-            if (GameManager.instance.selectedLevel == 2)
+            if (GameManager.Instance.selectedLevel == 2)
             {
                 if (GamePlayManager.instance?.baby != null)
                     GamePlayManager.instance.baby.tag = "Untagged";
@@ -85,7 +89,7 @@ public class PickDropController : MonoBehaviour
                 if (BabyController.instance != null)
                     Destroy(BabyController.instance.gameObject);
 
-                if (GameManager.instance.selectedLevel == 1)
+                if (GameManager.Instance.selectedLevel == 1)
                 {
                     PrefabeInstantLvl1();
                     if (babyPosLvl1 != null)
@@ -95,7 +99,7 @@ public class PickDropController : MonoBehaviour
                     }
                 }
 
-                if (GameManager.instance.selectedLevel == 6)
+                if (GameManager.Instance.selectedLevel == 6)
                 {
                     PrefabeInstantLvl6();
                     if (babyPosLvl6 != null)
@@ -105,7 +109,7 @@ public class PickDropController : MonoBehaviour
                     }
                 }
 
-                if (GameManager.instance.selectedLevel == 10)
+                if (GameManager.Instance.selectedLevel == 10)
                 {
                     PrefabeInstantLvl1();
                     if (babyPosLvl1 != null)
@@ -114,7 +118,7 @@ public class PickDropController : MonoBehaviour
                         babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
                     }
 
-                    ObjectiveController.instance?.UpdateTask(3);
+                    ObjectiveController.Instance?.UpdateTask(3);
                     SoundManager.instance?.BabyHappy();
 
                     GamePlayManager.instance?.cradleGreenGlow?.Stop();
@@ -126,7 +130,7 @@ public class PickDropController : MonoBehaviour
 
                 GamePlayManager.instance?.cradleGreenGlow?.Stop();
                 SoundManager.instance?.BabyHappy();
-                ObjectiveController.instance?.UpdateTask(2);
+                ObjectiveController.Instance?.UpdateTask(2);
 
                 StartCoroutine(SoundManager.instance.LevelComplete());
             }
@@ -142,7 +146,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance?.babyCry?.Stop();
                 SoundManager.instance?.BabyHappy();
                 BabyController.instance?.babyBlueGlow?.Play();
-                ObjectiveController.instance?.UpdateTask(2);
+                ObjectiveController.Instance?.UpdateTask(2);
 
                 if (BabyController.instance?.BabyAnim != null)
                 {
@@ -182,7 +186,7 @@ public class PickDropController : MonoBehaviour
                   BabyController.instance.BabyAnim.SetBool("Sit", true);*/
 
                 GamePlayManager.instance?.washPointGreenGlow?.Stop();
-                ObjectiveController.instance?.UpdateTask(1);
+                ObjectiveController.Instance?.UpdateTask(1);
 
                 print("Sit with cry");
 
@@ -200,7 +204,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance?.babyBlueGlow?.Play();
                 SoundManager.instance?.BabyHappy();
 
-                ObjectiveController.instance?.UpdateTask(2);
+                ObjectiveController.Instance?.UpdateTask(2);
 
                 if (BabyController.instance?.BabyAnim != null)
                 {
@@ -245,7 +249,7 @@ public class PickDropController : MonoBehaviour
                         BabyController.instance.clothBody.SetActive(true);
                 }
                 
-                ObjectiveController.instance?.UpdateTask(2);
+                ObjectiveController.Instance?.UpdateTask(2);
 
                 if (BabyController.instance?.BabyAnim != null)
                 {
@@ -272,7 +276,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance?.babyCry?.Stop();
                 BabyController.instance?.babyBlueGlow?.Play();
                 SoundManager.instance?.BabyHappy();
-                ObjectiveController.instance?.UpdateTask(2);
+                ObjectiveController.Instance?.UpdateTask(2);
 
                 if (BabyController.instance?.BabyAnim != null)
                 {
@@ -304,7 +308,7 @@ public class PickDropController : MonoBehaviour
                 BabyController.instance?.babyCry?.Stop();
                 BabyController.instance?.babyBlueGlow?.Play();
                 SoundManager.instance?.BabyHappy();
-                ObjectiveController.instance?.UpdateTask(2);
+                ObjectiveController.Instance?.UpdateTask(2);
 
                 if (BabyController.instance?.BabyAnim != null)
                 {
@@ -348,7 +352,7 @@ public class PickDropController : MonoBehaviour
                 if (BabyController.instance?.babyEyesRed != null)
                     BabyController.instance.babyEyesRed.color = Color.white;
 
-                ObjectiveController.instance?.UpdateTask(2);
+                ObjectiveController.Instance?.UpdateTask(2);
 
                 if (BabyController.instance?.BabyAnim != null)
                     BabyController.instance.BabyAnim.SetBool("Happy", true);
@@ -397,9 +401,9 @@ public class PickDropController : MonoBehaviour
 
 
 
-                    if ((GameManager.instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
+                    if ((GameManager.Instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
                     {
-                        ObjectiveController.instance.UpdateTask(1);
+                        ObjectiveController.Instance.UpdateTask(1);
 
                         GamePlayManager.instance.axeBlueGlow.transform.parent.tag = "Axe";
 
@@ -418,7 +422,7 @@ public class PickDropController : MonoBehaviour
                     UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
                     UIManager.instance.SetDoorButtonVisible(true);
 
-                    if ((GameManager.instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
+                    if ((GameManager.Instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
                     {
                         UIManager.instance.detectionTxt.text = "Door Lock";
                         GamePlayManager.instance.axeBlueGlow.Play();
@@ -477,7 +481,7 @@ public class PickDropController : MonoBehaviour
             {
 
 
-                if ((GameManager.instance.selectedLevel == 1) || (GameManager.instance.selectedLevel == 6) || (GameManager.instance.selectedLevel == 10))
+                if ((GameManager.Instance.selectedLevel == 1) || (GameManager.Instance.selectedLevel == 6) || (GameManager.Instance.selectedLevel == 10))
                 {
                     if (objTag == "Cradle")
                     {
@@ -496,7 +500,7 @@ public class PickDropController : MonoBehaviour
 
 
 
-                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 2))
+                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 2))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -510,7 +514,7 @@ public class PickDropController : MonoBehaviour
                     feeder = false;
                 }
 
-                if (objTag == "WashPoint" && (GameManager.instance.selectedLevel == 3))
+                if (objTag == "WashPoint" && (GameManager.Instance.selectedLevel == 3))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -524,7 +528,7 @@ public class PickDropController : MonoBehaviour
                     washPoint = false;
                 }
 
-                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 3))
+                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 3))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -538,7 +542,7 @@ public class PickDropController : MonoBehaviour
                     faceWash = false;
                 }
 
-                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 4))
+                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 4))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -552,7 +556,7 @@ public class PickDropController : MonoBehaviour
                     shirt = false;
                 }
 
-                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 5))
+                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 5))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -566,7 +570,7 @@ public class PickDropController : MonoBehaviour
                     toy = false;
                 }
 
-                if (objTag == "Fire" && (GameManager.instance.selectedLevel == 7))
+                if (objTag == "Fire" && (GameManager.Instance.selectedLevel == 7))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -581,7 +585,7 @@ public class PickDropController : MonoBehaviour
                 }
 
 
-                if (objTag == "Door" && (GameManager.instance.selectedLevel == 8))
+                if (objTag == "Door" && (GameManager.Instance.selectedLevel == 8))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -605,7 +609,7 @@ public class PickDropController : MonoBehaviour
 
 
 
-                if (objTag == "Baby" && (GameManager.instance.selectedLevel == 10))
+                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 10))
                 {
                     DetectItemsDropUI();
                     UIManager.instance.SetPickButtonVisible(true);
@@ -709,6 +713,21 @@ public class PickDropController : MonoBehaviour
     void MoveObject()
     {
         moveDirection = (holdArea.position - heldObj.transform.position);
+        float distanceFromHoldArea = moveDirection.magnitude;
+        
+        // If object is too far (stuck in wall), disable collider temporarily
+        if (heldObjCollider != null)
+        {
+            if (distanceFromHoldArea > maxDistanceFromHoldArea)
+            {
+                heldObjCollider.enabled = false; // Disable to pass through walls
+            }
+            else
+            {
+                heldObjCollider.enabled = true; // Re-enable when close
+            }
+        }
+        
         heldObjRB.AddForce(moveDirection * pickupForce, ForceMode.Force);
     }
 
@@ -719,6 +738,7 @@ public class PickDropController : MonoBehaviour
         if (detectObj.GetComponent<Rigidbody>())
         {
             heldObjRB = detectObj.GetComponent<Rigidbody>();
+            heldObjCollider = detectObj.GetComponent<Collider>();
 
             heldObjRB.linearDamping = 10;
             heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
@@ -740,13 +760,13 @@ public class PickDropController : MonoBehaviour
 
             if (detectObj.tag == "Baby")
             {
-                if (GameManager.instance.selectedLevel == 1)
+                if (GameManager.Instance.selectedLevel == 1)
                 {
                     GamePlayManager.instance.cradleGreenGlow.Play();
-                    ObjectiveController.instance.UpdateTask(1);
+                    ObjectiveController.Instance.UpdateTask(1);
                     BabyController.instance.babyCry.Stop();
                 }
-                if (GameManager.instance.selectedLevel == 3)
+                if (GameManager.Instance.selectedLevel == 3)
                 {
                     BabyController.instance.babyCry.Stop();
                     GamePlayManager.instance.washPointGreenGlow.Play();
@@ -754,7 +774,7 @@ public class PickDropController : MonoBehaviour
                     BabyController.instance.BabyAnim.SetBool("Sit", false);
 
                 }
-                if (GameManager.instance.selectedLevel == 6)
+                if (GameManager.Instance.selectedLevel == 6)
                 {
                     BabyController.instance.babyCry.Stop();
                     GamePlayManager.instance.cradleGreenGlow.Play();
@@ -762,7 +782,7 @@ public class PickDropController : MonoBehaviour
 
                     BabyController.instance.BabyAnim.SetBool("Sit", false);
                 }
-                if (GameManager.instance.selectedLevel == 8)
+                if (GameManager.Instance.selectedLevel == 8)
                 {
                     BabyController.instance.babyCry.Stop();
 
@@ -771,7 +791,7 @@ public class PickDropController : MonoBehaviour
                     BabyController.instance.BabyAnim.SetBool("Sit", false);
                 }
 
-                if (GameManager.instance.selectedLevel == 10)
+                if (GameManager.Instance.selectedLevel == 10)
                 {
                     BabyController.instance.BabyAnim.SetBool("Happy", false);
                 }
@@ -787,20 +807,20 @@ public class PickDropController : MonoBehaviour
             }
 
 
-            if (detectObj.tag == "Feeder" && GameManager.instance.selectedLevel == 2)
+            if (detectObj.tag == "Feeder" && GameManager.Instance.selectedLevel == 2)
             {
 
                 GamePlayManager.instance.feederBlueGlow.Stop();
 
                 GamePlayManager.instance.baby.tag = "Baby";
 
-                ObjectiveController.instance.UpdateTask(1);
+                ObjectiveController.Instance.UpdateTask(1);
 
                 holdArea.localPosition = new Vector3(0.3f, 0, 0.8f);
                 heldObj.transform.localEulerAngles = Vector3.zero;
             }
 
-            if (detectObj.tag == "Facewash" && GameManager.instance.selectedLevel == 3)
+            if (detectObj.tag == "Facewash" && GameManager.Instance.selectedLevel == 3)
             {
                 GamePlayManager.instance.facewashGlow.Stop();
 
@@ -813,11 +833,11 @@ public class PickDropController : MonoBehaviour
                 babyposLvl3.tag = "Baby";
             }
 
-            if (detectObj.tag == "Shirt" && GameManager.instance.selectedLevel == 4)
+            if (detectObj.tag == "Shirt" && GameManager.Instance.selectedLevel == 4)
             {
                 GamePlayManager.instance.shirtBlueGlow.Stop();
 
-                ObjectiveController.instance.UpdateTask(1);
+                ObjectiveController.Instance.UpdateTask(1);
 
                 holdArea.localPosition = new Vector3(0.3f, 0, 1f);
                 holdArea.localEulerAngles = new Vector3(0, -90, 60);
@@ -826,11 +846,11 @@ public class PickDropController : MonoBehaviour
                 GamePlayManager.instance.baby.tag = "Baby";
             }
 
-            if (detectObj.tag == "Toy" && GameManager.instance.selectedLevel == 5)
+            if (detectObj.tag == "Toy" && GameManager.Instance.selectedLevel == 5)
             {
                 GamePlayManager.instance.toyBlueGlow.Stop();
 
-                ObjectiveController.instance.UpdateTask(1);
+                ObjectiveController.Instance.UpdateTask(1);
 
                 holdArea.localPosition = new Vector3(0.5f, 0, 1.5f);
                 holdArea.localEulerAngles = new Vector3(0, -90, 40);
@@ -839,10 +859,10 @@ public class PickDropController : MonoBehaviour
                 GamePlayManager.instance.baby.tag = "Baby";
             }
 
-            if (detectObj.tag == "Fire Extinguisher" && GameManager.instance.selectedLevel == 7)
+            if (detectObj.tag == "Fire Extinguisher" && GameManager.Instance.selectedLevel == 7)
             {
                 GamePlayManager.instance.cylinderBlueGlow.Stop();
-                ObjectiveController.instance.UpdateTask(1);
+                ObjectiveController.Instance.UpdateTask(1);
 
                 holdArea.localPosition = new Vector3(0.5f, -0.4f, 1f);
                 holdArea.localEulerAngles = new Vector3(-90, 0, -120);
@@ -850,7 +870,7 @@ public class PickDropController : MonoBehaviour
                 heldObj.transform.localEulerAngles = Vector3.zero;
             }
 
-            if (detectObj.tag == "Axe" && GameManager.instance.selectedLevel == 8)
+            if (detectObj.tag == "Axe" && GameManager.Instance.selectedLevel == 8)
             {
                 GamePlayManager.instance.axeBlueGlow.Stop();
 
@@ -860,11 +880,11 @@ public class PickDropController : MonoBehaviour
                 heldObj.transform.localEulerAngles = Vector3.zero;
             }
 
-            if (detectObj.tag == "Talisman" && GameManager.instance.selectedLevel == 10)
+            if (detectObj.tag == "Talisman" && GameManager.Instance.selectedLevel == 10)
             {
                 GamePlayManager.instance.talismanBlueGlow.Stop();
 
-                ObjectiveController.instance.UpdateTask(1);
+                ObjectiveController.Instance.UpdateTask(1);
                 holdArea.localPosition = new Vector3(0.3f, 0, 0.4f);
                 heldObj.transform.localEulerAngles = Vector3.zero;
 
