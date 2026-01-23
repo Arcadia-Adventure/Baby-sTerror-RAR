@@ -13,21 +13,25 @@ public static class LogsSetting
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
 	public static void OnAfterSceneLoadRuntimeMethod()
 	{
-		//ArcadiaSdkManager.Agent.SetupLog();
+		GetArcadiaSDKLog();
+	}
+	public static void GetArcadiaSDKLog()
+	{
+		//if(ArcadiaSdkManager.Agent==null) return;
 		if (ArcadiaSdkManager.Agent.GetLog())
 		{
-			FPSLabel fpsLabel = GameObject.FindObjectOfType<FPSLabel>();
-			DebugLogManager InGameLogs = GameObject.FindObjectOfType<DebugLogManager>();
+			FPSLabel fpsLabel = GameObject.FindFirstObjectByType<FPSLabel>();
+			DebugLogManager InGameLogs = GameObject.FindFirstObjectByType<DebugLogManager>();
 			if (fpsLabel == null)
 			{
 				fpsLabelGO = new GameObject("FPS Label");
 				fpsLabelGO.AddComponent<FPSLabel>();
 				Application.targetFrameRate = 60;
 			}
-			if (InGameLogs==null)
+			if (InGameLogs == null)
 			{
-				GameObject obj=Resources.Load<GameObject>("IngameDebugConsole");
-				ingamedebuger=GameObject.Instantiate(obj);
+				GameObject obj = Resources.Load<GameObject>("IngameDebugConsole");
+				ingamedebuger = GameObject.Instantiate(obj);
 			}
 		}
 		else
@@ -37,4 +41,3 @@ public static class LogsSetting
 		}
 	}
 }
-//#endif

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Ommy.Singleton;
@@ -119,11 +120,10 @@ namespace Ommy.Notifications
         void RequestNotificationPermission()
         {
 #if UNITY_IOS
-            // Request permission to send notifications on iOS
-            using var req = new AuthorizationRequest(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound, true);
-            while (!req.IsFinished)
+            // Only request on actual iOS device, not in Editor
+            if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
-                // Wait for user response
+                StartCoroutine(RequestIOSPermissionAsync());
             }
 #elif UNITY_ANDROID
             // Android 13+ requires runtime permission
@@ -133,6 +133,18 @@ namespace Ommy.Notifications
             }
 #endif
         }
+
+#if UNITY_IOS
+        System.Collections.IEnumerator RequestIOSPermissionAsync()
+        {
+            using var req = new AuthorizationRequest(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound, true);
+            while (!req.IsFinished)
+            {
+                yield return null; // Wait one frame instead of blocking
+            }
+            Debug.Log($"[NotificationManager] iOS permission granted: {req.Granted}");
+        }
+#endif
 
         void ScheduleAllNotifications()
         {

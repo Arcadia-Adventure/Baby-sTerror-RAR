@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using ControlFreak2.UI;
 using ControlFreak2;
 using DG.Tweening;
+using Ommy.Prefs;
 
 public enum CrosshairState { None, Pick, Drop, DoorOpen, DoorClose }
 
@@ -62,13 +63,12 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Sets crosshair state with optimized tween (only creates tween if state changed)
     /// </summary>
-    public void SetCrosshair(CrosshairState state)
+    public void SetCrosshair(CrosshairState state, string detectionText)
     {
+        detectionTxt.text = detectionText;
         if (currentCrosshairState == state) return;
-        
         currentCrosshairState = state;
         crossHairDetection.DOKill();
-        
         switch (state)
         {
             case CrosshairState.None:
@@ -166,7 +166,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnApplicationQuit() 
     {
-		AA_AnalyticsManager.Agent.CustomEvent("Exit Game Level",GameManager.Instance.selectedLevel.ToString());
+		AA_AnalyticsManager.Agent.CustomEvent("Exit Game Level",GamePreference.selectedLevel.ToString());
     }
     public void DoorOpenCloseBtn()
     {
@@ -184,10 +184,10 @@ public class UIManager : MonoBehaviour
         //Camera.main.GetComponent<AudioListener>().enabled = false;
 
         SoundManager.instance.ClickSound();
-        GamePlayManager.instance.doorBell.mute = true;
+        GamePlayManager.Instance.doorBell.mute = true;
         BabyController.instance.babyCry.mute = true;
         BabyController.instance.babyAngryVoice.mute = true;
-        GamePlayManager.instance.RainBG.mute = true;
+        GamePlayManager.Instance.RainBG.mute = true;
         Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=true;
         Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute=true;
         Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute=true;
@@ -198,9 +198,9 @@ public class UIManager : MonoBehaviour
     public void ResumeBtn()
     {
         Time.timeScale = 1;
-        GamePlayManager.instance.doorBell.mute = false;
+        GamePlayManager.Instance.doorBell.mute = false;
         BabyController.instance.babyAngryVoice.mute = false;
-        GamePlayManager.instance.RainBG.mute = false;
+        GamePlayManager.Instance.RainBG.mute = false;
         BabyController.instance.babyCry.mute = false;
         Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=false;
         Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute = false;
@@ -237,7 +237,7 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1;
         if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
-        GameManager.Instance.selectedLevel++;
+        GamePreference.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         SoundManager.instance.ClickSound();
     }

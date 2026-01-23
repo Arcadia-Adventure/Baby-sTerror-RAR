@@ -112,9 +112,9 @@ public class SoundManager : MonoBehaviour
 	public IEnumerator LevelComplete()
 	{
 		yield return new WaitForSeconds(1.8f);
-		GamePlayManager.instance.LevelComplete();
+		GamePlayManager.Instance.LevelComplete();
 
-		GamePlayManager.instance.RainBG.Stop();
+		GamePlayManager.Instance.RainBG.Stop();
 		SoundManager.instance.LevelCompleteSound();
 		StartCoroutine(UIBGSound());
 	}

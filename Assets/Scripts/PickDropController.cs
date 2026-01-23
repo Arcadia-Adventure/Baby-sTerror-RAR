@@ -18,895 +18,163 @@ public class PickDropController : MonoBehaviour
     [Header("Pickup Settings")]
     [SerializeField] Transform holdArea;
 
-    public GameObject heldObj;
-    private Rigidbody heldObjRB;
-
     [Header("Physics Parameters")]
     [SerializeField] private float pickupRange = 10f;
     [SerializeField] private float pickupForce = 150.0f;
-    
+
     [Header("Wall Stuck Prevention")]
     [SerializeField] private float maxDistanceFromHoldArea = 1.5f;
-    private Collider heldObjCollider;
 
-    public GameObject detectObj;
-    public DoorController doorController;
     public FirstPersonController fpc;
 
     public void DoorOpenCloseBtn()
     {
         doorController.DoorOpenClose();
-        GamePlayManager.instance.doorBell.Stop();
+        GamePlayManager.Instance.doorBell.Stop();
     }
 
-    public void DetectItemsPickUI()
+    public void DetectedPickable(bool detected)
     {
-        UIManager.instance.SetCrosshair(CrosshairState.Pick);
         fpc.enableZoom = true;
-        fpc.holdToZoom = true;
-        fpc.isZoomed = true;
-    }
-
-    public void DetectItemsDropUI()
-    {
-        UIManager.instance.SetCrosshair(CrosshairState.Drop);
-        fpc.holdToZoom = false;
-        fpc.isZoomed = false;
-    }
-
-    public void Drop()
-    {
-        if (heldObj != null)
-        {
-            fpc.holdToZoom = false;
-            fpc.isZoomed = false;
-
-            DetectItemsPickUI();
-
-            SoundManager.instance?.DropItem();
-            GamePlayManager.instance?.GlowOn();
-
-            if (doorLock)
-            {
-                heldObjRB.GetComponent<DOTweenAnimation>()?.DORestart();
-                this.transform.DOShakePosition(0.5f, 1, 10, 30);
-                SoundManager.instance?.drop?.Stop();
-                print("hitting axe");
-            }
-            else
-            {
-                DropObject();
-            }
-
-            if (GameManager.Instance.selectedLevel == 2)
-            {
-                if (GamePlayManager.instance?.baby != null)
-                    GamePlayManager.instance.baby.tag = "Untagged";
-            }
-
-            if (prefabe)
-            {
-                if (BabyController.instance != null)
-                    Destroy(BabyController.instance.gameObject);
-
-                if (GameManager.Instance.selectedLevel == 1)
-                {
-                    PrefabeInstantLvl1();
-                    if (babyPosLvl1 != null)
-                    {
-                        babyPosLvl1.GetComponent<Animator>().enabled = true;
-                        babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
-                    }
-                }
-
-                if (GameManager.Instance.selectedLevel == 6)
-                {
-                    PrefabeInstantLvl6();
-                    if (babyPosLvl6 != null)
-                    {
-                        babyPosLvl6.GetComponent<Animator>().enabled = true;
-                        babyPosLvl6.GetComponent<Animator>().SetBool("Happy", true);
-                    }
-                }
-
-                if (GameManager.Instance.selectedLevel == 10)
-                {
-                    PrefabeInstantLvl1();
-                    if (babyPosLvl1 != null)
-                    {
-                        babyPosLvl1.GetComponent<Animator>().enabled = true;
-                        babyPosLvl1.GetComponent<Animator>().SetBool("Happy", true);
-                    }
-
-                    ObjectiveController.Instance?.UpdateTask(3);
-                    SoundManager.instance?.BabyHappy();
-
-                    GamePlayManager.instance?.cradleGreenGlow?.Stop();
-                    if (GamePlayManager.instance?.baby != null)
-                        GamePlayManager.instance.baby.tag = "Untagged";
-
-                    StartCoroutine(SoundManager.instance.LevelComplete());
-                }
-
-                GamePlayManager.instance?.cradleGreenGlow?.Stop();
-                SoundManager.instance?.BabyHappy();
-                ObjectiveController.Instance?.UpdateTask(2);
-
-                StartCoroutine(SoundManager.instance.LevelComplete());
-            }
-
-            if (feeder)
-            {
-                if (Items.instance?.feeder != null)
-                    Destroy(Items.instance.feeder);
-
-                if (GamePlayManager.instance?.baby != null)
-                    GamePlayManager.instance.baby.tag = "Untagged";
-
-                BabyController.instance?.babyCry?.Stop();
-                SoundManager.instance?.BabyHappy();
-                BabyController.instance?.babyBlueGlow?.Play();
-                ObjectiveController.Instance?.UpdateTask(2);
-
-                if (BabyController.instance?.BabyAnim != null)
-                {
-                    BabyController.instance.BabyAnim.SetBool("Happy", true);
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-                }
-
-                StartCoroutine(SoundManager.instance.LevelComplete());
-                print("feeder detection");
-            }
-
-
-            if (washPoint)
-            {
-
-                if (BabyController.instance != null)
-                    Destroy(BabyController.instance.gameObject);
-
-                PrefabeInstantLvl3();
-
-                if (babyposLvl3 != null)
-                {
-                    var animator = babyposLvl3.GetComponent<Animator>();
-                    if (animator != null)
-                    {
-                        animator.enabled = true;
-                        animator.SetBool("Fly", false);
-                        animator.SetBool("Sit", true);
-                    }
-
-                    var audioSource = babyposLvl3.GetComponent<AudioSource>();
-                    if (audioSource != null)
-                        audioSource.enabled = true;
-                }
-
-                /*  BabyController.instance.BabyAnim.SetBool("Fly", false);
-                  BabyController.instance.BabyAnim.SetBool("Sit", true);*/
-
-                GamePlayManager.instance?.washPointGreenGlow?.Stop();
-                ObjectiveController.Instance?.UpdateTask(1);
-
-                print("Sit with cry");
-
-                //GamePlayManager.instance.facewashGlow.Play();
-            }
-
-
-
-            if (faceWash)
-            {
-
-                if (Items.instance?.facewash != null)
-                    Destroy(Items.instance.facewash);
-
-                BabyController.instance?.babyBlueGlow?.Play();
-                SoundManager.instance?.BabyHappy();
-
-                ObjectiveController.Instance?.UpdateTask(2);
-
-                if (BabyController.instance?.BabyAnim != null)
-                {
-                    BabyController.instance.BabyAnim.SetBool("Happy", true);
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-                }
-
-                if (babyposLvl3 != null)
-                {
-                    babyposLvl3.GetComponent<AudioSource>().enabled = false;
-                    babyposLvl3.tag = "Untagged";
-                }
-
-                if (BabyController.instance?.babyDirtyFace != null)
-                    BabyController.instance.babyDirtyFace.SetActive(false);
-
-                if (SoundManager.instance != null)
-                    StartCoroutine(SoundManager.instance.LevelComplete());
-            }
-
-
-            if (shirt)
-            {
-
-                if (Items.instance?.dress != null)
-                    Destroy(Items.instance.dress);
-
-                if (GamePlayManager.instance?.baby != null)
-                    GamePlayManager.instance.baby.tag = "Untagged";
-
-                BabyController.instance?.babyCry?.Stop();
-                BabyController.instance?.babyBlueGlow?.Play();
-                SoundManager.instance?.BabyHappy();
-                
-                if (BabyController.instance != null)
-                {
-                    if (BabyController.instance.body != null)
-                        BabyController.instance.body.SetActive(false);
-                    if (BabyController.instance.diaper != null)
-                        BabyController.instance.diaper.SetActive(false);
-                    if (BabyController.instance.clothBody != null)
-                        BabyController.instance.clothBody.SetActive(true);
-                }
-                
-                ObjectiveController.Instance?.UpdateTask(2);
-
-                if (BabyController.instance?.BabyAnim != null)
-                {
-                    BabyController.instance.BabyAnim.SetBool("Happy", true);
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-                }
-
-                if (SoundManager.instance != null)
-                    StartCoroutine(SoundManager.instance.LevelComplete());
-            }
-
-
-
-
-            if (toy)
-            {
-
-                if (Items.instance?.toy != null)
-                    Destroy(Items.instance.toy);
-
-                if (GamePlayManager.instance?.baby != null)
-                    GamePlayManager.instance.baby.tag = "Untagged";
-
-                BabyController.instance?.babyCry?.Stop();
-                BabyController.instance?.babyBlueGlow?.Play();
-                SoundManager.instance?.BabyHappy();
-                ObjectiveController.Instance?.UpdateTask(2);
-
-                if (BabyController.instance?.BabyAnim != null)
-                {
-                    BabyController.instance.BabyAnim.SetBool("Happy", true);
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-                }
-
-                if (SoundManager.instance != null)
-                    StartCoroutine(SoundManager.instance.LevelComplete());
-            }
-
-
-
-
-
-
-
-            if (fire) // lvl7
-            {
-
-                if (Items.instance?.fireCylinder != null)
-                    Destroy(Items.instance.fireCylinder);
-                if (Items.instance?.fireLvl7 != null)
-                    Destroy(Items.instance.fireLvl7);
-
-                if (GamePlayManager.instance?.baby != null)
-                    GamePlayManager.instance.baby.tag = "Untagged";
-
-                BabyController.instance?.babyCry?.Stop();
-                BabyController.instance?.babyBlueGlow?.Play();
-                SoundManager.instance?.BabyHappy();
-                ObjectiveController.Instance?.UpdateTask(2);
-
-                if (BabyController.instance?.BabyAnim != null)
-                {
-                    BabyController.instance.BabyAnim.SetBool("Happy", true);
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-                }
-
-                if (SoundManager.instance != null)
-                    StartCoroutine(SoundManager.instance.LevelComplete());
-            }
-
-
-            if (talisman)
-            {
-
-                //Destroy(Items.instance.telisman);
-                if (Items.instance?.telisman != null)
-                    Items.instance.telisman.SetActive(false);
-
-                if (BabyController.instance?.BabyAnim != null)
-                    BabyController.instance.BabyAnim.SetBool("Fly", false);
-
-                //BabyController.instance.BabyAnim.enabled = false;
-                if (BabyController.instance != null)
-                {
-                    var rb = BabyController.instance.GetComponent<Rigidbody>();
-                    if (rb != null)
-                    {
-                        rb.isKinematic = false;
-                        rb.useGravity = true;
-                    }
-                }
-
-                if (Items.instance?.fireLvl10 != null)
-                    Destroy(Items.instance.fireLvl10);
-
-                BabyController.instance?.babyAngryVoice?.Stop();
-
-                BabyController.instance?.babyBlueGlow?.Play();
-
-                if (BabyController.instance?.babyEyesRed != null)
-                    BabyController.instance.babyEyesRed.color = Color.white;
-
-                ObjectiveController.Instance?.UpdateTask(2);
-
-                if (BabyController.instance?.BabyAnim != null)
-                    BabyController.instance.BabyAnim.SetBool("Happy", true);
-                SoundManager.instance?.BabyHappy();
-
-                GamePlayManager.instance?.cradleGreenGlow?.Play();
-                //GamePlayManager.instance.baby.tag = "Untagged";
-
-
-
-                //StartCoroutine(BabyController.instance.LevelComplete());
-            }
-        }
+        fpc.holdToZoom = detected;
+        fpc.isZoomed = detected;
     }
     RaycastHit hit;
-    public string objTag;
+    public DropPoint dropPoint;
+    public BabyController babyController;
+    public PickableItem detectedPickable;
+    public DoorController doorController;
+    public PickableItem heldPickable;
     private void Update()
     {
-        if (ControlFreak2.CF2Input.GetKeyDown(KeyCode.P))
-        {
-            if (heldObj != null)
-            {
-                Drop();
-            }
-            else
-            {
-                PickupObject();
-            }
-        }
+        ButtonInputs();
         //RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange, detectionLayers))
         {
-            objTag = hit.transform.tag;
-            // door button click
-            if (ControlFreak2.CF2Input.GetMouseButtonDown(1))
+            Interactable interactable;
+            if(hit.transform.TryGetComponent<Interactable>(out interactable))
             {
-
-                //print(hit.transform.name);
-
-
-                if (objTag == "Door" || objTag == "Fridge")
+                interactable.Detected();
+                if(interactable as DropPoint)
                 {
-                    //print("door open and close");
-                    hit.transform.GetComponent<DoorController>().DoorOpenClose();
-                    GamePlayManager.instance.doorBell.Stop();
-
-
-
-                    if ((GameManager.Instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
-                    {
-                        ObjectiveController.Instance.UpdateTask(1);
-
-                        GamePlayManager.instance.axeBlueGlow.transform.parent.tag = "Axe";
-
-                    }
-
+                    dropPoint = (DropPoint)interactable;
+                    UIManager.instance.SetCrosshair(dropPoint.crosshairState, dropPoint.detectionText);
                 }
-            }
-
-            // set door button UI 
-            if (objTag == "Door" || objTag == "Fridge")
-            {
-                if (hit.transform.GetComponent<DoorController>().isDoor == false)
+                if(interactable as DoorController)
                 {
-                    UIManager.instance.SetCrosshair(CrosshairState.DoorOpen);
-                    UIManager.instance.detectionTxt.text = "Open " + objTag;
-                    UIManager.instance.door.SetSprite(UIManager.instance.doorOpenImage);
-                    UIManager.instance.SetDoorButtonVisible(true);
-
-                    if ((GameManager.Instance.selectedLevel == 8) && hit.transform.GetComponent<DoorController>().isDoorLock == true)
-                    {
-                        UIManager.instance.detectionTxt.text = "Door Lock";
-                        GamePlayManager.instance.axeBlueGlow.Play();
-                    }
-                }
-                else
-                {
-                    UIManager.instance.SetCrosshair(CrosshairState.DoorClose);
-                    UIManager.instance.detectionTxt.text = "Close  " + objTag;
-                    UIManager.instance.door.SetSprite(UIManager.instance.doorCloseImage);
+                    doorController = (DoorController)interactable;
+                    UIManager.instance.SetCrosshair(doorController.crosshairState, doorController.detectionText);
                     UIManager.instance.SetDoorButtonVisible(true);
                 }
-            }
-
-            if (objTag == "Baby" ||
-                 objTag == "Feeder" ||
-                 objTag == "Facewash" ||
-                 objTag == "Shirt" ||
-                 objTag == "Toy" ||
-                 objTag == "Fire Extinguisher" ||
-                 objTag == "Axe" ||
-                 objTag == "Talisman"
-                )
-            {
-                DetectItemsPickUI();
-                UIManager.instance.SetPickButtonVisible(true);
-                UIManager.instance.pick.SetSprite(UIManager.instance.pickImage);
-                UIManager.instance.detectionTxt.text = "Pick " + objTag;
-
-
-
-            }
-            else if (objTag != "Door")
-            {
-                if (objTag != "Fridge")
+                if(interactable as BabyController)
                 {
-                    if (heldObj != null)
+                    babyController = (BabyController)interactable;
+                    if(babyController.canPickBaby)
                     {
-                        UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    }
-                    else
-                    {
-                        UIManager.instance.SetPickButtonVisible(false);
-                    }
-                    UIManager.instance.SetCrosshair(CrosshairState.None);
-
-                    fpc.holdToZoom = false;
-                    fpc.isZoomed = false;
-                }
-            }
-
-
-
-            // set drop item UI detection
-            if (heldObj != null)
-            {
-
-
-                if ((GameManager.Instance.selectedLevel == 1) || (GameManager.Instance.selectedLevel == 6) || (GameManager.Instance.selectedLevel == 10))
-                {
-                    if (objTag == "Cradle")
-                    {
-                        DetectItemsDropUI();
+                        detectedPickable = (PickableItem)interactable;
+                        DetectedPickable(true);
                         UIManager.instance.SetPickButtonVisible(true);
-                        UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                        UIManager.instance.detectionTxt.text = "Drop Baby";
-
-                        prefabe = true;
+                        UIManager.instance.SetCrosshair(detectedPickable.crosshairState, detectedPickable.detectionText);
                     }
                     else
                     {
-                        prefabe = false;
+                        UIManager.instance.SetCrosshair(CrosshairState.None, "Need "+babyController.requireItem.ToString());
                     }
                 }
-
-
-
-                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 2))
+                else if(interactable as PickableItem)
                 {
-                    DetectItemsDropUI();
+                    detectedPickable = (PickableItem)interactable;
+                    DetectedPickable(true);
                     UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Feeder";
-
-                    feeder = true;
+                    UIManager.instance.SetCrosshair(detectedPickable.crosshairState, detectedPickable.detectionText);
                 }
-                else
-                {
-                    feeder = false;
-                }
-
-                if (objTag == "WashPoint" && (GameManager.Instance.selectedLevel == 3))
-                {
-                    DetectItemsDropUI();
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Baby";
-
-                    washPoint = true;
-                }
-                else
-                {
-                    washPoint = false;
-                }
-
-                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 3))
-                {
-                    DetectItemsDropUI();
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Facewash";
-
-                    faceWash = true;
-                }
-                else
-                {
-                    faceWash = false;
-                }
-
-                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 4))
-                {
-                    DetectItemsDropUI();
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Shirt";
-
-                    shirt = true;
-                }
-                else
-                {
-                    shirt = false;
-                }
-
-                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 5))
-                {
-                    DetectItemsDropUI();
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Toy";
-
-                    toy = true;
-                }
-                else
-                {
-                    toy = false;
-                }
-
-                if (objTag == "Fire" && (GameManager.Instance.selectedLevel == 7))
-                {
-                    DetectItemsDropUI();
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Fire Extinguisher";
-
-                    fire = true;
-                }
-                else
-                {
-                    fire = false;
-                }
-
-
-                if (objTag == "Door" && (GameManager.Instance.selectedLevel == 8))
-                {
-                    DetectItemsDropUI();
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Door Break";
-
-                    doorLock = true;
-
-                    if (GamePlayManager.instance.babyRoomDoor.isDoorLock == false)
-                    {
-                        UIManager.instance.detectionTxt.text = "Door Close";
-
-                        UIManager.instance.SetPickButtonVisible(false);
-                    }
-
-                }
-                else
-                {
-                    doorLock = false;
-                }
-
-
-
-                if (objTag == "Baby" && (GameManager.Instance.selectedLevel == 10))
-                {
-                    DetectItemsDropUI();
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.pick.SetSprite(UIManager.instance.dropImage);
-                    UIManager.instance.detectionTxt.text = "Drop Talisman";
-
-                    talisman = true;
-                }
-                else
-                {
-                    talisman = false;
-                }
-
-
-            }
-            //PickupObject
-            if (heldObj == null)
-            {
-                detectObj = hit.transform.gameObject;
             }
         }
         else
         {
-            UIManager.instance.SetCrosshair(CrosshairState.None);
+            detectedPickable = null;
+            doorController = null;
+            dropPoint = null;
+            babyController = null;
+            DetectedPickable(false);
+            UIManager.instance.SetCrosshair(CrosshairState.None, null);
             UIManager.instance.SetDoorButtonVisible(false);
-
-            if (heldObj == null)
-            {
-                UIManager.instance.SetPickButtonVisible(false);
-            }
-
-            fpc.holdToZoom = false;
-            fpc.isZoomed = false;
+            if(heldPickable==null) UIManager.instance.SetPickButtonVisible(false);
         }
-
-        if (heldObj != null)
+    }
+    public void ButtonInputs()
+    {
+        if (CF2Input.GetKeyDown(KeyCode.Mouse1))
         {
-            //MoveObject
-            //MoveObject();
+            doorController.DoorOpenClose();
+        }
+        if (CF2Input.GetKeyDown(KeyCode.P))
+        {
+            if (heldPickable != null)
+                DropObject();
+            else
+                PickupObject();
         }
     }
     private void FixedUpdate()
     {
-        if (heldObj != null)
+        if (heldPickable != null)
         {
             //MoveObject
             MoveObject();
         }
     }
-
-
-
-    public bool prefabe;
-    public bool feeder;
-    public bool washPoint;
-    public bool faceWash;
-    public bool shirt;
-    public bool toy;
-    public bool doorLock;
-    public bool fire;
-    public bool talisman;
-
-
-
-    GameObject babyPosLvl1;
-    public void PrefabeInstantLvl1()
-    {
-        babyPosLvl1 = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
-        babyPosLvl1.transform.position = GamePlayManager.instance.babyDropSpwanPoint[0].transform.position;
-
-        babyPosLvl1.tag = "Untagged";
-        babyPosLvl1.GetComponent<AudioSource>().enabled = false;
-        //print(babyPosLvl1);
-    }
-
-    GameObject babyposLvl3;
-    public void PrefabeInstantLvl3()
-    {
-        babyposLvl3 = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
-        babyposLvl3.transform.position = GamePlayManager.instance.babyDropSpwanPoint[1].transform.position;
-
-        babyposLvl3.tag = "Untagged";
-
-        //print(babyposLvl3);
-    }
-
-    GameObject babyPosLvl6;
-    public void PrefabeInstantLvl6()
-    {
-        babyPosLvl6 = Instantiate(GamePlayManager.instance.baby, transform.position, Quaternion.identity);
-        babyPosLvl6.transform.position = GamePlayManager.instance.babyDropSpwanPoint[2].transform.position;
-
-        babyPosLvl6.tag = "Untagged";
-        babyPosLvl6.GetComponent<AudioSource>().enabled = false;
-        //print(babyPosLvl6);
-    }
-
-
-
     Vector3 moveDirection;
     void MoveObject()
     {
-        moveDirection = (holdArea.position - heldObj.transform.position);
-        float distanceFromHoldArea = moveDirection.magnitude;
+        // Transform local offset to world space relative to holdArea's orientation
+        Vector3 worldOffset = holdArea.TransformDirection(heldPickable.holdPositionOffset);
+        Vector3 targetPosition = holdArea.position + worldOffset;
         
+        moveDirection = targetPosition - heldPickable.transform.position;
+        float distanceFromHoldArea = moveDirection.magnitude;
+
         // If object is too far (stuck in wall), disable collider temporarily
-        if (heldObjCollider != null)
+        if (heldPickable != null)
         {
             if (distanceFromHoldArea > maxDistanceFromHoldArea)
             {
-                heldObjCollider.enabled = false; // Disable to pass through walls
+                heldPickable.collider.enabled = false; // Disable to pass through walls
             }
             else
             {
-                heldObjCollider.enabled = true; // Re-enable when close
+                heldPickable.collider.enabled = true; // Re-enable when close
             }
         }
-        
-        heldObjRB.AddForce(moveDirection * pickupForce, ForceMode.Force);
+
+        heldPickable.rb.AddForce(moveDirection * pickupForce, ForceMode.Force);
     }
 
     public void PickupObject()
     {
-        SoundManager.instance.PickItem();
-
-        if (detectObj.GetComponent<Rigidbody>())
-        {
-            heldObjRB = detectObj.GetComponent<Rigidbody>();
-            heldObjCollider = detectObj.GetComponent<Collider>();
-
-            heldObjRB.linearDamping = 10;
-            heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
-            heldObjRB.useGravity = true;
-            heldObjRB.useGravity = false;
-
-            if (detectObj.transform.tag == "Baby")
-            {
-
-                BabyController.instance.transform.parent = holdArea;
-            }
-            else
-            {
-                heldObjRB.transform.parent = holdArea;
-            }
-
-            heldObj = detectObj;
-
-
-            if (detectObj.tag == "Baby")
-            {
-                if (GameManager.Instance.selectedLevel == 1)
-                {
-                    GamePlayManager.instance.cradleGreenGlow.Play();
-                    ObjectiveController.Instance.UpdateTask(1);
-                    BabyController.instance.babyCry.Stop();
-                }
-                if (GameManager.Instance.selectedLevel == 3)
-                {
-                    BabyController.instance.babyCry.Stop();
-                    GamePlayManager.instance.washPointGreenGlow.Play();
-
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-
-                }
-                if (GameManager.Instance.selectedLevel == 6)
-                {
-                    BabyController.instance.babyCry.Stop();
-                    GamePlayManager.instance.cradleGreenGlow.Play();
-                    GamePlayManager.instance.cradleSoundTrigger.SetActive(false);
-
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-                }
-                if (GameManager.Instance.selectedLevel == 8)
-                {
-                    BabyController.instance.babyCry.Stop();
-
-                    GamePlayManager.instance.doorTrigger.SetActive(true);
-
-                    BabyController.instance.BabyAnim.SetBool("Sit", false);
-                }
-
-                if (GameManager.Instance.selectedLevel == 10)
-                {
-                    BabyController.instance.BabyAnim.SetBool("Happy", false);
-                }
-
-                BabyController.instance.BabyAnim.SetBool("Fly", true);
-
-
-                holdArea.localPosition = new Vector3(0.5f, -0.3f, 1);
-                holdArea.localEulerAngles = new Vector3(0, 200, 0);
-
-                holdArea.GetChild(0).localPosition = new Vector3(0, 0, 0);
-                holdArea.GetChild(0).localEulerAngles = new Vector3(0, 0, 0);
-            }
-
-
-            if (detectObj.tag == "Feeder" && GameManager.Instance.selectedLevel == 2)
-            {
-
-                GamePlayManager.instance.feederBlueGlow.Stop();
-
-                GamePlayManager.instance.baby.tag = "Baby";
-
-                ObjectiveController.Instance.UpdateTask(1);
-
-                holdArea.localPosition = new Vector3(0.3f, 0, 0.8f);
-                heldObj.transform.localEulerAngles = Vector3.zero;
-            }
-
-            if (detectObj.tag == "Facewash" && GameManager.Instance.selectedLevel == 3)
-            {
-                GamePlayManager.instance.facewashGlow.Stop();
-
-                holdArea.localPosition = new Vector3(0.3f, 0, 0.8f);
-                heldObj.transform.localEulerAngles = Vector3.zero;
-
-                var w = GameObject.FindGameObjectWithTag("WashPoint");
-                w.tag = "Untagged";
-
-                babyposLvl3.tag = "Baby";
-            }
-
-            if (detectObj.tag == "Shirt" && GameManager.Instance.selectedLevel == 4)
-            {
-                GamePlayManager.instance.shirtBlueGlow.Stop();
-
-                ObjectiveController.Instance.UpdateTask(1);
-
-                holdArea.localPosition = new Vector3(0.3f, 0, 1f);
-                holdArea.localEulerAngles = new Vector3(0, -90, 60);
-                heldObj.transform.localEulerAngles = Vector3.zero;
-
-                GamePlayManager.instance.baby.tag = "Baby";
-            }
-
-            if (detectObj.tag == "Toy" && GameManager.Instance.selectedLevel == 5)
-            {
-                GamePlayManager.instance.toyBlueGlow.Stop();
-
-                ObjectiveController.Instance.UpdateTask(1);
-
-                holdArea.localPosition = new Vector3(0.5f, 0, 1.5f);
-                holdArea.localEulerAngles = new Vector3(0, -90, 40);
-                heldObj.transform.localEulerAngles = Vector3.zero;
-
-                GamePlayManager.instance.baby.tag = "Baby";
-            }
-
-            if (detectObj.tag == "Fire Extinguisher" && GameManager.Instance.selectedLevel == 7)
-            {
-                GamePlayManager.instance.cylinderBlueGlow.Stop();
-                ObjectiveController.Instance.UpdateTask(1);
-
-                holdArea.localPosition = new Vector3(0.5f, -0.4f, 1f);
-                holdArea.localEulerAngles = new Vector3(-90, 0, -120);
-
-                heldObj.transform.localEulerAngles = Vector3.zero;
-            }
-
-            if (detectObj.tag == "Axe" && GameManager.Instance.selectedLevel == 8)
-            {
-                GamePlayManager.instance.axeBlueGlow.Stop();
-
-                holdArea.localPosition = new Vector3(0.4f, -0.8f, 1f);
-                holdArea.localEulerAngles = new Vector3(0, 0, 0);
-
-                heldObj.transform.localEulerAngles = Vector3.zero;
-            }
-
-            if (detectObj.tag == "Talisman" && GameManager.Instance.selectedLevel == 10)
-            {
-                GamePlayManager.instance.talismanBlueGlow.Stop();
-
-                ObjectiveController.Instance.UpdateTask(1);
-                holdArea.localPosition = new Vector3(0.3f, 0, 0.4f);
-                heldObj.transform.localEulerAngles = Vector3.zero;
-
-                GamePlayManager.instance.baby.tag = "Baby";
-            }
-
-            handObjTag = detectObj.tag;
-            heldObj.tag = "Untagged";
-        }
+        heldPickable = detectedPickable;
+        heldPickable.PickObject(holdArea);
     }
-
-    public string handObjTag;
-
     public void DropObject()
     {
-        heldObj.tag = handObjTag;
-        heldObjRB.useGravity = true;
-        heldObjRB.linearDamping = 1;
-        heldObjRB.constraints = RigidbodyConstraints.None;
-        heldObj.transform.parent = null;
-        heldObj = null;
-        heldObjRB.AddForce(transform.forward * 1, ForceMode.Impulse);
-        heldObjRB.AddForce(transform.up * 2, ForceMode.Impulse);
+        if(heldPickable == null) return;
+        if(dropPoint != null)
+        {
+            dropPoint.DropOnPoint(heldPickable);
+            heldPickable = null;
+            SoundManager.instance?.DropItem();
+        }
+        else if(babyController != null && babyController.requireItem == heldPickable.itemType)
+        {
+            babyController.GiveItemToBaby(heldPickable);
+            heldPickable = null;
+            SoundManager.instance?.DropItem();
+        }
+        else
+        {
+            heldPickable.DropObject();
+            heldPickable = null;
+            SoundManager.instance?.DropItem();
+        }
     }
 }

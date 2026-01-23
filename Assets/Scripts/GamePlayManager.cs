@@ -1,27 +1,42 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Ommy.Attributes;
 using Ommy.Prefs;
+using Ommy.Singleton;
 using UnityEngine;
 
-public class GamePlayManager : MonoBehaviour
+public class GamePlayManager : Singleton<GamePlayManager>
 {
-    public static GamePlayManager instance;
-
-    private void Awake()
+    [Serializable]
+    public class LevelConfig
     {
-        instance = this;
+        public GameObject levelObject;
+        public Transform playerSpawnPoint,babySpawnPoint;
+        public BabyAnimationType babyAnimationType;
     }
-
-
-    public Transform[] playerSpawnPoint;
+    public GameObject levelsParent;
+    public Transform playerSpawnPointsParent;
+    public Transform babySpawnPointsParent;
+    [InspectorButton("SetupLevels")]
+    public void SetupLevelsConfig()
+    {
+        int levelCount = levelsParent.transform.childCount;
+        for (int i = 0; i < levelCount; i++)
+        {
+            LevelConfig config = new ();
+            config.levelObject = levelsParent.transform.GetChild(i).gameObject;
+            config.playerSpawnPoint = playerSpawnPointsParent.GetChild(i);
+            config.babySpawnPoint = babySpawnPointsParent.GetChild(i);
+            levelConfigs.Add(config);
+            config.levelObject.SetActive(false);
+        }
+    }
+    public List<LevelConfig> levelConfigs = new List<LevelConfig>();
     public GameObject player;
-
-    public GameObject[] levelObjects;
-
     public AudioSource doorBell;
-
-    public Transform[] BabySpawnPoint;
-    public GameObject baby;
+    public BabyController baby;
 
     public AudioSource babyCryingCradle;
     public GameObject doorTrigger;
@@ -54,6 +69,10 @@ public class GamePlayManager : MonoBehaviour
 
     public GameObject[] Cracker;
 
+    [Header("Door Break Objective Settings")]
+    [Tooltip("Task index to complete when door is fully broken. Set to 0 to disable.")]
+    [Min(0)]
+    public int doorBreakTaskIndex = 0;
    
 
     public void Crack()
@@ -65,9 +84,14 @@ public class GamePlayManager : MonoBehaviour
                 babyRoomDoor.isDoorLock = false;
                 
                
-                var g = PickDropController.instance.heldObj;
+                var g = PickDropController.instance.heldPickable.gameObject;
                 Destroy(g);
-                ObjectiveController.Instance.UpdateTask(2);
+                
+                // Complete task if configured
+                if (doorBreakTaskIndex > 0)
+                {
+                   // ObjectiveManager.Instance.CompleteTask(doorBreakTaskIndex);
+                }
 
             }
             if (!Cracker[i].activeInHierarchy)
@@ -82,68 +106,63 @@ public class GamePlayManager : MonoBehaviour
 
     private void Start()
     {
-        ArcadiaSdkManager.Agent.ShowBanner();
         RainBG.volume = 0.2f;
         RainBG.Play();
         SoundManager.instance.BG.Stop();
 
-        player.transform.position = playerSpawnPoint[GameManager.Instance.selectedLevel - 1].position;    
-        player.transform.rotation = playerSpawnPoint[GameManager.Instance.selectedLevel - 1].rotation;
-
-        baby.transform.position = BabySpawnPoint[GameManager.Instance.selectedLevel - 1].position;
-        baby.transform.rotation = BabySpawnPoint[GameManager.Instance.selectedLevel - 1].rotation;
-
-        levelObjects[GameManager.Instance.selectedLevel - 1].SetActive(true);
-
-       
-
+        player.transform.position = levelConfigs[GamePreference.selectedLevel - 1].playerSpawnPoint.position;    
+        player.transform.rotation = levelConfigs[GamePreference.selectedLevel - 1].playerSpawnPoint.rotation;
+        levelConfigs[GamePreference.selectedLevel - 1].levelObject.SetActive(true);
+        var spawnPoint = levelConfigs[GamePreference.selectedLevel - 1].babySpawnPoint;
+        baby.SetActiveAndPositionAndRotation(spawnPoint!=null, spawnPoint);
         BabyController.instance.babyCry.Play();
+        SetupLevel();
+        ArcadiaSdkManager.Agent.ShowBanner();
+        AA_AnalyticsManager.Agent.GameStartAnalytics(GamePreference.selectedLevel);
+    }
 
-        if (GameManager.Instance.selectedLevel == 1)
-        {   
+    public void SetupLevel()
+    {
+        houseExitDoor.isDoorLock = GamePreference.selectedLevel != 1;
+        if (GamePreference.selectedLevel == 1)
+        {
             doorBell.Play();
-            BabyController.instance.BabyAnim.SetBool("Cry", true);
-
-            houseExitDoor.isDoorLock = false;
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Cry);
         }
-        else
+        if (GamePreference.selectedLevel == 2)
         {
-            houseExitDoor.isDoorLock = true;
-        }
-
-        if (GameManager.Instance.selectedLevel == 2)
-        {
-            BabyController.instance.BabyAnim.SetBool("Sit", true);
-            baby.tag = "Untagged";
+            BabyController.instance.requireItem = ItemType.Feeder;
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Sit);
         }
 
-        if (GameManager.Instance.selectedLevel == 3)
+        if (GamePreference.selectedLevel == 3)
         {
-            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            BabyController.instance.requireItem = ItemType.Facewash;
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Sit);
             BabyController.instance.babyDirtyFace.SetActive(true);
         }
 
-        if (GameManager.Instance.selectedLevel == 4)
+        if (GamePreference.selectedLevel == 4)
         {
-            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Sit);
             baby.tag = "Untagged";
         }
 
-        if (GameManager.Instance.selectedLevel == 5)
+        if (GamePreference.selectedLevel == 5)
         {
-            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Sit);
             baby.tag = "Untagged";
         }
 
-        if (GameManager.Instance.selectedLevel == 6)
+        if (GamePreference.selectedLevel == 6)
         { 
             babyCryingCradle.Play();
-            baby.SetActive(false);
+            baby.SetActiveAndPositionAndRotation(false, null);
         }
 
-        if (GameManager.Instance.selectedLevel == 7)
+        if (GamePreference.selectedLevel == 7)
         {
-            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Sit);
             baby.tag = "Untagged";
 
             Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().Play();
@@ -152,12 +171,12 @@ public class GamePlayManager : MonoBehaviour
 
 
 
-        if (GameManager.Instance.selectedLevel == 8)
+        if (GamePreference.selectedLevel == 8)
         {
             babyRoomDoor.isDoorLock = true;
             BabyController.instance.babyCry.Play();
 
-            BabyController.instance.BabyAnim.SetBool("Sit", true);
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Sit);
             axeBlueGlow.transform.parent.tag = "Untagged";
 
             axeBlueGlow.Stop();
@@ -170,11 +189,11 @@ public class GamePlayManager : MonoBehaviour
         }
 
 
-        if(GameManager.Instance.selectedLevel == 9)
+        if(GamePreference.selectedLevel == 9)
         {
             BabyController.instance.babyEyesRed.color = Color.red;
 
-            BabyController.instance.BabyAnim.SetBool("AngrySit", true);
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.AngrySit);
 
             BabyController.instance.babyAngryVoice.Play();
             BabyController.instance.babyCry.Stop();
@@ -190,7 +209,7 @@ public class GamePlayManager : MonoBehaviour
             BabyController.instance.babyEyesRed.color = Color.white;
         }
 
-        if(GameManager.Instance.selectedLevel == 10)
+        if(GamePreference.selectedLevel == 10)
         {
 
             Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().Play();
@@ -214,7 +233,7 @@ public class GamePlayManager : MonoBehaviour
 
             BabyController.instance.babyEyesRed.color = Color.red;
 
-            BabyController.instance.BabyAnim.SetBool("Fly", true);
+            BabyController.instance.babyAnimationController.SetAnimation(BabyAnimationType.Fly);
             
 
             BabyController.instance.babyAngryVoice.Play();
@@ -231,19 +250,19 @@ public class GamePlayManager : MonoBehaviour
 
         }
     }
-
-
     public void LevelComplete()
     {
-        UIManager.instance.LvlCompleteON();
-        int currentPlayerPrefs = GamePreference.openLevels;
+        DOVirtual.DelayedCall(2f, () => {
+            UIManager.instance.LvlCompleteON();
+            int currentPlayerPrefs = GamePreference.openLevels;
 
-        if(currentPlayerPrefs < 9 && GameManager.Instance.selectedLevel == currentPlayerPrefs+1)
-        {
-            GamePreference.openLevels = currentPlayerPrefs+1;
-        }
-        ArcadiaSdkManager.Agent.ShowRateUs();
-        AA_AnalyticsManager.Agent.GameCompleteAnalytics(GameManager.Instance.selectedLevel);
+            if(currentPlayerPrefs < 9 && GamePreference.selectedLevel == currentPlayerPrefs+1)
+            {
+                GamePreference.openLevels = currentPlayerPrefs+1;
+            }
+            ArcadiaSdkManager.Agent.ShowRateUs();
+            AA_AnalyticsManager.Agent.GameCompleteAnalytics(GamePreference.selectedLevel);
+        });
     }
 
 
@@ -253,17 +272,4 @@ public class GamePlayManager : MonoBehaviour
         yield return new WaitForSeconds(1.8f);
         hoshBanda.SetActive(false);
     }
-
-    public void GlowOn()
-    {
-       feederBlueGlow.Play();
-       shirtBlueGlow.Play();
-       axeBlueGlow.Play();
-        toyBlueGlow.Play();
-        cylinderBlueGlow.Play();
-        talismanBlueGlow.Play();
-        facewashGlow.Play();
-    }
-         
-
 }

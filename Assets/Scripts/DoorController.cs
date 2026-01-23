@@ -2,53 +2,50 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEditor.Experimental.GraphView;
 
-public class DoorController : MonoBehaviour
+public class DoorController : Interactable
 {
     public Vector3 doorOpen;
     public Vector3 doorClose;
-    public bool isDoor = false;
+    public bool isDoorOpen = false;
 
     public bool isDoorLock;
-
+    public override void Start() 
+    {
+        base.Start();
+        UpdateDetectionText();
+    }
+    public void UpdateDetectionText()
+    {
+        if (isDoorLock) detectionText = "Door is Locked";
+        else detectionText = isDoorOpen ? "Close Door" : "Open Door"; 
+        crosshairState = isDoorOpen ? CrosshairState.DoorClose : CrosshairState.DoorOpen;
+    }
     public void DoorOpenClose()
     {
         if (isDoorLock == false)
         {
-            if (isDoor == false)
+            if (isDoorOpen == false)
             {
                 transform.DORotate(doorOpen, 0.5f);
-                isDoor = true;
-
+                isDoorOpen = true;
                 SoundManager.instance.doorOpen.Play();
-
-                PickDropController.instance.fpc.enableZoom = false;
-                PickDropController.instance.fpc.holdToZoom = false;
-                PickDropController.instance.fpc.isZoomed = false;
             }
             else
             {
                 transform.DORotate(doorClose, 0.5f);
-                isDoor = false;
-
+                isDoorOpen = false;
                 SoundManager.instance.doorClose.Play();
-
-                PickDropController.instance.fpc.enableZoom = false;
-                PickDropController.instance.fpc.holdToZoom = false;
-                PickDropController.instance.fpc.isZoomed = false;
             }
         }
         else
         {
-            transform.DOPunchRotation(Vector3.up*2 , 0.5f).OnComplete( ()=> 
-            {
-               transform.DORotate(doorClose, 0.1f);
-
-
-            });
-
-            GamePlayManager.instance.doorLock.Play();
+            this.transform.DOShakePosition(0.5f, 1, 10, 30);
+            SoundManager.instance?.drop?.Stop();
+            print("hitting axe");
+            GamePlayManager.Instance.doorLock.Play();
         }
-       
+        UpdateDetectionText();
     }
 }

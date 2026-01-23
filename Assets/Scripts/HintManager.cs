@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Ommy.Prefs;
 using Ommy.Singleton;
 using UnityEngine;
 
@@ -8,11 +9,18 @@ public class HintManager : Singleton<HintManager>
     public List<LevelObject> levelObjects;
     public void ShowCurrentHint()
     {
-        ActivateIndicator(GameManager.Instance.selectedLevel-1, ObjectiveController.Instance.currentTask);
+        ActivateIndicator(GamePreference.selectedLevel-1, ObjectiveManager.Instance.currentTaskIndex);
     }
     public bool IsCurrentHintActive()
     {
-        return IsIndicatorActivated(GameManager.Instance.selectedLevel-1, ObjectiveController.Instance.currentTask);
+        return IsIndicatorActivated(GamePreference.selectedLevel-1, ObjectiveManager.Instance.currentTaskIndex);
+    }
+    /// <summary>
+    /// Called by ObjectiveManager when a task is completed to update hint indicator
+    /// </summary>
+    public void UpdateHint()
+    {
+        DeactiveAllIndicators();
     }
     public void ActivateIndicator(int level, int task=0)
     {

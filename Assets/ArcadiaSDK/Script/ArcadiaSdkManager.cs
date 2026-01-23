@@ -31,6 +31,7 @@ public class ArcadiaSdkManager : MonoBehaviour
     }
 
     [Header("[v25.7.13]")]
+    public int initializationDelay = 2;
     public bool removeAds = false;
     public bool useTestIDs;
     public bool preCache = true;
@@ -113,14 +114,15 @@ public class ArcadiaSdkManager : MonoBehaviour
     void Start()
     {
         removeAds = PlayerPrefs.GetInt(nameof(removeAds), 0) == 1;
-        InitializeAdsManager();
+        StartCoroutine(InitializeAdsManager());
         InternetCheckerInit();
         if (loadingText == null) loadingText = GetComponentInChildren<Text>(true);
         if (showAvaiableUpdateInStart) ShowAvailbleUpdate();
     }
     
-    private void InitializeAdsManager()
+    private IEnumerator InitializeAdsManager()
     {
+        yield return new WaitForSeconds(initializationDelay);
         // Initialize AppStateEventNotifier
         if (AppStateEventNotifier.Instance != null)
         {
@@ -133,7 +135,7 @@ public class ArcadiaSdkManager : MonoBehaviour
         if (adsManager == null)
         {
             Debug.LogError("No ads manager found! Please ensure either AppLovinAdsManager or AdMobAdsManager is active in the scene.");
-            return;
+            yield break;
         }
         
         // Initialize the ads manager
@@ -146,16 +148,7 @@ public class ArcadiaSdkManager : MonoBehaviour
         adsManager.Initialize(sdkKey, enableLogs);
         
         // Subscribe to events
-        
-        // Load ads and proceed
         LoadNextScene();
-        
-        if (Application.internetReachability != NetworkReachability.ReachableViaLocalAreaNetwork && 
-            Application.internetReachability != NetworkReachability.ReachableViaCarrierDataNetwork)
-        {
-            LoadNextScene();
-        }
-        Invoke(nameof(LoadNextScene), 3f);
     }
     
     private IAdsManager FindAdsManager()
@@ -215,8 +208,7 @@ public class ArcadiaSdkManager : MonoBehaviour
     
     public void LoadNextScene()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0)
-            SceneManager.LoadScene(1);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex+1);
     }
     
     public void OnRemoveAds()

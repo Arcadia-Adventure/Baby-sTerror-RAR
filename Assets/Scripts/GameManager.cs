@@ -8,6 +8,7 @@ using UnityEngine.Rendering;
 
 public class GameManager : Singleton<GameManager>
 {
+	public int targetFrameRate = 30;
 	[Header("Tasks Details override daily notification")]
 	public TasksDetail tasksDetail;
 	protected override void Awake()
@@ -18,6 +19,7 @@ public class GameManager : Singleton<GameManager>
 	}
 	private void Start() 
 	{
+		Application.targetFrameRate = 30;
 		OverrideDailyNotification();
 	}
 	private void OverrideDailyNotification()
@@ -30,8 +32,6 @@ public class GameManager : Singleton<GameManager>
 		};
 		NotificationManager.Instance.dailyMessages = new List<NotificationData>{ notificationData };
 	}
-	public int selectedLevel;
-
 	
 	public void SetDefaultPlayerPrefs()
     {

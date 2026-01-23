@@ -44,8 +44,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bff921331dc241b394f2eacdc6fa0d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  title: Daily Reminder
-  message: Don't forget to play it!
-  hour: 24
-  minute: 0
-  second: 0
+  dontDestroyOnLoad: 1
+  enableNotifications: 1
+  dailyHour: 10
+  dailyMinute: 0
+  comeBackAfterHours: 4
+  comeBackAfterDays1: 1
+  comeBackAfterDays3: 3
+  comeBackAfterDays7: 7
+  dailyMessages:
+  - title: "\U0001F441\uFE0F She's Watching..."
+    message: The Nanny never sleeps. Can you escape her terror tonight?
+    emoji: "\U0001F441\uFE0F"
+  - title: "\U0001F37C The Baby Awaits..."
+    message: Shh... the nursery is quiet. Too quiet. Time to escape!
+    emoji: "\U0001F37C"
+  - title: "\U0001F6AA Doors Are Unlocking..."
+    message: The house grows darker. Your escape window is opening...
+    emoji: "\U0001F6AA"
+  - title: "\U0001F480 Survive Another Night"
+    message: The Nanny is hunting. Will you make it out alive?
+    emoji: "\U0001F480"
+  - title: "\U0001F56F\uFE0F Lights Are Flickering..."
+    message: Something stirs in the shadows. Face your fears!
+    emoji: "\U0001F56F\uFE0F"
+  comeBackMessages:
+  - title: "\U0001F47B We've Been Waiting..."
+    message: The Nanny hasn't forgotten you. She never forgets...
+    emoji: "\U0001F47B"
+  - title: "\U0001F52A She Knows You Left..."
+    message: Running away won't save you. Come back... if you dare.
+    emoji: "\U0001F52A"
+  - title: "\U0001F631 Did You Hear That?"
+    message: Footsteps in the dark... The terror continues without you!
+    emoji: "\U0001F631"
+  - title: "\U0001F5A4 The Nightmare Misses You"
+    message: The baby is crying... only you can save it from HER.
+    emoji: "\U0001F5A4"
+  - title: "\u26B0\uFE0F Unfinished Horror..."
+    message: You left the baby behind! The Nanny is getting closer to it...
+    emoji: "\u26B0\uFE0F"
+  streakMessages:
+  - title: "\U0001F525 Your Courage Fades..."
+    message: Don't let fear win! Keep your survival streak alive!
+    emoji: "\U0001F525"
+  - title: "\u23F0 Time Is Running Out!"
+    message: The Nanny grows stronger each day you're gone. Return NOW!
+    emoji: "\u23F0"
