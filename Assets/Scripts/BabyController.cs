@@ -1,20 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters;
 using DG.Tweening;
 using Ommy.Prefs;
 using UnityEngine;
 
 public class BabyController : PickableItem
 {
-    public static BabyController instance;
-    public bool canPickBaby => requireItem == ItemType.None;
+    public static BabyController Instance;
+    private void Awake() 
+    {
+        if(Instance == null) Instance = this;
+    }
+    public bool canPickBaby = true;
     public ItemType requireItem = ItemType.None;
     public BabyAnimationController babyAnimationController;
-    public DropPoint babyDropPoint;
-    private void Awake()
-    {
-        instance = this;
-    }
     public AudioSource babyCry;
 
     public GameObject diaper;
@@ -58,6 +58,7 @@ public class BabyController : PickableItem
     }
     public void GiveItemToBaby(PickableItem item)
     {
+        print("item: "+ item.itemType+" given to baby");
         item.ReleaseObject();
         item.rb.isKinematic = true;
         item.collider.enabled = false;

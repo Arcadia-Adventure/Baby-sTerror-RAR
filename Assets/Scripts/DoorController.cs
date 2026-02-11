@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using UnityEditor.Experimental.GraphView;
+using System.Collections.Generic;
+using System.Linq;
 
 public class DoorController : Interactable
 {
+    public List<GameObject> crackEffects;
     public Vector3 doorOpen;
     public Vector3 doorClose;
+    public TaskType onDoorBreakTask;
     public bool isDoorOpen = false;
 
     public bool isDoorLock;
@@ -41,11 +42,35 @@ public class DoorController : Interactable
         }
         else
         {
-            this.transform.DOShakePosition(0.5f, 1, 10, 30);
+            // Door locked effect - punch then snap back
+            transform.DOPunchRotation(Vector3.up * 2f, 0.5f, 8, 0.5f)
+                .OnComplete(() => 
+                {
+                    transform.DORotate(doorClose, 0.1f);
+                });
             SoundManager.instance?.drop?.Stop();
             print("hitting axe");
             GamePlayManager.Instance.doorLock.Play();
         }
         UpdateDetectionText();
+    }
+    void OnCollisionExit(Collision other)
+    {
+        if(other.collider.TryGetComponent(out AxeController axe))
+        {
+            if(axe.isSwinging && isDoorLock)
+            {
+                if(crackEffects.Any(e => e.activeInHierarchy == false))
+                {
+                    crackEffects.FirstOrDefault(e => e.activeInHierarchy == false)?.SetActive(true);
+                }
+                else 
+                {
+                    ObjectiveManager.OnTaskEventReceived(onDoorBreakTask);
+                    isDoorLock = false;
+                    DoorOpenClose();
+                }
+            }
+        }
     }
 }

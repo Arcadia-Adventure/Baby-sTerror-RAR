@@ -1,3 +1,4 @@
+using System;
 using Ommy.Attributes;
 using SickscoreGames.HUDNavigationSystem;
 using UnityEngine;
@@ -12,8 +13,9 @@ public class PickableItem : Interactable
     public string itemTag;
     public ParticleSystem glowParticle;
     public Rigidbody rb;
-    public Collider collider;
+    public DropPoint currentDropPoint;
     public HUDNavigationElement hUDNavigationElement;
+    public Action OnPick,OnDrop;
 
     [Header("Objective Settings")]
     [Tooltip("Task to complete when this item is picked up. Set to None to disable.")]
@@ -45,6 +47,12 @@ public class PickableItem : Interactable
         transform.localEulerAngles = holdRotationOffset;
         gameObject.layer = LayerMask.NameToLayer("HeldItem");
         ObjectiveManager.OnTaskEventReceived(OnPickTaskType);
+        if(currentDropPoint != null)
+        {
+            currentDropPoint.ClearDropPoint();
+            currentDropPoint = null;
+        }
+        OnPick?.Invoke();
     }
     public virtual void Update()
     {
@@ -60,6 +68,7 @@ public class PickableItem : Interactable
         rb.AddForce(transform.forward * 1, ForceMode.Impulse);
         rb.AddForce(transform.up * 2, ForceMode.Impulse);
         ReleaseObject();
+        OnDrop?.Invoke();
     }
     public virtual void ReleaseObject()
     {

@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 using ControlFreak2;
+using Ommy.Attributes;
 
 public class PickDropController : MonoBehaviour
 {
@@ -12,7 +11,7 @@ public class PickDropController : MonoBehaviour
     {
         instance = this;
     }
-
+    public QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Collide;
     public LayerMask detectionLayers;
 
     [Header("Pickup Settings")]
@@ -32,11 +31,13 @@ public class PickDropController : MonoBehaviour
         doorController.DoorOpenClose();
         GamePlayManager.Instance.doorBell.Stop();
     }
-
+    [InspectorButton("ToggleZoom")]
+    public void ToggleZoom()
+    {
+        DetectedPickable(fpc.isZoomed);
+    }
     public void DetectedPickable(bool detected)
     {
-        fpc.enableZoom = true;
-        fpc.holdToZoom = detected;
         fpc.isZoomed = detected;
     }
     RaycastHit hit;
@@ -49,7 +50,7 @@ public class PickDropController : MonoBehaviour
     {
         ButtonInputs();
         //RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange, detectionLayers))
+        if(Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange, detectionLayers, queryTriggerInteraction))
         {
             Interactable interactable;
             if(hit.transform.TryGetComponent<Interactable>(out interactable))
@@ -57,8 +58,12 @@ public class PickDropController : MonoBehaviour
                 interactable.Detected();
                 if(interactable as DropPoint)
                 {
-                    dropPoint = (DropPoint)interactable;
-                    UIManager.instance.SetCrosshair(dropPoint.crosshairState, dropPoint.detectionText);
+                    bool canAccept = heldPickable != null && ((DropPoint)interactable).CanAcceptItem(heldPickable);
+                    if(canAccept)
+                    {
+                        dropPoint = (DropPoint)interactable;
+                        UIManager.instance.SetCrosshair(dropPoint.crosshairState, dropPoint.detectionText);
+                    }
                 }
                 if(interactable as DoorController)
                 {
@@ -69,9 +74,13 @@ public class PickDropController : MonoBehaviour
                 if(interactable as BabyController)
                 {
                     babyController = (BabyController)interactable;
-                    if(babyController.canPickBaby)
+                    if (heldPickable != null && heldPickable.itemType == babyController.requireItem)
                     {
-                        detectedPickable = (PickableItem)interactable;
+                        UIManager.instance.SetCrosshair(CrosshairState.Drop, "Give " + heldPickable.itemType.ToString() + " to Baby");
+                    }
+                    else if (babyController.canPickBaby)
+                    {
+                        detectedPickable = babyController;
                         DetectedPickable(true);
                         UIManager.instance.SetPickButtonVisible(true);
                         UIManager.instance.SetCrosshair(detectedPickable.crosshairState, detectedPickable.detectionText);
@@ -114,6 +123,13 @@ public class PickDropController : MonoBehaviour
                 DropObject();
             else
                 PickupObject();
+        }
+        if(CF2Input.GetKeyDown(KeyCode.F))
+        {
+            if(heldPickable is UseableItem)
+            {
+                ((UseableItem)heldPickable).UseDevice();
+            }
         }
     }
     private void FixedUpdate()

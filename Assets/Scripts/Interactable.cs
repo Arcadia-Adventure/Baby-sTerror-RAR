@@ -4,6 +4,7 @@ public class Interactable : MonoBehaviour
 {
     public CrosshairState crosshairState;
     public string detectionText;
+    public Collider collider;
     public virtual void Start()
     {
         gameObject.layer = LayerMask.NameToLayer("Interactable");

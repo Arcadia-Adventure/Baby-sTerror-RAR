@@ -3,6 +3,8 @@ using DG.Tweening;
 using UnityEngine.Events;
 public class DropPoint : Interactable
 {
+    public ItemType FilledBy = ItemType.None;
+    public ItemType acceptableItemType = ItemType.Any;
     public TaskType onDropTaskType = TaskType.None;
     public BabyAnimationType whenDropBabyPlayAnim;
     public UnityEvent onItemDrop;
@@ -10,8 +12,12 @@ public class DropPoint : Interactable
     public override void Start()
     {
         base.Start();
-        detectionText = "Drop Baby";
+        FilledBy = ItemType.None;
+        detectionText = "Drop "+ acceptableItemType.ToString();
     }
+    // Check if this drop point can accept the given item
+    public bool CanAcceptItem(PickableItem item) 
+        => acceptableItemType == ItemType.Any || acceptableItemType == item.itemType;
     public void DropOnPoint(PickableItem item)
     {
         item.rb.isKinematic = true;
@@ -25,5 +31,13 @@ public class DropPoint : Interactable
             baby.babyAnimationController.SetAnimation(whenDropBabyPlayAnim);
         }
         onItemDrop.Invoke();
+        FilledBy = item.itemType;
+        item.currentDropPoint = this;
+        collider.enabled = false;
+    }
+    public void ClearDropPoint()
+    {
+        collider.enabled = true;
+        FilledBy = ItemType.None;
     }
 }

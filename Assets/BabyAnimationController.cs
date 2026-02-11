@@ -3,11 +3,11 @@ using UnityEngine;
 public class BabyAnimationController : MonoBehaviour
 {
     public Animator babyAnimator;
-    public BabyAnimationType initialanimation;
+    public BabyAnimationType initialAndCurrentAnim;
     public void Start()
     {
         babyAnimator = GetComponent<Animator>();
-        if(initialanimation != BabyAnimationType.None) SetAnimation(initialanimation);
+        if(initialAndCurrentAnim != BabyAnimationType.None) SetAnimation(initialAndCurrentAnim);
     }
     public void SetAnimation(BabyAnimationType animationType)
     {
@@ -17,6 +17,7 @@ public class BabyAnimationController : MonoBehaviour
             babyAnimator.ResetTrigger(type.ToString());
         }
         babyAnimator.SetTrigger(animationType.ToString());
+        initialAndCurrentAnim = animationType;
     }
     public void SetAnimation(string animation)
     {
@@ -25,5 +26,6 @@ public class BabyAnimationController : MonoBehaviour
             babyAnimator.ResetTrigger(type.ToString());
         }
         babyAnimator.SetTrigger(animation);
+        initialAndCurrentAnim = (BabyAnimationType)System.Enum.Parse(typeof(BabyAnimationType), animation);
     }
 }

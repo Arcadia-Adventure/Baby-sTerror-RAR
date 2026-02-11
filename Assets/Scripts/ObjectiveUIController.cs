@@ -1,54 +1,45 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using Ommy.Singleton;
-using Ommy.Prefs;
 
 public class ObjectiveUIController : Singleton<ObjectiveUIController>
 {
-    public TasksDetail tasksDetail;
-    public TextMeshProUGUI levelnoTxt, missionNameTxt;
-    public TextMeshProUGUI[] taskTxt;
-    public Color completeTaskColor;
-    public void Start()
+    [SerializeField] private TextMeshProUGUI levelnoTxt;
+    [SerializeField] private TextMeshProUGUI missionNameTxt;
+    [SerializeField] private TextMeshProUGUI[] taskTxt;
+    [SerializeField] private Color completeTaskColor;
+
+    private int currentTaskIndex;
+
+    public void Initialize(ObjectiveManager.LevelTasks levelTasks)
     {
-        SetObjective();
+        levelnoTxt.text = levelTasks.levelNO;
+        missionNameTxt.text = levelTasks.missionName;
+
+        for (int i = 0; i < levelTasks.taskInfos.Count; i++)
+        {
+            taskTxt[i].text = levelTasks.taskInfos[i].description;
+            taskTxt[i].gameObject.SetActive(i == 0);
+        }
+        currentTaskIndex = 0;
     }
-    void SetObjective()
+
+    public void UpdateTask(TaskInfo taskInfo)
     {
-        levelnoTxt.text = tasksDetail.Objectives[GamePreference.selectedLevel - 1].levelNO;
-        missionNameTxt.text = tasksDetail.Objectives[GamePreference.selectedLevel - 1].missionName;
-        for (int i = 0; i < tasksDetail.Objectives[GamePreference.selectedLevel-1].Tasks.Length; i++)
+        int index = currentTaskIndex;
+        print($"Updating Task: {taskInfo.description}");
+
+        if (taskTxt[index].text.Contains("complete")) return;
+
+        taskTxt[index].text = $"{taskInfo.description} (complete)";
+        taskTxt[index].color = completeTaskColor;
+
+        int nextIndex = index + 1;
+        if (nextIndex < taskTxt.Length && taskTxt[nextIndex] != null)
         {
-            if(i==0)
-            {
-                taskTxt[i].gameObject.SetActive(true);
-            }
-            taskTxt[i].text = tasksDetail.Objectives[GamePreference.selectedLevel - 1].Tasks[i];
+            taskTxt[nextIndex].gameObject.SetActive(true);
         }
-    }
-    public void UpdateTask(int taskNo)
-    {
-        if(taskTxt[taskNo-1].text.Contains("complete"))
-        {
-            return;
-        }
-        taskTxt[taskNo-1].text = taskTxt[taskNo-1].text + "  (complete)";
-        if(taskNo < tasksDetail.Objectives[GamePreference.selectedLevel - 1].Tasks.Length)
-        {
-            taskTxt[taskNo].gameObject.SetActive(true);
-        }
-        //taskTxt[currentTask].text.Insert(taskTxt[currentTask].text.Length, " (Complete)"); 
-        taskTxt[taskNo-1].color = completeTaskColor;
-    }
-    public IEnumerator WriteObjective(Text objectiveText , string text)
-    {
-        foreach (var item in text)
-        {
-            objectiveText.text += item;
-            yield return new WaitForSeconds(0.1f);
-        }
+        currentTaskIndex++;
     }
 }

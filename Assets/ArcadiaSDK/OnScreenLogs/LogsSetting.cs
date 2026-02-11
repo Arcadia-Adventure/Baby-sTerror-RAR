@@ -17,7 +17,7 @@ public static class LogsSetting
 	}
 	public static void GetArcadiaSDKLog()
 	{
-		//if(ArcadiaSdkManager.Agent==null) return;
+		if(ArcadiaSdkManager.Agent==null) return;
 		if (ArcadiaSdkManager.Agent.GetLog())
 		{
 			FPSLabel fpsLabel = GameObject.FindFirstObjectByType<FPSLabel>();

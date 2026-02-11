@@ -26,6 +26,7 @@ public class UIManager : MonoBehaviour
 
     public TouchButtonSpriteAnimator door;
     public TouchButtonSpriteAnimator pick;
+    public TouchButtonSpriteAnimator useDevice;
 
     public Image crossHairDetection;
     public TextMeshProUGUI detectionTxt;
@@ -38,7 +39,7 @@ public class UIManager : MonoBehaviour
     private CrosshairState currentCrosshairState = CrosshairState.None;
     private bool doorButtonVisible = false;
     private bool pickButtonVisible = false;
-
+    private bool useDeviceButtonVisible = false;
     private void Awake()
     {
         if (instance == null)
@@ -146,6 +147,25 @@ public class UIManager : MonoBehaviour
             pick.transform.parent.GetComponent<TouchButton>().enabled = false;
         }
     }
+    /// <summary>
+    /// Shows/hides use device button with fade animation (only if state changed)
+    /// </summary>
+    public void SetUseDeviceButtonVisible(bool visible)
+    {
+        if (useDeviceButtonVisible == visible) return;
+        useDeviceButtonVisible = visible;
+        useDevice.image.DOKill();
+        if (visible)
+        {
+            useDevice.image.DOFade(1, 1);
+            useDevice.transform.parent.GetComponent<TouchButton>().enabled = true;
+        }
+        else
+        {
+            useDevice.image.DOFade(0, 1);
+            useDevice.transform.parent.GetComponent<TouchButton>().enabled = false;
+        }
+    }
 
     #endregion
     public void OnDisable() 
@@ -185,8 +205,8 @@ public class UIManager : MonoBehaviour
 
         SoundManager.instance.ClickSound();
         GamePlayManager.Instance.doorBell.mute = true;
-        BabyController.instance.babyCry.mute = true;
-        BabyController.instance.babyAngryVoice.mute = true;
+        BabyController.Instance.babyCry.mute = true;
+        BabyController.Instance.babyAngryVoice.mute = true;
         GamePlayManager.Instance.RainBG.mute = true;
         Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=true;
         Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute=true;
@@ -199,9 +219,9 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1;
         GamePlayManager.Instance.doorBell.mute = false;
-        BabyController.instance.babyAngryVoice.mute = false;
+        BabyController.Instance.babyAngryVoice.mute = false;
         GamePlayManager.Instance.RainBG.mute = false;
-        BabyController.instance.babyCry.mute = false;
+        BabyController.Instance.babyCry.mute = false;
         Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=false;
         Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute = false;
         Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute = false;
