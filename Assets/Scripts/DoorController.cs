@@ -2,6 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
+using Ommy.Audio;
 
 public class DoorController : Interactable
 {
@@ -9,6 +10,12 @@ public class DoorController : Interactable
     public Vector3 doorOpen;
     public Vector3 doorClose;
     public TaskType onDoorBreakTask;
+    public AudioSource audioSource;
+    public AudioClip lockedDoorSFX;
+    public AudioClip doorOpenSFX;
+    public AudioClip doorCloseSFX;
+    public AudioClip doorBellSFX;
+
     public bool isDoorOpen = false;
 
     public bool isDoorLock;
@@ -31,13 +38,14 @@ public class DoorController : Interactable
             {
                 transform.DORotate(doorOpen, 0.5f);
                 isDoorOpen = true;
-                SoundManager.instance.doorOpen.Play();
+                AudioManager.Instance.PlaySFX(doorOpenSFX);
+                PlayDoorBell(false);
             }
             else
             {
                 transform.DORotate(doorClose, 0.5f);
                 isDoorOpen = false;
-                SoundManager.instance.doorClose.Play();
+                AudioManager.Instance.PlaySFX(doorCloseSFX);
             }
         }
         else
@@ -48,7 +56,7 @@ public class DoorController : Interactable
                 {
                     transform.DORotate(doorClose, 0.1f);
                 });
-            SoundManager.instance?.drop?.Stop();
+            AudioManager.Instance.PlaySFX(lockedDoorSFX);
             print("hitting axe");
             GamePlayManager.Instance.doorLock.Play();
         }
@@ -71,6 +79,22 @@ public class DoorController : Interactable
                     DoorOpenClose();
                 }
             }
+        }
+    }
+    public void PlayDoorBell(bool play)
+    {
+        if(audioSource == null) return;
+        if(!play)
+        {
+            audioSource.Stop();
+            audioSource.clip = null;
+            audioSource.loop = false;
+        }
+        else
+        {
+            audioSource.clip = doorBellSFX;
+            audioSource.loop = true;
+            audioSource.Play();
         }
     }
 }

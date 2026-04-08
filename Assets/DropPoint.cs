@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
+using Ommy.Audio;
 public class DropPoint : Interactable
 {
     public ItemType FilledBy = ItemType.None;
@@ -28,7 +29,7 @@ public class DropPoint : Interactable
         if(item is BabyController)
         {
             BabyController baby = (BabyController)item;
-            baby.babyAnimationController.SetAnimation(whenDropBabyPlayAnim);
+            baby.SetAnimation(whenDropBabyPlayAnim);
         }
         onItemDrop.Invoke();
         FilledBy = item.itemType;

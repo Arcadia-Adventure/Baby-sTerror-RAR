@@ -11,13 +11,15 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     [SerializeField] private Color completeTaskColor;
 
     private int currentTaskIndex;
+    private int totalTaskCount;
 
     public void Initialize(ObjectiveManager.LevelTasks levelTasks)
     {
         levelnoTxt.text = levelTasks.levelNO;
         missionNameTxt.text = levelTasks.missionName;
+        totalTaskCount = levelTasks.taskInfos.Count;
 
-        for (int i = 0; i < levelTasks.taskInfos.Count; i++)
+        for (int i = 0; i < totalTaskCount; i++)
         {
             taskTxt[i].text = levelTasks.taskInfos[i].description;
             taskTxt[i].gameObject.SetActive(i == 0);
@@ -36,7 +38,7 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
         taskTxt[index].color = completeTaskColor;
 
         int nextIndex = index + 1;
-        if (nextIndex < taskTxt.Length && taskTxt[nextIndex] != null)
+        if (nextIndex < totalTaskCount && taskTxt[nextIndex] != null)
         {
             taskTxt[nextIndex].gameObject.SetActive(true);
         }

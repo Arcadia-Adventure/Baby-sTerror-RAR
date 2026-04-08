@@ -2,6 +2,7 @@
 using DG.Tweening;
 using ControlFreak2;
 using Ommy.Attributes;
+using Ommy.Audio;
 
 public class PickDropController : MonoBehaviour
 {
@@ -29,7 +30,6 @@ public class PickDropController : MonoBehaviour
     public void DoorOpenCloseBtn()
     {
         doorController.DoorOpenClose();
-        GamePlayManager.Instance.doorBell.Stop();
     }
     [InspectorButton("ToggleZoom")]
     public void ToggleZoom()
@@ -174,23 +174,27 @@ public class PickDropController : MonoBehaviour
     public void DropObject()
     {
         if(heldPickable == null) return;
+
+        var droppedItem = heldPickable;
+
         if(dropPoint != null)
         {
             dropPoint.DropOnPoint(heldPickable);
-            heldPickable = null;
-            SoundManager.instance?.DropItem();
         }
         else if(babyController != null && babyController.requireItem == heldPickable.itemType)
         {
             babyController.GiveItemToBaby(heldPickable);
-            heldPickable = null;
-            SoundManager.instance?.DropItem();
         }
         else
         {
             heldPickable.DropObject();
-            heldPickable = null;
-            SoundManager.instance?.DropItem();
         }
+
+        heldPickable = null;
+
+        if(droppedItem.dropSFX != null)
+            AudioManager.Instance.PlaySFX(droppedItem.dropSFX);
+        else
+            Debug.LogWarning("No drop sfx for " + droppedItem.itemType.ToString());
     }
 }

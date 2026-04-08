@@ -7,10 +7,6 @@ using Ommy.Singleton;
 using Ommy.Prefs;
 using Ommy.Attributes;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 public class ObjectiveManager : Singleton<ObjectiveManager>
 {
     [SerializeField] private List<LevelTasks> levelsTasks;
@@ -75,10 +71,10 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
         return taskInfo != null;
     }
 
-    private void OnTaskCompleted(TaskType taskType)
+    void OnTaskCompleted(TaskType taskType)
     {
         if (!TryGetTaskInfo(taskType, out var taskInfo)) return;
-        
+        if(taskInfo.isCompleted ) return;
         taskInfo.isCompleted = true;
         taskInfo.OnComplete?.Invoke(taskType);
         

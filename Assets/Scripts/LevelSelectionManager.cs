@@ -6,6 +6,7 @@ using Ommy.Singleton;
 using Ommy.Prefs;
 using DG.Tweening;
 using Ommy.Attributes;
+using Ommy.Audio;
 
 public class LevelSelectionManager : Singleton<LevelSelectionManager>
 {
@@ -96,8 +97,7 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
     public void BackBtn()
     {
         SceneManager.LoadScene("MainMenu");
-
-        SoundManager.instance.ClickSound();
+        AudioManager.Instance.PlaySFX(SFX.Click);
     }
 
 
@@ -106,5 +106,6 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
         loadingScreen.SetActive(true);
         GamePreference.selectedLevel = selectedLevel;
         SceneManager.LoadSceneAsync("GamePlay");
-        SoundManager.instance.ClickSound();    }
+        AudioManager.Instance.PlaySFX(SFX.Click);    
+    }
 }

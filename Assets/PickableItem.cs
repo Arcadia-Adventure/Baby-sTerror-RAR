@@ -1,5 +1,6 @@
 using System;
 using Ommy.Attributes;
+using Ommy.Audio;
 using SickscoreGames.HUDNavigationSystem;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ public class PickableItem : Interactable
     public Rigidbody rb;
     public DropPoint currentDropPoint;
     public HUDNavigationElement hUDNavigationElement;
+    public AudioClip pickSFX, dropSFX;
     public Action OnPick,OnDrop;
 
     [Header("Objective Settings")]
@@ -36,7 +38,7 @@ public class PickableItem : Interactable
     }
     public virtual void PickObject(Transform parent)
     {
-        SoundManager.instance.PickItem();
+        AudioManager.Instance.PlaySFX(SFX.PickItem);
         if (glowParticle != null) glowParticle.Stop();
         rb.useGravity = false;
         rb.isKinematic = false;

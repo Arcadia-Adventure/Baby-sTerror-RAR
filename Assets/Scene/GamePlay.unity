@@ -311,11 +311,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 32249095}
   m_Mesh: {fileID: 4300000, guid: 3cac1c303129b124f87fddd6d760a3f4, type: 3}
---- !u!1 &36707557 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6882929360811805471, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-  m_PrefabInstance: {fileID: 6882929360848508922}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &42303881
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1964,95 +1959,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67a5fc50cb592fe4f95457eb6d66e520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &191843493
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 6882929360848508923}
-    m_Modifications:
-    - target: {fileID: 130730508685250575, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_Name
-      value: Baby HUD Element
-      objectReference: {fileID: 0}
-    - target: {fileID: 130730508685250575, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: Settings
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: Prefabs.RadarPrefab
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: Prefabs.MinimapPrefab
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: Prefabs.IndicatorPrefab
-      value: 
-      objectReference: {fileID: 114774112296258654, guid: 43ca8a78e154fef43a69247ce19eadc6, type: 3}
-    - target: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: Prefabs.CompassBarPrefab
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: useIndicatorDistanceText
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-      propertyPath: ignoreIndicatorHideDistance
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
 --- !u!1 &196870434
 GameObject:
   m_ObjectHideFlags: 0
@@ -2664,7 +2570,7 @@ GameObject:
   - component: {fileID: 276850625}
   - component: {fileID: 276850628}
   m_Layer: 0
-  m_Name: Cradle
+  m_Name: CradleDropPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2679,9 +2585,9 @@ Transform:
   m_GameObject: {fileID: 276850623}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.06, y: 3.5, z: -3.279}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -0.06, y: 3.5878, z: -3.279}
+  m_LocalScale: {x: 0.13, y: 0.13, z: 0.13}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 415723518}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6835,6 +6741,8 @@ MonoBehaviour:
   rb: {fileID: 685525305}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 1035107495}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 3
   OnDropForBabyTaskType: 12
 --- !u!1 &693392693
@@ -7175,6 +7083,11 @@ MonoBehaviour:
   doorOpen: {x: 0, y: -90, z: 0}
   doorClose: {x: 0, y: 0, z: 0}
   onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
   isDoorOpen: 0
   isDoorLock: 0
 --- !u!65 &731708946
@@ -41564,7 +41477,7 @@ GameObject:
   - component: {fileID: 1217169000}
   - component: {fileID: 1217169003}
   m_Layer: 0
-  m_Name: WashPoint
+  m_Name: Washroom Droppoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41678,7 +41591,7 @@ MonoBehaviour:
   FilledBy: 0
   acceptableItemType: 1
   onDropTaskType: 19
-  whenDropBabyPlayAnim: 3
+  whenDropBabyPlayAnim: 1
   onItemDrop:
     m_PersistentCalls:
       m_Calls: []
@@ -47301,7 +47214,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
   m_PrefabInstance: {fileID: 6882929360848508922}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36707557}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
@@ -48119,7 +48032,6 @@ MonoBehaviour:
     babySpawnPoint: {fileID: 305083197}
     babyAnimationType: 0
   player: {fileID: 54471721415885039}
-  doorBell: {fileID: 8645931840377426454}
   baby: {fileID: 1308490465}
   babyCryingCradle: {fileID: 5322578965511811716}
   flyingFurniture:
@@ -53281,13 +53193,13 @@ AudioSource:
     m_RotationOrder: 4
 --- !u!1 &1400301746 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 130730508685250575, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-  m_PrefabInstance: {fileID: 191843493}
+  m_CorrespondingSourceObject: {fileID: 3863238541728292543, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+  m_PrefabInstance: {fileID: 6882929360848508922}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1400301747 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7935350785356472157, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-  m_PrefabInstance: {fileID: 191843493}
+  m_CorrespondingSourceObject: {fileID: 6515740226217284077, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+  m_PrefabInstance: {fileID: 6882929360848508922}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1400301746}
   m_Enabled: 1
@@ -53295,11 +53207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67a5fc50cb592fe4f95457eb6d66e520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1400301748 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7711090132939935108, guid: 09d225da729ee43d8b1baa63bcb568cd, type: 3}
-  m_PrefabInstance: {fileID: 191843493}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1404964817
 GameObject:
   m_ObjectHideFlags: 0
@@ -54440,14 +54347,14 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 2
       description: -Find the Feeder in the Kitchen.
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 11
       description: -Feed the baby.
       OnComplete:
         m_PersistentCalls:
@@ -54457,14 +54364,14 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 19
       description: -Pick up the baby and take it to the washroom.
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 20
       description: "-Find the facewash and clean the baby\u2019s face."
       OnComplete:
         m_PersistentCalls:
@@ -54474,14 +54381,14 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 3
       description: -Find warm clothes for the baby.
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 12
       description: "-Change the baby\u2019s clothes."
       OnComplete:
         m_PersistentCalls:
@@ -54491,14 +54398,14 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 21
       description: -Find a toy to cheer up the baby.
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 22
       description: -Give the toy to the baby.
       OnComplete:
         m_PersistentCalls:
@@ -54508,14 +54415,14 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 23
       description: "-The baby is crying\u2014check the baby\u2019s Bedroom."
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 8
       description: "-The baby is hiding\u2014find it and put it back to bed."
       OnComplete:
         m_PersistentCalls:
@@ -54525,14 +54432,14 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 6
       description: -Find the fire extinguisher
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 24
       description: "-Put out the fire\u2026 but who started it?"
       OnComplete:
         m_PersistentCalls:
@@ -54542,21 +54449,21 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 15
       description: "-Check the baby\u2019s Bedroom."
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
-      description: "-The Beddoor won\u2019t open, find an axe and break the door."
+      taskType: 25
+      description: "-The Bed door won\u2019t open, find an axe and break the door."
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 14
       description: -Pick up the baby and leave the room
       OnComplete:
         m_PersistentCalls:
@@ -54566,7 +54473,7 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 26
       description: "-Follow the baby\u2019s voice."
       OnComplete:
         m_PersistentCalls:
@@ -54576,21 +54483,21 @@ MonoBehaviour:
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 4
       description: -Find the talisman.
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 10
       description: -Give the talisman to the baby.
       OnComplete:
         m_PersistentCalls:
           m_Calls: []
     - isCompleted: 0
       requireLevel: -1
-      taskType: 0
+      taskType: 8
       description: -Pick up the baby and put it to bed.
       OnComplete:
         m_PersistentCalls:
@@ -54850,6 +54757,8 @@ MonoBehaviour:
   rb: {fileID: 1475569174}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 1049903521}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 6
   OnDropForBabyTaskType: 13
   useSprite: {fileID: 21300000, guid: 1d3cb6aa3d219b9498d53e526c5efa7f, type: 3}
@@ -83626,6 +83535,8 @@ MonoBehaviour:
   rb: {fileID: 919132147918752864}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 48768405}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 4
   OnDropForBabyTaskType: 0
 --- !u!1 &919132149293667731
@@ -85241,6 +85152,8 @@ MonoBehaviour:
   rb: {fileID: 4233497092945465960}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 1092839278}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 2
   OnDropForBabyTaskType: 11
 --- !u!1 &4327183743156610957
@@ -85397,6 +85310,8 @@ MonoBehaviour:
   rb: {fileID: 4370947935827287086}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 185173844}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 21
   OnDropForBabyTaskType: 22
 --- !u!4 &4461398309285504304
@@ -85682,6 +85597,8 @@ MonoBehaviour:
   rb: {fileID: 327966231}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 1171653612}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 5
   OnDropForBabyTaskType: 0
   useSprite: {fileID: 0}
@@ -86612,97 +86529,45 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 307530316, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929359951990018, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: m_Resource
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioSource
       value: 
-      objectReference: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
-    - target: {fileID: 6882929359951990018, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: MaxDistance
-      value: 300
+      objectReference: {fileID: 6882929360848508923}
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioEntries.Array.size
+      value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 6882929359951990018, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: m_audioClip
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioEntries.Array.data[0].clip
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929359951990018, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929359951990018, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      objectReference: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioEntries.Array.data[1].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 89df9faf9e1d2be479d8a9e63d735df2, type: 3}
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioEntries.Array.data[2].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 89df9faf9e1d2be479d8a9e63d735df2, type: 3}
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioEntries.Array.data[0].animationType
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6882929359951990028, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: m_IsActive
-      value: 1
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioEntries.Array.data[1].animationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+      propertyPath: audioEntries.Array.data[2].animationType
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: collider
-      value: 
-      objectReference: {fileID: 6882929360848508925}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: itemType
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: glowParticle
+      propertyPath: babyAudioController
       value: 
       objectReference: {fileID: 6882929360848508924}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: babyDropPoint
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: detectionText
-      value: Pick Baby
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: facewashPoint
-      value: 
-      objectReference: {fileID: 1217168999}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: OnPickTaskType
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: crosshairState
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: hUDNavigationElement
-      value: 
-      objectReference: {fileID: 1400301747}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: holdPositionOffset.y
-      value: -0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: holdPositionOffset.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: holdRotationOffset.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: holdRotationOffset.y
-      value: 190
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811760818, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: babyAnimationController
-      value: 
-      objectReference: {fileID: 6882929360848508926}
     - target: {fileID: 6882929360811805471, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
       propertyPath: m_Name
       value: Baby
-      objectReference: {fileID: 0}
-    - target: {fileID: 6882929360811959823, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      propertyPath: m_RootOrder
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6882929360811959823, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -86746,49 +86611,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6882929360811959823, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1400301748}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6882929360811805471, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6882929360848508926}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
---- !u!4 &6882929360848508923 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6882929360811959823, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+--- !u!82 &6882929360848508923 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 4504384811526215291, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
   m_PrefabInstance: {fileID: 6882929360848508922}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &6882929360848508924 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 5099812333670163747, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-  m_PrefabInstance: {fileID: 6882929360848508922}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &6882929360848508925 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 6882929361342126249, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-  m_PrefabInstance: {fileID: 6882929360848508922}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6882929360848508926
+--- !u!114 &6882929360848508924 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 3793413665925333322, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
+  m_PrefabInstance: {fileID: 6882929360848508922}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36707557}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a4eb6ebd98414b4ebf554b50f6171b1, type: 3}
+  m_Script: {fileID: 11500000, guid: b39995e1c174040f9a9c5c32a93afbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  babyAnimator: {fileID: 6882929360848508927}
-  initialAndCurrentAnim: 0
---- !u!95 &6882929360848508927 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 6882929360821182925, guid: 651c042083eb37e478c03cfd9d064a7e, type: 3}
-  m_PrefabInstance: {fileID: 6882929360848508922}
-  m_PrefabAsset: {fileID: 0}
 --- !u!33 &6994740306295725703
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -133052,6 +132893,11 @@ MonoBehaviour:
   doorOpen: {x: 0, y: 90, z: 0}
   doorClose: {x: 0, y: 0, z: 0}
   onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
   isDoorOpen: 0
   isDoorLock: 0
 --- !u!1 &8613631043642956139
@@ -142147,6 +141993,11 @@ MonoBehaviour:
   doorOpen: {x: 0, y: 270, z: 0}
   doorClose: {x: 0, y: 180, z: 0}
   onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
   isDoorOpen: 0
   isDoorLock: 0
 --- !u!1 &8614458270723852695
@@ -142192,6 +142043,11 @@ MonoBehaviour:
   doorOpen: {x: 0, y: 0, z: 0}
   doorClose: {x: 0, y: -90, z: 0}
   onDoorBreakTask: 25
+  audioSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
   isDoorOpen: 0
   isDoorLock: 1
 --- !u!82 &8614458270723852697
@@ -146178,6 +146034,11 @@ MonoBehaviour:
   doorOpen: {x: 0, y: 0, z: 0}
   doorClose: {x: 0, y: 90, z: 0}
   onDoorBreakTask: 0
+  audioSource: {fileID: 8645931840377426454}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 8300000, guid: 832db2c57ea08c941a3433a81680da2a, type: 3}
   isDoorOpen: 0
   isDoorLock: 0
 --- !u!1 &8614911950025964370
@@ -158952,6 +158813,8 @@ MonoBehaviour:
   rb: {fileID: 8618399824840867071}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 386776866}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 7
   OnDropForBabyTaskType: 20
 --- !u!4 &8618402028798523268
@@ -203036,10 +202899,10 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 0
+  MaxDistance: 10
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -205312,6 +205175,8 @@ MonoBehaviour:
   rb: {fileID: 9288182}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 0
   OnDropForBabyTaskType: 0
 --- !u!33 &8646228750629384818
@@ -205919,6 +205784,8 @@ MonoBehaviour:
   rb: {fileID: 535754301}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 0
   OnDropForBabyTaskType: 0
 --- !u!33 &8646292183705944084
@@ -205953,6 +205820,8 @@ MonoBehaviour:
   rb: {fileID: 620597945}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 0
   OnDropForBabyTaskType: 0
 --- !u!33 &8646299235334850788
@@ -206056,6 +205925,8 @@ MonoBehaviour:
   rb: {fileID: 1549465012}
   currentDropPoint: {fileID: 0}
   hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
   OnPickTaskType: 0
   OnDropForBabyTaskType: 0
 --- !u!33 &8646313825996594395

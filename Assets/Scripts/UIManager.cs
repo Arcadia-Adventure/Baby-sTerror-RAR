@@ -8,6 +8,7 @@ using ControlFreak2.UI;
 using ControlFreak2;
 using DG.Tweening;
 using Ommy.Prefs;
+using Ommy.Audio;
 
 public enum CrosshairState { None, Pick, Drop, DoorOpen, DoorClose }
 
@@ -200,38 +201,22 @@ public class UIManager : MonoBehaviour
         ArcadiaSdkManager.Agent.ShowInterstitialAd();
         Time.timeScale = 0;
         pausePanel.SetActive(true);
-
-        //Camera.main.GetComponent<AudioListener>().enabled = false;
-
-        SoundManager.instance.ClickSound();
-        GamePlayManager.Instance.doorBell.mute = true;
-        BabyController.Instance.babyCry.mute = true;
-        BabyController.Instance.babyAngryVoice.mute = true;
+        AudioManager.Instance.PlaySFX(SFX.Click);
+        BabyController.Instance.MuteAudio(true);
         GamePlayManager.Instance.RainBG.mute = true;
-        Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=true;
-        Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute=true;
-        Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute=true;
-        SoundManager.instance.BG.Play();
+        AudioManager.Instance.SetBGSetting(false);
     }
 
 
     public void ResumeBtn()
     {
         Time.timeScale = 1;
-        GamePlayManager.Instance.doorBell.mute = false;
-        BabyController.Instance.babyAngryVoice.mute = false;
+        BabyController.Instance.MuteAudio(false);
         GamePlayManager.Instance.RainBG.mute = false;
-        BabyController.Instance.babyCry.mute = false;
-        Items.instance.fireLvl7.GetComponentInChildren<AudioSource>().mute=false;
-        Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().mute = false;
-        Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().mute = false;
         ArcadiaSdkManager.Agent.ShowBanner();
         pausePanel.SetActive(false);
-
-       // Camera.main.GetComponent<AudioListener>().enabled = true;
-
-        SoundManager.instance.ClickSound();
-        SoundManager.instance.BG.Stop();
+        AudioManager.Instance.PlaySFX(SFX.Click);
+        AudioManager.Instance.SetBGSetting(false);
     }
 
 
@@ -239,7 +224,7 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene("MainMenu");
-        SoundManager.instance.ClickSound();
+        AudioManager.Instance.PlaySFX(SFX.Click);
     }
 
 
@@ -249,7 +234,7 @@ public class UIManager : MonoBehaviour
         if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
-        SoundManager.instance.ClickSound();
+        AudioManager.Instance.PlaySFX(SFX.Click);
     }
 
    
@@ -259,7 +244,7 @@ public class UIManager : MonoBehaviour
         if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
         GamePreference.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        SoundManager.instance.ClickSound();
+        AudioManager.Instance.PlaySFX(SFX.Click);
     }
     public void SensivitySlider()
     {

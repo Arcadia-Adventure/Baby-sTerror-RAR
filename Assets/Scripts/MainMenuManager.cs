@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Ommy.Audio;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -88,7 +89,7 @@ public class MainMenuManager : MonoBehaviour
 		{
 
 			musicOff.SetActive(false);
-			SoundManager.instance.BG.Play();
+			AudioManager.Instance.SetBGSetting(true);
 			musicOn.SetActive(true);
 
 			music = true;
@@ -96,7 +97,7 @@ public class MainMenuManager : MonoBehaviour
 		else
 		{
 			musicOn.SetActive(false);
-			SoundManager.instance.BG.Stop();
+			AudioManager.Instance.SetBGSetting(false);
 			musicOff.SetActive(true);
 
 			music = false;
@@ -108,14 +109,14 @@ public class MainMenuManager : MonoBehaviour
 		if(PlayerPrefs.GetInt("Sound") == 1)
         {
 			soundOff.SetActive(false);
-			SoundManager.instance.click.mute = false;
+			AudioManager.Instance.SetSFXSetting(true);
 			soundOn.SetActive(true);
 			sound = true;
         }
         else
         {
 			soundOn.SetActive(false);
-			SoundManager.instance.click.mute = true;
+			AudioManager.Instance.SetSFXSetting(false);
 			soundOff.SetActive(true);
 
 			sound = false;
@@ -125,39 +126,39 @@ public class MainMenuManager : MonoBehaviour
     public void PlayBtn()
 	{
 		SceneManager.LoadScene("LevelSelection");
-		SoundManager.instance.ClickSound();
+		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
 
 	public void SettingBtn()
 	{ 
 		settingPanel.SetActive(true);
-		SoundManager.instance.ClickSound();
+		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
 
 
 	public void BackBtn()
 	{
 		settingPanel.SetActive(false);
-		SoundManager.instance.ClickSound();
+		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
 
 
 	public void QuitBtn()
     { 
 		quitPanel.SetActive(true);
-		SoundManager.instance.ClickSound();
+		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
 
 	public void QuitBtnYes()
     {
 		Application.Quit();
-		SoundManager.instance.ClickSound();
+		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
 
 	public void QuitBtnNo()
 	{
 		quitPanel.SetActive(false);
-		SoundManager.instance.ClickSound();
+		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
 
 
@@ -176,7 +177,7 @@ public class MainMenuManager : MonoBehaviour
 			// Music Off
 
 			musicOn.SetActive(false);
-			SoundManager.instance.BG.Stop();
+			AudioManager.Instance.SetBGSetting(false);
 			musicOff.SetActive(true);
 
 			music = false;
@@ -188,7 +189,7 @@ public class MainMenuManager : MonoBehaviour
 			// Music On
 
 			musicOff.SetActive(false);
-			SoundManager.instance.BG.Play();
+			AudioManager.Instance.SetBGSetting(true);
 			musicOn.SetActive(true);
 
 			music = true;
@@ -204,7 +205,7 @@ public class MainMenuManager : MonoBehaviour
         if (sound)
         {
 			soundOn.SetActive(false);
-			SoundManager.instance.click.mute = true;
+			AudioManager.Instance.SetSFXSetting(false);
 			soundOff.SetActive(true);
 
 			sound = false;
@@ -214,10 +215,10 @@ public class MainMenuManager : MonoBehaviour
         else
         {
 			soundOff.SetActive(false);
-			SoundManager.instance.click.mute = false;
+			AudioManager.Instance.SetSFXSetting(true);
 			soundOn.SetActive(true);
 
-			SoundManager.instance.click.Play();
+			AudioManager.Instance.PlaySFX(SFX.Click);
 
 			sound = true;
 

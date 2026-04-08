@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters;
 using DG.Tweening;
 using Ommy.Prefs;
 using UnityEngine;
@@ -14,16 +11,12 @@ public class BabyController : PickableItem
     }
     public bool canPickBaby = true;
     public ItemType requireItem = ItemType.None;
-    public BabyAnimationController babyAnimationController;
-    public AudioSource babyCry;
-
+    [SerializeField] private BabyAnimationController babyAnimationController;
+    [SerializeField] private BabyAudioController babyAudioController;
     public GameObject diaper;
     public GameObject clothBody;
     public GameObject body;
-
     public Material babyEyesRed;
-    public AudioSource babyAngryVoice;
-
     public GameObject babyDirtyFace;
 
     public override void Start()
@@ -39,11 +32,7 @@ public class BabyController : PickableItem
     public override void PickObject(Transform parent)
     {
         base.PickObject(parent);
-        // Stop baby crying when picked up (common to all levels)
-        if (babyCry != null && babyCry.isPlaying)
-        {
-            babyCry.Stop();
-        }
+        StopAudio();
         babyAnimationController.SetAnimation(BabyAnimationType.Fly);
     }
     public override void DropObject()
@@ -65,11 +54,33 @@ public class BabyController : PickableItem
         item.transform.DOLocalJump(transform.position, 0.5f, 1, 0.5f);
         item.transform.DORotate(transform.eulerAngles, 0.5f);
         ObjectiveManager.OnTaskEventReceived(item.OnDropForBabyTaskType);
-        babyAnimationController.SetAnimation(BabyAnimationType.Happy);
+        SetAnimation(BabyAnimationType.Happy);
         DOVirtual.DelayedCall(0.5f, () =>
         {
             requireItem = ItemType.None;
             Destroy(item.gameObject);
         });
+    }
+
+    public void PlayAudio(BabyAnimationType animationType, bool loop) =>
+        babyAudioController.Play(animationType, loop);
+
+    public void StopAudio() => babyAudioController.Stop();
+
+    public void MuteAudio(bool mute) => babyAudioController.Mute(mute);
+
+    public void SetAnimation(BabyAnimationType animationType)
+    {
+        switch(animationType)
+        {
+            case BabyAnimationType.Cry:
+                PlayAudio(animationType, true);
+                break;
+            case BabyAnimationType.Happy:
+            case BabyAnimationType.AngrySit:
+                PlayAudio(animationType, false);
+                break;
+        }
+        babyAnimationController.SetAnimation(animationType);
     }
 }

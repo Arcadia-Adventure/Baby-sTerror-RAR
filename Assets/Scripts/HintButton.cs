@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using Ommy.Prefs;
+using Ommy.Audio;
 public class HintButton : BaseButton
 {
     public int HintCount => GamePreference.hintCount;
@@ -16,7 +17,7 @@ public class HintButton : BaseButton
     }
     public override void OnClick()
     {
-        SoundManager.instance.ClickSound();
+        AudioManager.Instance.PlaySFX(SFX.Click);
         if(HintCount <= 0) RechargeAndShowHint();
         else ShowHint();
     }
