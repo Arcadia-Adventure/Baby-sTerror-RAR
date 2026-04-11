@@ -1,12 +1,12 @@
 public enum BabyAnimationType
 {
     None = 0,
-    Cry = 1,
+    CrySit = 1,
     Fly = 2,
     Happy = 3,
-    Sit = 4,
-    Idle = 5,
-    AngrySit = 6,
+    Idle = 4,
+    AngrySit = 5,
+    CryLay = 6,
 }
 public enum TaskType
 {

@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using DG.Tweening;
+using UnityEngine;
+
+[Serializable]
+public class BabyItemEffect
+{
+    public ItemType itemType;
+    public GameObject[] objectsToActivate;
+    public GameObject[] objectsToDeactivate;
+}
+
+public class BabyItemHandler : MonoBehaviour
+{
+    [SerializeField] private List<BabyItemEffect> itemEffects = new List<BabyItemEffect>();
+
+    public void GiveItemToBaby(PickableItem item)
+    {
+        var baby = BabyController.Instance;
+        Debug.Log("item: " + item.itemType + " given to baby");
+
+        item.ReleaseObject();
+        item.rb.isKinematic = true;
+        item.collider.enabled = false;
+        item.transform.DOLocalJump(baby.transform.position, 0.5f, 1, 0.5f);
+        item.transform.DORotate(baby.transform.eulerAngles, 0.5f);
+        ObjectiveManager.OnTaskEventReceived(item.OnDropForBabyTaskType);
+        baby.SetAnimation(BabyAnimationType.Happy);
+
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            ApplyItemEffect(item.itemType);
+            baby.requireItem = ItemType.None;
+            Destroy(item.gameObject);
+        });
+    }
+
+    void ApplyItemEffect(ItemType itemType)
+    {
+        var effect = itemEffects.Find(e => e.itemType == itemType);
+        if (effect != null)
+        {
+            foreach (var obj in effect.objectsToActivate)
+                if (obj != null) obj.SetActive(true);
+
+            foreach (var obj in effect.objectsToDeactivate)
+                if (obj != null) obj.SetActive(false);
+        }
+
+        if (itemType == ItemType.Talisman)
+            CalmDownBaby();
+    }
+
+    void CalmDownBaby()
+    {
+        var baby = BabyController.Instance;
+        baby.rb.isKinematic = false;
+        baby.rb.useGravity = true;
+        baby.babyEyesRed.color = Color.white;
+        baby.tag = baby.itemTag;
+        baby.SetAnimation(BabyAnimationType.Happy);
+        baby.canPickBaby = true;
+        baby.requireItem = ItemType.None;
+        foreach (var furniture in GamePlayManager.Instance.flyingFurniture)
+        {
+            var fRb = furniture.GetComponent<Rigidbody>();
+            fRb.useGravity = true;
+            fRb.isKinematic = false;
+        }
+        Items.instance.cradleDropPoint.gameObject.SetActive(true);
+    }
+}

@@ -1296,7 +1296,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: enableLogs
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
+      propertyPath: Ids.gameName
+      value: 'Babys Terror: Escape the Nanny'
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: initializationDelay

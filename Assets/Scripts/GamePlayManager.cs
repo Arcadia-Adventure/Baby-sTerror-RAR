@@ -13,71 +13,55 @@ public class GamePlayManager : Singleton<GamePlayManager>
     public class LevelConfig
     {
         public GameObject levelObject;
-        public Transform playerSpawnPoint,babySpawnPoint;
+        public Transform playerSpawnPoint, babySpawnPoint;
         public BabyAnimationType babyAnimationType;
     }
-    public DropPoint cradleDropPoint;
+
+    [Header("Level Setup")]
+    public List<LevelConfig> levelConfigs = new();
     public GameObject levelsParent;
     public Transform playerSpawnPointsParent;
     public Transform babySpawnPointsParent;
+    public GameObject player;
+    public BabyController baby;
+
+    [Header("Environment")]
+    public AudioSource RainBG;
+    public AudioSource babyCryingCradle;
+    public AudioSource doorLock;
+    public DoorController babyRoomDoor;
+    public DoorController houseExitDoor;
+    public DropPoint cradleDropPoint;
+    public ParticleSystem axeBlueGlow;
+    public GameObject[] flyingFurniture;
+    public GameObject[] Cracker;
+
+    int Level => GamePreference.selectedLevel;
+    LevelConfig CurrentConfig => levelConfigs[Level - 1];
+
+    #region Editor Setup
+
     [InspectorButton("SetupLevels")]
     public void SetupLevelsConfig()
     {
         int levelCount = levelsParent.transform.childCount;
         for (int i = 0; i < levelCount; i++)
         {
-            LevelConfig config = new ();
-            config.levelObject = levelsParent.transform.GetChild(i).gameObject;
-            config.playerSpawnPoint = playerSpawnPointsParent.GetChild(i);
-            config.babySpawnPoint = babySpawnPointsParent.GetChild(i);
+            LevelConfig config = new()
+            {
+                levelObject = levelsParent.transform.GetChild(i).gameObject,
+                playerSpawnPoint = playerSpawnPointsParent.GetChild(i),
+                babySpawnPoint = babySpawnPointsParent.GetChild(i)
+            };
             levelConfigs.Add(config);
             config.levelObject.SetActive(false);
         }
     }
-    public List<LevelConfig> levelConfigs = new List<LevelConfig>();
-    public GameObject player;
-    public BabyController baby;
-    public AudioSource babyCryingCradle;
-    public GameObject[] flyingFurniture;
-    public ParticleSystem axeBlueGlow;
-    public AudioSource RainBG;
-    public DoorController babyRoomDoor;
-    public DoorController houseExitDoor;
-    public AudioSource doorLock;
-    public GameObject[] Cracker;
 
-    [Header("Door Break Objective Settings")]
-    [Tooltip("Task index to complete when door is fully broken. Set to 0 to disable.")]
-    [Min(0)]
-    public int doorBreakTaskIndex = 0;
-    public void Crack()
-    {
-        for (int i = 0; i < Cracker.Length; i++)
-        {
-            if (i == 2)
-            {
-                babyRoomDoor.isDoorLock = false;
-                
-               
-                var g = PickDropController.instance.heldPickable.gameObject;
-                Destroy(g);
-                
-                // Complete task if configured
-                if (doorBreakTaskIndex > 0)
-                {
-                   // ObjectiveManager.Instance.CompleteTask(doorBreakTaskIndex);
-                }
+    #endregion
 
-            }
-            if (!Cracker[i].activeInHierarchy)
-            {
-                Cracker[i].SetActive(true);
-                AudioManager.Instance.PlaySFX(SFX.DoorBreak);
-                return;
-            }
-        }
-    }
-
+    private void OnEnable() => ObjectiveManager.OnTaskReceived += OnTaskReceived;
+    private void OnDisable() => ObjectiveManager.OnTaskReceived -= OnTaskReceived;
 
     private void Start()
     {
@@ -85,161 +69,167 @@ public class GamePlayManager : Singleton<GamePlayManager>
         RainBG.Play();
         AudioManager.Instance.SetBGSetting(false);
 
-        player.transform.position = levelConfigs[GamePreference.selectedLevel - 1].playerSpawnPoint.position;    
-        player.transform.rotation = levelConfigs[GamePreference.selectedLevel - 1].playerSpawnPoint.rotation;
-        levelConfigs[GamePreference.selectedLevel - 1].levelObject.SetActive(true);
-        var spawnPoint = levelConfigs[GamePreference.selectedLevel - 1].babySpawnPoint;
-        baby.SetActiveAndPositionAndRotation(spawnPoint!=null, spawnPoint);
-        BabyController.Instance.SetAnimation(BabyAnimationType.Cry);
+        player.transform.SetPositionAndRotation(
+            CurrentConfig.playerSpawnPoint.position,
+            CurrentConfig.playerSpawnPoint.rotation);
+
+        CurrentConfig.levelObject.SetActive(true);
+
+        var spawnPoint = CurrentConfig.babySpawnPoint;
+        baby.SetActiveAndPositionAndRotation(spawnPoint != null, spawnPoint);
+        baby.SetAnimation(BabyAnimationType.CrySit);
+
         SetupLevel();
+
         ArcadiaSdkManager.Agent.ShowBanner();
-        AA_AnalyticsManager.Agent.GameStartAnalytics(GamePreference.selectedLevel);
+        AA_AnalyticsManager.Agent.GameStartAnalytics(Level);
     }
+
     public void OnInteractableInteract(ItemType itemType)
     {
-        if(itemType == ItemType.BabyRoomDoor || GamePreference.selectedLevel == 6)
-        {
+        if (itemType == ItemType.BabyRoomDoor || Level == 6)
             ObjectiveManager.OnTaskEventReceived(TaskType.CheckBabyRoom);
-        }
     }
-    public void SetupLevel()
+
+    void SetupLevel()
     {
-        houseExitDoor.isDoorLock = GamePreference.selectedLevel != 1;
-        babyRoomDoor.isDoorLock = GamePreference.selectedLevel == 8;
-        if (GamePreference.selectedLevel == 1)
+        houseExitDoor.isDoorLock = Level != 1;
+        babyRoomDoor.isDoorLock = Level == 8;
+        baby.babyEyesRed.color = Color.white;
+
+        switch (Level)
         {
-            cradleDropPoint.gameObject.SetActive(true);
-            houseExitDoor.PlayDoorBell(true);
-            BabyController.Instance.SetAnimation(BabyAnimationType.Cry);
-        }
-        if (GamePreference.selectedLevel == 2)
-        {
-            BabyController.Instance.requireItem = ItemType.Feeder;
-            BabyController.Instance.SetAnimation(BabyAnimationType.Sit);
-        }
+            case 1:
+                cradleDropPoint.gameObject.SetActive(true);
+                houseExitDoor.PlayDoorBell(true);
+                baby.SetAnimation(BabyAnimationType.CryLay);
+                break;
 
-        if (GamePreference.selectedLevel == 3)
-        {
-            BabyController.Instance.requireItem = ItemType.Facewash;
-            BabyController.Instance.SetAnimation(BabyAnimationType.Sit);
-            BabyController.Instance.babyDirtyFace.SetActive(true);
-        }
+            case 2:
+                baby.requireItem = ItemType.Feeder;
+                baby.SetAnimation(BabyAnimationType.CrySit);
+                break;
 
-        if (GamePreference.selectedLevel == 4)
-        {
-            BabyController.Instance.requireItem = ItemType.Cloth;
-            BabyController.Instance.SetAnimation(BabyAnimationType.Sit);
-        }
+            case 3:
+                baby.requireItem = ItemType.Facewash;
+                baby.SetAnimation(BabyAnimationType.CrySit);
+                baby.babyDirtyFace.SetActive(true);
+                break;
 
-        if (GamePreference.selectedLevel == 5)
-        {
-            BabyController.Instance.requireItem = ItemType.Toy;
-            BabyController.Instance.SetAnimation(BabyAnimationType.Sit);
-        }
+            case 4:
+                baby.requireItem = ItemType.Cloth;
+                baby.SetAnimation(BabyAnimationType.CrySit);
+                break;
 
-        if (GamePreference.selectedLevel == 6)
-        { 
-            babyCryingCradle.Play();
-            baby.SetActiveAndPositionAndRotation(false, null);
-        }
+            case 5:
+                baby.requireItem = ItemType.Toy;
+                baby.SetAnimation(BabyAnimationType.CrySit);
+                break;
 
-        if (GamePreference.selectedLevel == 7)
-        {
-            BabyController.Instance.SetAnimation(BabyAnimationType.Sit);
-            BabyController.Instance.canPickBaby = false;
-        }
+            case 6:
+                babyCryingCradle.Play();
+                baby.SetActiveAndPositionAndRotation(false, null);
+                break;
 
-        if (GamePreference.selectedLevel == 8)
-        {
-            BabyController.Instance.PlayAudio(BabyAnimationType.Cry, true);
+            case 7:
+                baby.SetAnimation(BabyAnimationType.CrySit);
+                baby.canPickBaby = false;
+                break;
 
-            BabyController.Instance.SetAnimation(BabyAnimationType.Sit);
-            axeBlueGlow.transform.parent.tag = "Untagged";
+            case 8:
+                baby.SetAnimation(BabyAnimationType.CrySit);
+                axeBlueGlow.transform.parent.tag = "Untagged";
+                axeBlueGlow.Stop();
+                Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().Play();
+                break;
 
-            axeBlueGlow.Stop();
+            case 9:
+                SetupPossessedBaby(BabyAnimationType.AngrySit, BabyAnimationType.AngrySit);
+                baby.canPickBaby = false;
+                break;
 
-            Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().Play();
-        }
-
-
-        if(GamePreference.selectedLevel == 9)
-        {
-            BabyController.Instance.babyEyesRed.color = Color.red;
-
-            BabyController.Instance.SetAnimation(BabyAnimationType.AngrySit);
-
-            BabyController.Instance.PlayAudio(BabyAnimationType.AngrySit, true);
-
-            baby.GetComponent<Rigidbody>().isKinematic = true;
-            baby.GetComponent<Rigidbody>().useGravity = false;
-
-            baby.tag = "Untagged";
-
-        }
-        else
-        {
-            BabyController.Instance.babyEyesRed.color = Color.white;
-        }
-
-        if(GamePreference.selectedLevel == 10)
-        {
-
-            Items.instance.fireLvl10.GetComponentInChildren<AudioSource>().Play();
-
-            for (int i = 0; i < flyingFurniture.Length; i++)
-            {
-                flyingFurniture[i].GetComponent<Rigidbody>().useGravity = false;
-                flyingFurniture[i].GetComponent<Rigidbody>().AddForce(10, 10, 10);
-            }
-
-            baby.tag = "Untagged";
-
-            BabyController.Instance.babyEyesRed.color = Color.red;
-
-            BabyController.Instance.SetAnimation(BabyAnimationType.Fly);
-            
-
-            BabyController.Instance.PlayAudio(BabyAnimationType.AngrySit, true);
-
-            baby.GetComponent<Rigidbody>().isKinematic = true;
-            baby.GetComponent<Rigidbody>().useGravity = false;
-
-
-            UIManager.instance.nextButton.SetActive(false);
-            UIManager.instance.rateusButton.SetActive(true);
-
-            BabyController.Instance.MuteAudio(true);
-
+            case 10:
+                SetupPossessedBaby(BabyAnimationType.Fly, BabyAnimationType.AngrySit);
+                SetupFlyingFurniture();
+                baby.requireItem = ItemType.Talisman;
+                baby.canPickBaby = false;
+                UIManager.instance.nextButton.SetActive(false);
+                UIManager.instance.rateusButton.SetActive(true);
+                break;
         }
     }
+
+    void SetupPossessedBaby(BabyAnimationType animation, BabyAnimationType audio)
+    {
+        baby.babyEyesRed.color = Color.red;
+        baby.SetAnimation(animation);
+        baby.PlayAudio(audio);
+        baby.rb.isKinematic = true;
+        baby.rb.useGravity = false;
+    }
+
+    void SetupFlyingFurniture()
+    {
+        foreach (var furniture in flyingFurniture)
+        {
+            var rb = furniture.GetComponent<Rigidbody>();
+            rb.useGravity = false;
+            rb.AddForce(10, 10, 10);
+        }
+    }
+
+    public void Crack()
+    {
+        for (int i = 0; i < Cracker.Length; i++)
+        {
+            if (!Cracker[i].activeInHierarchy)
+            {
+                Cracker[i].SetActive(true);
+                AudioManager.Instance.PlaySFX(SFX.DoorBreak);
+
+                if (i == Cracker.Length - 1)
+                {
+                    babyRoomDoor.isDoorLock = false;
+                    Destroy(PickDropController.instance.heldPickable.gameObject);
+                }
+                return;
+            }
+        }
+    }
+
     public void LevelComplete()
     {
-        DOVirtual.DelayedCall(2f, () => {
+        DOVirtual.DelayedCall(2f, () =>
+        {
             UIManager.instance.LvlCompleteON();
             AudioManager.Instance.PlaySFX(SFX.LevelComplete);
-            int currentPlayerPrefs = GamePreference.openLevels;
 
-            if(currentPlayerPrefs < 9 && GamePreference.selectedLevel == currentPlayerPrefs+1)
-            {
-                GamePreference.openLevels = currentPlayerPrefs+1;
-            }
+            int currentOpen = GamePreference.openLevels;
+            if (currentOpen < 9 && Level == currentOpen + 1)
+                GamePreference.openLevels = currentOpen + 1;
+
             ArcadiaSdkManager.Agent.ShowRateUs();
-            AA_AnalyticsManager.Agent.GameCompleteAnalytics(GamePreference.selectedLevel);
+            AA_AnalyticsManager.Agent.GameCompleteAnalytics(Level);
         });
     }
-    public void OnTaskReceived(TaskType taskType)
+
+    void OnTaskReceived(TaskType taskType)
     {
-        if(taskType == TaskType.CheckBabyRoom)
-        {
+        if (taskType == TaskType.CheckBabyRoom)
             SpawnBabyInKitchen();
-        }
+        if(taskType == TaskType.FollowBabyVoice)
+            player.GetComponent<PlayerAnimationController>().SetAnimation(PlayerAnimation.Unconscious);
     }
-    public void SpawnBabyInKitchen()
+
+    void SpawnBabyInKitchen()
     {
         babyCryingCradle.Stop();
         baby.gameObject.SetActive(true);
-        BabyController.Instance.SetAnimation(BabyAnimationType.Sit);
-        DOVirtual.DelayedCall(2f, () => BabyController.Instance.PlayAudio(BabyAnimationType.Cry, true));
-        BabyController.Instance.OnPick+=()=>cradleDropPoint.gameObject.SetActive(true);
+        baby.SetAnimation(BabyAnimationType.CrySit);
+        DOVirtual.DelayedCall(2f, () => baby.PlayAudio(BabyAnimationType.CrySit));
+        baby.OnPick -= OnBabyPickedInKitchen;
+        baby.OnPick += OnBabyPickedInKitchen;
     }
+
+    void OnBabyPickedInKitchen() => cradleDropPoint.gameObject.SetActive(true);
 }

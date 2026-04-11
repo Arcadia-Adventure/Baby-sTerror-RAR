@@ -25,24 +25,15 @@ public class BabyAudioController : MonoBehaviour
             _clipLookup[entry.animationType] = entry.clip;
     }
 
-    public void Play(BabyAnimationType animationType, bool loop = false)
+    public void Play(BabyAnimationType audioType)
     {
-        if (!_clipLookup.TryGetValue(animationType, out var clip) || clip == null)
+        if (!_clipLookup.TryGetValue(audioType, out var clip) || clip == null)
             return;
 
         audioSource.Stop();
-        audioSource.loop = loop;
-
-        if (loop)
-        {
-            audioSource.clip = clip;
-            audioSource.Play();
-        }
-        else
-        {
-            audioSource.Stop();
-            audioSource.PlayOneShot(clip);
-        }
+        audioSource.loop = audioType == BabyAnimationType.CrySit || audioType == BabyAnimationType.AngrySit;
+        audioSource.clip = clip;
+        audioSource.Play();
     }
 
     public void Stop()

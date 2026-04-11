@@ -10,38 +10,41 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     [SerializeField] private TextMeshProUGUI[] taskTxt;
     [SerializeField] private Color completeTaskColor;
 
-    private int currentTaskIndex;
     private int totalTaskCount;
+    private List<TaskInfo> taskInfos;
 
     public void Initialize(ObjectiveManager.LevelTasks levelTasks)
     {
         levelnoTxt.text = levelTasks.levelNO;
         missionNameTxt.text = levelTasks.missionName;
         totalTaskCount = levelTasks.taskInfos.Count;
+        taskInfos = levelTasks.taskInfos;
 
         for (int i = 0; i < totalTaskCount; i++)
         {
             taskTxt[i].text = levelTasks.taskInfos[i].description;
             taskTxt[i].gameObject.SetActive(i == 0);
         }
-        currentTaskIndex = 0;
     }
 
-    public void UpdateTask(TaskInfo taskInfo)
+    public void UpdateTask(int taskIndex)
     {
-        int index = currentTaskIndex;
-        print($"Updating Task: {taskInfo.description}");
+        if (taskIndex < 0 || taskIndex >= totalTaskCount) return;
 
-        if (taskTxt[index].text.Contains("complete")) return;
+        print($"Updating Task [{taskIndex}]: {taskInfos[taskIndex].description}");
 
-        taskTxt[index].text = $"{taskInfo.description} (complete)";
-        taskTxt[index].color = completeTaskColor;
+        taskTxt[taskIndex].text = $"{taskInfos[taskIndex].description} (complete)";
+        taskTxt[taskIndex].color = completeTaskColor;
+        taskTxt[taskIndex].gameObject.SetActive(true);
 
-        int nextIndex = index + 1;
-        if (nextIndex < totalTaskCount && taskTxt[nextIndex] != null)
+        // Reveal the next pending task that isn't visible yet
+        for (int i = 0; i < totalTaskCount; i++)
         {
-            taskTxt[nextIndex].gameObject.SetActive(true);
+            if (!taskInfos[i].isCompleted && !taskTxt[i].gameObject.activeSelf)
+            {
+                taskTxt[i].gameObject.SetActive(true);
+                break;
+            }
         }
-        currentTaskIndex++;
     }
 }

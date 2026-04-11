@@ -49,7 +49,6 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
     }
     private void Start()
     {
-
         CurrentLevelTasks = levelsTasks[GamePreference.selectedLevel - 1];
         TotalTasks = CurrentLevelTasks.taskInfos.Count;
         objectiveUIController.Initialize(CurrentLevelTasks);
@@ -73,13 +72,15 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
 
     void OnTaskCompleted(TaskType taskType)
     {
-        if (!TryGetTaskInfo(taskType, out var taskInfo)) return;
-        if(taskInfo.isCompleted ) return;
+        int taskIndex = CurrentLevelTasks.taskInfos.FindIndex(t => t.taskType == taskType && !t.isCompleted);
+        if (taskIndex < 0) return;
+
+        var taskInfo = CurrentLevelTasks.taskInfos[taskIndex];
         taskInfo.isCompleted = true;
         taskInfo.OnComplete?.Invoke(taskType);
         
         OnTaskReceived?.Invoke(taskType);
-        objectiveUIController.UpdateTask(taskInfo);
+        objectiveUIController.UpdateTask(taskIndex);
 
         if (IsLevelCompleted()) 
             GamePlayManager.Instance.LevelComplete();

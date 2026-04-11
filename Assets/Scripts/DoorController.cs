@@ -9,6 +9,7 @@ public class DoorController : Interactable
     public List<GameObject> crackEffects;
     public Vector3 doorOpen;
     public Vector3 doorClose;
+    public TaskType onLockedCheckTask;
     public TaskType onDoorBreakTask;
     public AudioSource audioSource;
     public AudioClip lockedDoorSFX;
@@ -32,6 +33,7 @@ public class DoorController : Interactable
     }
     public void DoorOpenClose()
     {
+        if(isDoorLock) ObjectiveManager.OnTaskEventReceived(onLockedCheckTask);
         if (isDoorLock == false)
         {
             if (isDoorOpen == false)
