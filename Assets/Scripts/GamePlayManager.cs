@@ -100,6 +100,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
         switch (Level)
         {
             case 1:
+                AudioSources.Instance.PlayDoorKnocking(1f, true);
                 cradleDropPoint.gameObject.SetActive(true);
                 houseExitDoor.PlayDoorBell(true);
                 baby.SetAnimation(BabyAnimationType.CryLay);
@@ -173,6 +174,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
         foreach (var furniture in flyingFurniture)
         {
             var rb = furniture.GetComponent<Rigidbody>();
+            rb.isKinematic = false;
             rb.useGravity = false;
             rb.AddForce(10, 10, 10);
         }

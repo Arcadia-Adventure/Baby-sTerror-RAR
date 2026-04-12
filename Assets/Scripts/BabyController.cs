@@ -1,5 +1,7 @@
+using System;
 using Ommy.Prefs;
 using UnityEngine;
+using DG.Tweening;
 
 public class BabyController : PickableItem
 {
@@ -8,6 +10,7 @@ public class BabyController : PickableItem
     {
         if(Instance == null) Instance = this;
     }
+    public float cryThreshold = 10f;
     public bool canPickBaby = true;
     public ItemType requireItem = ItemType.None;
     [SerializeField] private BabyAnimationController babyAnimationController;
@@ -35,9 +38,34 @@ public class BabyController : PickableItem
         StopAudio();
         babyAnimationController.SetAnimation(BabyAnimationType.Fly);
     }
+    public override void ReleaseObject()
+    {
+        rb.useGravity = true;
+        rb.linearDamping = 1;
+        transform.parent = null;
+        gameObject.layer = LayerMask.NameToLayer("Interactable");
+    }
     public override void DropObject()
     {
+        OnDropBaby();
         base.DropObject();
+    }
+    public void OnDropBaby()
+    {
+        //play crying sound if hit with speed more than 10
+        if(rb.linearVelocity.magnitude > cryThreshold)
+        {
+            SetAnimation(BabyAnimationType.Drop, 
+            onComplete: () => 
+            {
+                SetAnimation(BabyAnimationType.CryStand);
+            }
+            );
+        }
+        else
+        {
+            SetAnimation(BabyAnimationType.Drop);
+        }
     }
     public void SetActiveAndPositionAndRotation(bool active, Transform targetTransform)
     {
@@ -54,9 +82,9 @@ public class BabyController : PickableItem
 
     public void MuteAudio(bool mute) => babyAudioController.Mute(mute);
 
-    public void SetAnimation(BabyAnimationType animationType, bool withAudio = true)
+    public void SetAnimation(BabyAnimationType animationType, bool withAudio = true, Action onComplete = null)
     {
-        if(withAudio) PlayAudio(animationType);
-        babyAnimationController.SetAnimation(animationType);
+        if (withAudio) PlayAudio(animationType);
+        babyAnimationController.SetAnimation(animationType, onComplete);
     }
 }

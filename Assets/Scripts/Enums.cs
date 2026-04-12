@@ -7,6 +7,8 @@ public enum BabyAnimationType
     Idle = 4,
     AngrySit = 5,
     CryLay = 6,
+    Drop = 7,
+    CryStand = 8,
 }
 public enum TaskType
 {

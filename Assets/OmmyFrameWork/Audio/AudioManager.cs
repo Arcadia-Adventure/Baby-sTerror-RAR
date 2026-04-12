@@ -11,6 +11,7 @@ namespace Ommy.Audio
         PickItem,
         LevelComplete,
         DoorBreak,
+        DropItem,
     }//enum end
 
     [System.Serializable]

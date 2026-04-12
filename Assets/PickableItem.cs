@@ -38,7 +38,8 @@ public class PickableItem : Interactable
     }
     public virtual void PickObject(Transform parent)
     {
-        AudioManager.Instance.PlaySFX(SFX.PickItem);
+        if(pickSFX != null) AudioManager.Instance.PlaySFX(pickSFX);
+        else AudioManager.Instance.PlaySFX(SFX.PickItem);
         if (glowParticle != null) glowParticle.Stop();
         rb.useGravity = false;
         rb.isKinematic = false;
@@ -70,6 +71,8 @@ public class PickableItem : Interactable
         rb.AddForce(transform.forward * 1, ForceMode.Impulse);
         rb.AddForce(transform.up * 2, ForceMode.Impulse);
         ReleaseObject();
+        if(dropSFX != null) AudioManager.Instance.PlaySFX(dropSFX);
+        else AudioManager.Instance.PlaySFX(SFX.DropItem);
         OnDrop?.Invoke();
     }
     public virtual void ReleaseObject()

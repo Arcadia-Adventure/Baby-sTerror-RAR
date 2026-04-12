@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
 using Ommy.Audio;
+using UnityEngine.Events;
 
 public class DoorController : Interactable
 {
@@ -16,7 +17,7 @@ public class DoorController : Interactable
     public AudioClip doorOpenSFX;
     public AudioClip doorCloseSFX;
     public AudioClip doorBellSFX;
-
+    public UnityEvent<bool> onDoorOpen;
     public bool isDoorOpen = false;
 
     public bool isDoorLock;
@@ -36,6 +37,7 @@ public class DoorController : Interactable
         if(isDoorLock) ObjectiveManager.OnTaskEventReceived(onLockedCheckTask);
         if (isDoorLock == false)
         {
+            onDoorOpen.Invoke(!isDoorOpen);
             if (isDoorOpen == false)
             {
                 transform.DORotate(doorOpen, 0.5f);

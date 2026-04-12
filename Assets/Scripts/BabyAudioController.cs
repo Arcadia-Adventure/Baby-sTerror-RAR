@@ -31,7 +31,7 @@ public class BabyAudioController : MonoBehaviour
             return;
 
         audioSource.Stop();
-        audioSource.loop = audioType == BabyAnimationType.CrySit || audioType == BabyAnimationType.AngrySit;
+        audioSource.loop = audioType.ToString().Contains("Cry") || audioType.ToString().Contains("Angry");
         audioSource.clip = clip;
         audioSource.Play();
     }
