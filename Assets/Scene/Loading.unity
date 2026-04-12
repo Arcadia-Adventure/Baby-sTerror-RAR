@@ -1002,6 +1002,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3409731864355045134, guid: 597a7f9a1c74ad0439b42857c548f14b, type: 3}
+      propertyPath: _bgMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: ad8d9836b73ddb042a22a19f82420426, type: 3}
+    - target: {fileID: 3409731864355045134, guid: 597a7f9a1c74ad0439b42857c548f14b, type: 3}
       propertyPath: _sfxClips.Array.size
       value: 5
       objectReference: {fileID: 0}

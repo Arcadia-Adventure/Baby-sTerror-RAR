@@ -53,6 +53,8 @@ public class MainMenuManager : MonoBehaviour
 		SetMusicSavedValue();
 
 		SetSoundSavedValue();
+
+		AudioManager.Instance.StartGame();
 	}
 
 	public void MoreGames()

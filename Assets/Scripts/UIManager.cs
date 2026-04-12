@@ -204,7 +204,8 @@ public class UIManager : MonoBehaviour
         AudioManager.Instance.PlaySFX(SFX.Click);
         BabyController.Instance.MuteAudio(true);
         GamePlayManager.Instance.RainBG.mute = true;
-        AudioManager.Instance.SetBGSetting(false);
+        AudioManager.Instance.SetBGSetting(true);
+        AudioManager.Instance.StartGame();
     }
 
 

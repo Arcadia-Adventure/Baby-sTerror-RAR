@@ -67,6 +67,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
     {
         RainBG.volume = 0.2f;
         RainBG.Play();
+        AudioManager.Instance.GameEnd();
         AudioManager.Instance.SetBGSetting(false);
 
         player.transform.SetPositionAndRotation(
@@ -100,7 +101,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
         switch (Level)
         {
             case 1:
-                AudioSources.Instance.PlayDoorKnocking(1f, true);
+                AudioSources.Instance.PlayDoorKnocking(3f, true);
                 cradleDropPoint.gameObject.SetActive(true);
                 houseExitDoor.PlayDoorBell(true);
                 baby.SetAnimation(BabyAnimationType.CryLay);
