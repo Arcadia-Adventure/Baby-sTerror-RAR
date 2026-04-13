@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using Ommy.Audio;
 using UnityEngine;
 
 public class PlayerFootSteps : MonoBehaviour
@@ -8,7 +7,7 @@ public class PlayerFootSteps : MonoBehaviour
     public Rigidbody rb;
     [Header("Footstep Audio Settings")]
     public float[] VolumeRange = {0.8f, 1f};
-    public AudioSource footSteps;
+    public MyAudioSource footSteps;
 
     private void Start()
     {

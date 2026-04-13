@@ -112,6 +112,9 @@ public class MainMenuManager : MonoBehaviour
         {
 			soundOff.SetActive(false);
 			AudioManager.Instance.SetSFXSetting(true);
+			AudioManager.Instance.MuteCategory(AudioCategory.Ambient, false);
+			AudioManager.Instance.MuteCategory(AudioCategory.Voice, false);
+			AudioManager.Instance.MuteCategory(AudioCategory.SFX, false);
 			soundOn.SetActive(true);
 			sound = true;
         }
@@ -119,6 +122,9 @@ public class MainMenuManager : MonoBehaviour
         {
 			soundOn.SetActive(false);
 			AudioManager.Instance.SetSFXSetting(false);
+			AudioManager.Instance.MuteCategory(AudioCategory.Ambient, true);
+			AudioManager.Instance.MuteCategory(AudioCategory.Voice, true);
+			AudioManager.Instance.MuteCategory(AudioCategory.SFX, true);
 			soundOff.SetActive(true);
 
 			sound = false;
@@ -208,6 +214,9 @@ public class MainMenuManager : MonoBehaviour
         {
 			soundOn.SetActive(false);
 			AudioManager.Instance.SetSFXSetting(false);
+			AudioManager.Instance.MuteCategory(AudioCategory.Ambient, true);
+			AudioManager.Instance.MuteCategory(AudioCategory.Voice, true);
+			AudioManager.Instance.MuteCategory(AudioCategory.SFX, true);
 			soundOff.SetActive(true);
 
 			sound = false;
@@ -218,6 +227,9 @@ public class MainMenuManager : MonoBehaviour
         {
 			soundOff.SetActive(false);
 			AudioManager.Instance.SetSFXSetting(true);
+			AudioManager.Instance.MuteCategory(AudioCategory.Ambient, false);
+			AudioManager.Instance.MuteCategory(AudioCategory.Voice, false);
+			AudioManager.Instance.MuteCategory(AudioCategory.SFX, false);
 			soundOn.SetActive(true);
 
 			AudioManager.Instance.PlaySFX(SFX.Click);

@@ -76,9 +76,23 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
         if (taskIndex < 0) return;
 
         var taskInfo = CurrentLevelTasks.taskInfos[taskIndex];
+
+        if (taskInfo.completePreviousTasks)
+        {
+            for (int i = 0; i < taskIndex; i++)
+            {
+                var priorTask = CurrentLevelTasks.taskInfos[i];
+                if (!priorTask.isCompleted)
+                {
+                    priorTask.isCompleted = true;
+                    priorTask.OnComplete?.Invoke(priorTask.taskType);
+                    OnTaskReceived?.Invoke(priorTask.taskType);
+                    objectiveUIController.UpdateTask(i);
+                }
+            }
+        }
         taskInfo.isCompleted = true;
         taskInfo.OnComplete?.Invoke(taskType);
-        
         OnTaskReceived?.Invoke(taskType);
         objectiveUIController.UpdateTask(taskIndex);
 
@@ -101,6 +115,8 @@ public class TaskInfo
     public bool isCompleted;
     public int requireLevel = -1;
     public TaskType taskType;
+    [Tooltip("When enabled, completing this task will also mark all previous incomplete tasks as completed.")]
+    public bool completePreviousTasks;
     [TextArea(2, 6)]
     public string description;
     public UnityEvent<TaskType> OnComplete;

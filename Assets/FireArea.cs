@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using Ommy.Audio;
 using UnityEngine;
 
 public class FireArea : MonoBehaviour
 {
     public TaskType onFireEndTask = TaskType.FireEnded;
     public List<ParticleSystem> fireObjs;
+    public MyAudioSource fireAudio;
     public void RemoveFireObject(GameObject fireObj)
     {
         ParticleSystem ps = fireObj.GetComponent<ParticleSystem>();
@@ -13,6 +15,15 @@ public class FireArea : MonoBehaviour
         if(fireObjs.Count == 0)
         {
             ObjectiveManager.OnTaskEventReceived(onFireEndTask);
+            fireAudio.Stop();
         }
     } 
+    public void ActivateFire()
+    {
+        foreach (var fireObj in fireObjs)
+        {
+            fireObj.Play();
+        }
+        fireAudio.Play();
+    }
 }

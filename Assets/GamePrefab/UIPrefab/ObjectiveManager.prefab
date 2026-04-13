@@ -1,0 +1,248 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &165558006109712565
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6568193915974216305}
+  - component: {fileID: 8815921918839854112}
+  m_Layer: 0
+  m_Name: ObjectiveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6568193915974216305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165558006109712565}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8815921918839854112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165558006109712565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c347501c3516411aa6c331e46a7f919, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 0
+  levelsTasks:
+  - levelNO: Night 1
+    missionName: "Who\u2019s at the Door?"
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 1
+      completePreviousTasks: 0
+      description: -Answer the ringing doorbell and find the baby.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 8
+      completePreviousTasks: 0
+      description: -Pick up the baby and settle it in Bedroom.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 2
+    missionName: The Baby is Hungry
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 2
+      completePreviousTasks: 0
+      description: -Find the Feeder in the Kitchen.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 11
+      completePreviousTasks: 0
+      description: -Feed the baby.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 3
+    missionName: Something Feels Wrong
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 19
+      completePreviousTasks: 0
+      description: -Pick up the baby and take it to the washroom.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 20
+      completePreviousTasks: 0
+      description: "-Find the facewash and clean the baby\u2019s face."
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 4
+    missionName: Cold Whispers
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 3
+      completePreviousTasks: 0
+      description: -Find warm clothes for the baby.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 12
+      completePreviousTasks: 0
+      description: "-Change the baby\u2019s clothes."
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 5
+    missionName: "The Baby\u2019s Silent Tears"
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 21
+      completePreviousTasks: 0
+      description: -Find a toy to cheer up the baby.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 22
+      completePreviousTasks: 0
+      description: -Give the toy to the baby.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 6
+    missionName: Vanishing Baby
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 23
+      completePreviousTasks: 0
+      description: "-The baby is crying\u2014check the baby\u2019s Bedroom."
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 8
+      completePreviousTasks: 0
+      description: "-The baby is hiding\u2014find it and put it back to bed."
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 7
+    missionName: Smoke in the Air
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 6
+      completePreviousTasks: 0
+      description: -Find the fire extinguisher
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 24
+      completePreviousTasks: 0
+      description: "-Put out the fire\u2026 but who started it?"
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 8
+    missionName: Trapped Baby.
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 15
+      completePreviousTasks: 0
+      description: "-Check the baby\u2019s Bedroom."
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 25
+      completePreviousTasks: 1
+      description: "-The Bed door won\u2019t open, find an axe and break the door."
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 14
+      completePreviousTasks: 0
+      description: -Pick up the baby and leave the room
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 9
+    missionName: "The Baby\u2019s Voice"
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 26
+      completePreviousTasks: 0
+      description: "-Follow the baby\u2019s voice."
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  - levelNO: Night 10
+    missionName: The Cursed Talisman.
+    taskInfos:
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 4
+      completePreviousTasks: 0
+      description: -Find the talisman.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 10
+      completePreviousTasks: 0
+      description: -Give the talisman to the baby.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+    - isCompleted: 0
+      requireLevel: -1
+      taskType: 8
+      completePreviousTasks: 0
+      description: -Pick up the baby and put it to bed.
+      OnComplete:
+        m_PersistentCalls:
+          m_Calls: []
+  objectiveUIController: {fileID: 0}
+  tasksDetail: {fileID: 11400000, guid: 47fb33193745a44c9b244cb2ac8189e1, type: 2}

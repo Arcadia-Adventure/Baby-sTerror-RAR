@@ -2,18 +2,19 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
 using Ommy.Audio;
+using UnityEngine.VFX;
 public class DropPoint : Interactable
 {
     public ItemType FilledBy = ItemType.None;
     public ItemType acceptableItemType = ItemType.Any;
     public TaskType onDropTaskType = TaskType.None;
+    public ParticleSystem dropAreaVFX;
     public BabyAnimationType whenDropBabyPlayAnim;
     public UnityEvent onItemDrop;
 
     public override void Start()
     {
         base.Start();
-        FilledBy = ItemType.None;
         detectionText = "Drop "+ acceptableItemType.ToString();
     }
     // Check if this drop point can accept the given item
@@ -21,6 +22,7 @@ public class DropPoint : Interactable
         => acceptableItemType == ItemType.Any || acceptableItemType == item.itemType;
     public void DropOnPoint(PickableItem item)
     {
+        dropAreaVFX.Stop();
         item.rb.isKinematic = true;
         item.ReleaseObject();
         item.transform.DOLocalJump(transform.position, 0.5f, 1, 0.5f);

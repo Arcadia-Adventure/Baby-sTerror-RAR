@@ -80,8 +80,6 @@ public class BabyController : PickableItem
 
     public void StopAudio() => babyAudioController.Stop();
 
-    public void MuteAudio(bool mute) => babyAudioController.Mute(mute);
-
     public void SetAnimation(BabyAnimationType animationType, bool withAudio = true, Action onComplete = null)
     {
         if (withAudio) PlayAudio(animationType);

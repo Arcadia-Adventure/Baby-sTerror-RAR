@@ -202,8 +202,7 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 0;
         pausePanel.SetActive(true);
         AudioManager.Instance.PlaySFX(SFX.Click);
-        BabyController.Instance.MuteAudio(true);
-        GamePlayManager.Instance.RainBG.mute = true;
+        AudioManager.Instance.PauseAll();
         AudioManager.Instance.SetBGSetting(true);
         AudioManager.Instance.StartGame();
     }
@@ -212,11 +211,11 @@ public class UIManager : MonoBehaviour
     public void ResumeBtn()
     {
         Time.timeScale = 1;
-        BabyController.Instance.MuteAudio(false);
-        GamePlayManager.Instance.RainBG.mute = false;
         ArcadiaSdkManager.Agent.ShowBanner();
         pausePanel.SetActive(false);
         AudioManager.Instance.PlaySFX(SFX.Click);
+        AudioManager.Instance.ResumeAll();
+        AudioManager.Instance.GameEnd();
         AudioManager.Instance.SetBGSetting(false);
     }
 

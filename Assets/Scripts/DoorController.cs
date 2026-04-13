@@ -12,7 +12,8 @@ public class DoorController : Interactable
     public Vector3 doorClose;
     public TaskType onLockedCheckTask;
     public TaskType onDoorBreakTask;
-    public AudioSource audioSource;
+    public MyAudioSource audioSource;
+    public MyAudioSource doorKnockingSource;
     public AudioClip lockedDoorSFX;
     public AudioClip doorOpenSFX;
     public AudioClip doorCloseSFX;
@@ -44,6 +45,7 @@ public class DoorController : Interactable
                 isDoorOpen = true;
                 AudioManager.Instance.PlaySFX(doorOpenSFX);
                 PlayDoorBell(false);
+                StopDoorKnocking();
             }
             else
             {
@@ -61,8 +63,6 @@ public class DoorController : Interactable
                     transform.DORotate(doorClose, 0.1f);
                 });
             AudioManager.Instance.PlaySFX(lockedDoorSFX);
-            print("hitting axe");
-            GamePlayManager.Instance.doorLock.Play();
         }
         UpdateDetectionText();
     }
@@ -72,6 +72,7 @@ public class DoorController : Interactable
         {
             if(axe.isSwinging && isDoorLock)
             {
+                AudioManager.Instance.PlaySFX(SFX.DoorBreak);
                 if(crackEffects.Any(e => e.activeInHierarchy == false))
                 {
                     crackEffects.FirstOrDefault(e => e.activeInHierarchy == false)?.SetActive(true);
@@ -85,6 +86,18 @@ public class DoorController : Interactable
             }
         }
     }
+    public void PlayDoorKnocking(float initialDelay, float interval = 1f)
+    {
+        if (doorKnockingSource == null) return;
+        doorKnockingSource.PlayRepeating(initialDelay, interval);
+    }
+
+    public void StopDoorKnocking()
+    {
+        if (doorKnockingSource != null)
+            doorKnockingSource.Stop();
+    }
+
     public void PlayDoorBell(bool play)
     {
         if(audioSource == null) return;

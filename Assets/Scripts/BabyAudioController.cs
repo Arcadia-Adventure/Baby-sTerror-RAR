@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Ommy.Audio;
 using UnityEngine;
 public class BabyAudioController : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class BabyAudioController : MonoBehaviour
         public AudioClip clip;
     }
 
-    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private MyAudioSource audioSource;
     [SerializeField] private List<AudioEntry> audioEntries = new();
 
     private Dictionary<BabyAnimationType, AudioClip> _clipLookup;
@@ -18,7 +19,7 @@ public class BabyAudioController : MonoBehaviour
     private void Awake()
     {
         if (audioSource == null)
-            audioSource = GetComponent<AudioSource>();
+            audioSource = GetComponent<MyAudioSource>();
 
         _clipLookup = new Dictionary<BabyAnimationType, AudioClip>();
         foreach (var entry in audioEntries)
@@ -41,8 +42,6 @@ public class BabyAudioController : MonoBehaviour
         audioSource.loop = false;
         audioSource.Stop();
     }
-
-    public void Mute(bool mute) => audioSource.mute = mute;
 
     public bool IsPlaying => audioSource.isPlaying;
 }

@@ -14,6 +14,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
     {
         public GameObject levelObject;
         public Transform playerSpawnPoint, babySpawnPoint;
+        public DropPoint initDropPoint;
         public BabyAnimationType babyAnimationType;
     }
 
@@ -22,13 +23,12 @@ public class GamePlayManager : Singleton<GamePlayManager>
     public GameObject levelsParent;
     public Transform playerSpawnPointsParent;
     public Transform babySpawnPointsParent;
-    public GameObject player;
+    public PlayerController player;
     public BabyController baby;
 
     [Header("Environment")]
-    public AudioSource RainBG;
-    public AudioSource babyCryingCradle;
-    public AudioSource doorLock;
+    public MyAudioSource RainBG;
+    public MyAudioSource babyCryingCradle;
     public DoorController babyRoomDoor;
     public DoorController houseExitDoor;
     public DropPoint cradleDropPoint;
@@ -65,20 +65,26 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     private void Start()
     {
-        RainBG.volume = 0.2f;
         RainBG.Play();
         AudioManager.Instance.GameEnd();
         AudioManager.Instance.SetBGSetting(false);
 
-        player.transform.SetPositionAndRotation(
+        player.gameObject.transform.SetPositionAndRotation(
             CurrentConfig.playerSpawnPoint.position,
             CurrentConfig.playerSpawnPoint.rotation);
 
         CurrentConfig.levelObject.SetActive(true);
 
         var spawnPoint = CurrentConfig.babySpawnPoint;
-        baby.SetActiveAndPositionAndRotation(spawnPoint != null, spawnPoint);
-        baby.SetAnimation(BabyAnimationType.CrySit);
+        if(CurrentConfig.initDropPoint != null)
+        {
+            CurrentConfig.initDropPoint.DropOnPoint(baby);
+        }
+        else
+        {
+            baby.SetActiveAndPositionAndRotation(spawnPoint != null, spawnPoint);
+        }
+        baby.SetAnimation(CurrentConfig.babyAnimationType);
 
         SetupLevel();
 
@@ -101,31 +107,26 @@ public class GamePlayManager : Singleton<GamePlayManager>
         switch (Level)
         {
             case 1:
-                AudioSources.Instance.PlayDoorKnocking(3f, true);
+                houseExitDoor.PlayDoorKnocking(2f,5f);
                 cradleDropPoint.gameObject.SetActive(true);
                 houseExitDoor.PlayDoorBell(true);
-                baby.SetAnimation(BabyAnimationType.CryLay);
                 break;
 
             case 2:
                 baby.requireItem = ItemType.Feeder;
-                baby.SetAnimation(BabyAnimationType.CrySit);
                 break;
 
             case 3:
                 baby.requireItem = ItemType.Facewash;
-                baby.SetAnimation(BabyAnimationType.CrySit);
                 baby.babyDirtyFace.SetActive(true);
                 break;
 
             case 4:
                 baby.requireItem = ItemType.Cloth;
-                baby.SetAnimation(BabyAnimationType.CrySit);
                 break;
 
             case 5:
                 baby.requireItem = ItemType.Toy;
-                baby.SetAnimation(BabyAnimationType.CrySit);
                 break;
 
             case 6:
@@ -134,38 +135,36 @@ public class GamePlayManager : Singleton<GamePlayManager>
                 break;
 
             case 7:
-                baby.SetAnimation(BabyAnimationType.CrySit);
+                Items.instance.bedroomFireArea.ActivateFire();
                 baby.canPickBaby = false;
                 break;
 
             case 8:
-                baby.SetAnimation(BabyAnimationType.CrySit);
-                axeBlueGlow.transform.parent.tag = "Untagged";
-                axeBlueGlow.Stop();
-                Items.instance.fireLvl8.GetComponentInChildren<AudioSource>().Play();
+                Items.instance.bedroomFireArea.ActivateFire();
                 break;
 
             case 9:
-                SetupPossessedBaby(BabyAnimationType.AngrySit, BabyAnimationType.AngrySit);
+                SetupPossessedBaby();
                 baby.canPickBaby = false;
                 break;
 
             case 10:
-                SetupPossessedBaby(BabyAnimationType.Fly, BabyAnimationType.AngrySit);
+                player.SetAnimation(PlayerAnimation.GettingUp);
+                Items.instance.bedroomFireArea.ActivateFire();
+                SetupPossessedBaby();
                 SetupFlyingFurniture();
                 baby.requireItem = ItemType.Talisman;
                 baby.canPickBaby = false;
+                baby.PlayAudio(BabyAnimationType.AngrySit);
                 UIManager.instance.nextButton.SetActive(false);
                 UIManager.instance.rateusButton.SetActive(true);
                 break;
         }
     }
 
-    void SetupPossessedBaby(BabyAnimationType animation, BabyAnimationType audio)
+    void SetupPossessedBaby()
     {
         baby.babyEyesRed.color = Color.red;
-        baby.SetAnimation(animation);
-        baby.PlayAudio(audio);
         baby.rb.isKinematic = true;
         baby.rb.useGravity = false;
     }
@@ -178,25 +177,6 @@ public class GamePlayManager : Singleton<GamePlayManager>
             rb.isKinematic = false;
             rb.useGravity = false;
             rb.AddForce(10, 10, 10);
-        }
-    }
-
-    public void Crack()
-    {
-        for (int i = 0; i < Cracker.Length; i++)
-        {
-            if (!Cracker[i].activeInHierarchy)
-            {
-                Cracker[i].SetActive(true);
-                AudioManager.Instance.PlaySFX(SFX.DoorBreak);
-
-                if (i == Cracker.Length - 1)
-                {
-                    babyRoomDoor.isDoorLock = false;
-                    Destroy(PickDropController.instance.heldPickable.gameObject);
-                }
-                return;
-            }
         }
     }
 
@@ -221,7 +201,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
         if (taskType == TaskType.CheckBabyRoom)
             SpawnBabyInKitchen();
         if(taskType == TaskType.FollowBabyVoice)
-            player.GetComponent<PlayerAnimationController>().SetAnimation(PlayerAnimation.Unconscious);
+            player.SetAnimation(PlayerAnimation.Unconscious);
     }
 
     void SpawnBabyInKitchen()
