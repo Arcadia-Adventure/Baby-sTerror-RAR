@@ -60,12 +60,21 @@ public class GameAnalyticsManager : MonoBehaviour
     {
         GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete,"Level_Complete",levelNo.ToString(),levelNo);
     }
-    public static void CustomEvent(string param,string value)
+    public static void CustomEvent(string param, string value)
     {
+        GameAnalytics.NewDesignEvent(param + ":" + value);
     }
-    public static void AdTrackingAnalytics(String adType,String location)
+    public static void AdTrackingAnalytics(string adType, string location)
     {
-
+        GameAnalytics.NewDesignEvent("ad:" + adType + ":" + location);
+    }
+    public static void DesignEvent(string eventId)
+    {
+        GameAnalytics.NewDesignEvent(eventId);
+    }
+    public static void DesignEvent(string eventId, float value)
+    {
+        GameAnalytics.NewDesignEvent(eventId, value);
     }
     #region GAIDs
 

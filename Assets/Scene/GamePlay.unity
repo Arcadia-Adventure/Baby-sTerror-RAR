@@ -141623,7 +141623,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isDoorOpen: 0
-  isDoorLock: 1
+  isDoorLock: 0
 --- !u!82 &8614458270723852697
 AudioSource:
   m_ObjectHideFlags: 0

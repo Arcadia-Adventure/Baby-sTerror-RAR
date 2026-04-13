@@ -37,6 +37,7 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
         ArcadiaSdkManager.Agent.ShowBanner();
         UnlockLevelsIfNeeded();
         MoveContentView();
+        AA_AnalyticsManager.Agent.TrackScreenView("level_select");
     }
     void OnDisable()
     {
@@ -103,6 +104,7 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
 
     public void LevelSelectBtn(int selectedLevel)
     {
+        AA_AnalyticsManager.Agent.TrackLevelSelected(selectedLevel, GamePreference.openLevels);
         loadingScreen.SetActive(true);
         GamePreference.selectedLevel = selectedLevel;
         SceneManager.LoadSceneAsync("GamePlay");

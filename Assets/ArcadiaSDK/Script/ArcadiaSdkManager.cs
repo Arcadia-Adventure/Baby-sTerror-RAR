@@ -413,6 +413,7 @@ public class ArcadiaSdkManager : MonoBehaviour
             return;
         }
         
+        if (CurrentAdPlacement == "unknown") CurrentAdPlacement = "interstitial_generic";
         ShowLoadingScreen(true);
         successCallBack += () => ShowLoadingScreen(false);
         failCallBack += () => ShowLoadingScreen(false);
@@ -434,6 +435,7 @@ public class ArcadiaSdkManager : MonoBehaviour
             return;
         }
         
+        if (CurrentAdPlacement == "unknown") CurrentAdPlacement = "rewarded_generic";
         ShowLoadingScreen(true);
         successCallBack += (int reward) => ShowLoadingScreen(false);
         failCallBack += () => ShowLoadingScreen(false);
@@ -516,16 +518,23 @@ public class ArcadiaSdkManager : MonoBehaviour
     private void OnAdFailedToLoad(string adUnitId, string error)
     {
         PrintStatus($"Ad failed to load: {adUnitId}, Error: {error}");
+        string adType = ResolveAdType(adUnitId);
+        AA_AnalyticsManager.Agent.TrackAdEvent("failed", adType, CurrentAdPlacement);
     }
     
     private void OnAdShown(string adUnitId)
     {
         PrintStatus($"Ad shown: {adUnitId}");
+        string adType = ResolveAdType(adUnitId);
+        AA_AnalyticsManager.Agent.TrackAdEvent("shown", adType, CurrentAdPlacement);
+        AnalyticsTracker.OnAdShown(adType, CurrentAdPlacement);
     }
     
     private void OnAdClosed(string adUnitId)
     {
         PrintStatus($"Ad closed: {adUnitId}");
+        string adType = ResolveAdType(adUnitId);
+        AA_AnalyticsManager.Agent.TrackAdEvent("closed", adType, CurrentAdPlacement);
         
         // Track when fullscreen ads are closed to prevent back-to-back ads
         // This is when the app returns to foreground, so we start cooldown here
@@ -560,6 +569,18 @@ public class ArcadiaSdkManager : MonoBehaviour
         }
     }
     
+    public static string ResolveAdType(string adUnitId)
+    {
+        if (adUnitId == myGameIds.bannerAdId) return "banner";
+        if (adUnitId == myGameIds.interstitialAdId) return "interstitial";
+        if (adUnitId == myGameIds.rewardedVideoAdId) return "rewarded";
+        if (adUnitId == myGameIds.appOpenAdId) return "app_open";
+        if (adUnitId == myGameIds.mrecAdId) return "mrec";
+        return "unknown";
+    }
+
+    public static string CurrentAdPlacement { get; set; } = "unknown";
+
     public static void PrintStatus(string message)
     {
         if (ArcadiaSdkManager.Agent && ArcadiaSdkManager.Agent.enableLogs)

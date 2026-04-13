@@ -88,7 +88,10 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
         SetupLevel();
 
+        ArcadiaSdkManager.CurrentAdPlacement = "gameplay_banner";
         ArcadiaSdkManager.Agent.ShowBanner();
+        AnalyticsTracker.OnLevelStart(Level);
+        AA_AnalyticsManager.Agent.TrackScreenView("gameplay");
         AA_AnalyticsManager.Agent.GameStartAnalytics(Level);
     }
 
@@ -100,8 +103,8 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     void SetupLevel()
     {
-        houseExitDoor.isDoorLock = Level != 1;
-        babyRoomDoor.isDoorLock = Level == 8;
+        houseExitDoor.SetLocked(Level != 1);
+        babyRoomDoor.SetLocked(Level == 8);
         baby.babyEyesRed.color = Color.white;
 
         switch (Level)

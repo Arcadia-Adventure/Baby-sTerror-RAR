@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum AppState
 {
@@ -44,10 +45,13 @@ public class AppStateEventNotifier : MonoBehaviour
         if (hasFocus)
         {
             AppStateChanged?.Invoke(AppState.Foreground);
+            AA_AnalyticsManager.Agent?.TrackScreenView("app_foreground");
         }
         else
         {
             AppStateChanged?.Invoke(AppState.Background);
+            AA_AnalyticsManager.Agent?.TrackSessionEnd("backgrounded",
+                SceneManager.GetActiveScene().name);
         }
     }
     
@@ -56,10 +60,13 @@ public class AppStateEventNotifier : MonoBehaviour
         if (pauseStatus)
         {
             AppStateChanged?.Invoke(AppState.Background);
+            AA_AnalyticsManager.Agent?.TrackSessionEnd("paused",
+                SceneManager.GetActiveScene().name);
         }
         else
         {
             AppStateChanged?.Invoke(AppState.Foreground);
+            AA_AnalyticsManager.Agent?.TrackScreenView("app_foreground");
         }
     }
 }

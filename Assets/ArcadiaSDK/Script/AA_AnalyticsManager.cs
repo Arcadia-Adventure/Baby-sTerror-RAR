@@ -73,7 +73,80 @@ public class AA_AnalyticsManager : MonoBehaviour
     }
     public void CustomEvent(string param, string value)
     {
-        FirebaseManager.LogEvent("custom",param,value);
-        GameAnalyticsManager.CustomEvent(param,value);
+        FirebaseManager.LogEvent("custom", param, value);
+        GameAnalyticsManager.CustomEvent(param, value);
+    }
+
+    public void TrackScreenView(string screenName)
+    {
+        FirebaseManager.LogScreenView(screenName);
+        GameAnalyticsManager.DesignEvent("screen:" + screenName);
+    }
+
+    public void TrackButtonClick(string buttonName)
+    {
+        FirebaseManager.LogEvent("button_click", "button", buttonName);
+        GameAnalyticsManager.DesignEvent("button:" + buttonName);
+    }
+
+    public void TrackLevelSelected(int level, int openLevels)
+    {
+        FirebaseManager.LogDesignEvent("level_selected",
+            new Firebase.Analytics.Parameter("level", level),
+            new Firebase.Analytics.Parameter("open_levels", openLevels));
+        GameAnalyticsManager.DesignEvent("level_selected:" + level, openLevels);
+    }
+
+    public void TrackObjectiveCompleted(int level, int objectiveIndex, string taskType)
+    {
+        FirebaseManager.LogDesignEvent("objective_completed",
+            new Firebase.Analytics.Parameter("level", level),
+            new Firebase.Analytics.Parameter("objective_index", objectiveIndex),
+            new Firebase.Analytics.Parameter("task_type", taskType),
+            new Firebase.Analytics.Parameter("time_in_level", (int)AnalyticsTracker.TimeSinceLevel));
+        GameAnalyticsManager.DesignEvent("objective:completed:" + level + ":" + objectiveIndex);
+    }
+
+    public void TrackObjectiveStalled(int level, int objectiveIndex, float elapsedSeconds)
+    {
+        FirebaseManager.LogDesignEvent("objective_stalled",
+            new Firebase.Analytics.Parameter("level", level),
+            new Firebase.Analytics.Parameter("objective_index", objectiveIndex),
+            new Firebase.Analytics.Parameter("stall_seconds", (int)elapsedSeconds));
+        GameAnalyticsManager.DesignEvent("objective:stalled:" + level + ":" + objectiveIndex, elapsedSeconds);
+    }
+
+    public void TrackLevelRetry(int level)
+    {
+        AnalyticsTracker.OnLevelRetry();
+        FirebaseManager.LogDesignEvent("level_retry",
+            new Firebase.Analytics.Parameter("level", level),
+            new Firebase.Analytics.Parameter("fail_count", AnalyticsTracker.LevelFailCount));
+        GameAnalyticsManager.GameFailAnalytics(level);
+        GameAnalyticsManager.DesignEvent("level:retry:" + level, AnalyticsTracker.LevelFailCount);
+    }
+
+    public void TrackLevelAbandon(int level, string reason)
+    {
+        FirebaseManager.LogDesignEvent("level_abandon",
+            new Firebase.Analytics.Parameter("level", level),
+            new Firebase.Analytics.Parameter("reason", reason),
+            new Firebase.Analytics.Parameter("objective_index", AnalyticsTracker.CurrentObjectiveIndex),
+            new Firebase.Analytics.Parameter("time_in_level", (int)AnalyticsTracker.TimeSinceLevel),
+            new Firebase.Analytics.Parameter("fail_count", AnalyticsTracker.LevelFailCount));
+        GameAnalyticsManager.DesignEvent("level:abandon:" + level + ":" + reason);
+    }
+
+    public void TrackAdEvent(string eventType, string adType, string placement)
+    {
+        FirebaseManager.LogAdEvent(eventType, adType, placement);
+        GameAnalyticsManager.AdTrackingAnalytics(adType, eventType + ":" + placement);
+    }
+
+    public void TrackSessionEnd(string reason, string scene)
+    {
+        float duration = AnalyticsTracker.TimeSinceSessionStart;
+        FirebaseManager.LogSessionEnd(reason, scene, duration);
+        GameAnalyticsManager.DesignEvent("session:end:" + reason, duration);
     }
 }

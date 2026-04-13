@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using Ommy.Attributes;
 using Ommy.Audio;
 using SickscoreGames.HUDNavigationSystem;
@@ -82,5 +83,15 @@ public class PickableItem : Interactable
         rb.constraints = RigidbodyConstraints.None;
         transform.parent = null;
         gameObject.layer = LayerMask.NameToLayer("Interactable");
+    }
+
+    protected virtual void OnDisable()
+    {
+        DOTween.Kill(transform);
+    }
+
+    protected virtual void OnDestroy()
+    {
+        DOTween.Kill(transform);
     }
 }

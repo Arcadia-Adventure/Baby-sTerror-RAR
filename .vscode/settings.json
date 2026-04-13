@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Baby-sTerror-RAR.sln"
+    "dotnet.defaultSolution": "Baby-sTerror-RAR.slnx"
 }

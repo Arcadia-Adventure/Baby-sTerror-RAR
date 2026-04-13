@@ -28,6 +28,7 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void SetAnimatedCameraActive(bool isActive)
     {
+        if (animatedCam == null || playerCam == null) return;
         animatedCam.gameObject.SetActive(isActive);
         playerCam.gameObject.SetActive(!isActive);
     }
@@ -64,7 +65,7 @@ public class PlayerAnimationController : MonoBehaviour
         Vector3 fallenPos = animatedCam.transform.localPosition + positionOffset;
         float dur = unconsciousDuration;
 
-        var seq = DOTween.Sequence();
+        var seq = DOTween.Sequence().SetTarget(animatedCam.transform);
 
         // Phase 1 - dizzy sway before collapsing
         float swayDur = dur * 0.25f;
@@ -119,7 +120,7 @@ public class PlayerAnimationController : MonoBehaviour
         Vector3 standRot = playerCam.transform.localEulerAngles;
         float dur = gettingUpDuration;
 
-        var seq = DOTween.Sequence();
+        var seq = DOTween.Sequence().SetTarget(animatedCam.transform);
 
         // Phase 1 - eyes flutter: tiny shake as if regaining consciousness
         seq.Append(
@@ -170,6 +171,16 @@ public class PlayerAnimationController : MonoBehaviour
     {
         if (activeSequence != null && activeSequence.IsActive())
             activeSequence.Kill();
+
+        if (animatedCam != null)
+            DOTween.Kill(animatedCam.transform);
+
+        activeSequence = null;
+    }
+
+    private void OnDisable()
+    {
+        KillActive();
     }
 
     private void OnDestroy()

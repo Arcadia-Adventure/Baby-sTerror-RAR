@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Ommy.Audio;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -39,6 +40,7 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject soundOn;
 	public GameObject soundOff;
 	public GameObject restoreButton;
+	public TMP_Text versionText;
 
 	private void Start()
 	{
@@ -46,6 +48,7 @@ public class MainMenuManager : MonoBehaviour
         {
 			restoreButton.SetActive(false);
         }
+        ArcadiaSdkManager.CurrentAdPlacement = "main_menu_banner";
         ArcadiaSdkManager.Agent.ShowBanner();
 		// set ui slider value from player prefs
 		slider.value = PlayerPrefs.GetFloat("MouseSensitivity");
@@ -54,7 +57,12 @@ public class MainMenuManager : MonoBehaviour
 
 		SetSoundSavedValue();
 
+		if (versionText != null)
+			versionText.text = "v" + Application.version;
+
 		AudioManager.Instance.StartGame();
+
+		AA_AnalyticsManager.Agent.TrackScreenView("main_menu");
 	}
 
 	public void MoreGames()
@@ -133,12 +141,14 @@ public class MainMenuManager : MonoBehaviour
 
     public void PlayBtn()
 	{
+		AA_AnalyticsManager.Agent.TrackButtonClick("play");
 		SceneManager.LoadScene("LevelSelection");
 		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
 
 	public void SettingBtn()
-	{ 
+	{
+		AA_AnalyticsManager.Agent.TrackButtonClick("settings");
 		settingPanel.SetActive(true);
 		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
@@ -159,6 +169,7 @@ public class MainMenuManager : MonoBehaviour
 
 	public void QuitBtnYes()
     {
+		AA_AnalyticsManager.Agent.TrackSessionEnd("quit_button", "MainMenu");
 		Application.Quit();
 		AudioManager.Instance.PlaySFX(SFX.Click);
 	}
@@ -180,6 +191,7 @@ public class MainMenuManager : MonoBehaviour
 	
 	public void MusicBtn()
     {
+		AA_AnalyticsManager.Agent.TrackButtonClick("music_toggle");
         if (music)
 		{
 			// Music Off
@@ -210,6 +222,7 @@ public class MainMenuManager : MonoBehaviour
 
 	public void SoundBtn()
     {
+		AA_AnalyticsManager.Agent.TrackButtonClick("sound_toggle");
         if (sound)
         {
 			soundOn.SetActive(false);

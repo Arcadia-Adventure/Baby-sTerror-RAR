@@ -21,6 +21,8 @@ public class GameManager : Singleton<GameManager>
 	{
 		Application.targetFrameRate = 30;
 		OverrideDailyNotification();
+		AnalyticsTracker.Initialize();
+		AA_AnalyticsManager.Agent.TrackScreenView("session_start");
 	}
 	private void OverrideDailyNotification()
 	{

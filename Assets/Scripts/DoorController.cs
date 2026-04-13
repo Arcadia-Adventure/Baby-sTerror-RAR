@@ -27,6 +27,13 @@ public class DoorController : Interactable
         base.Start();
         UpdateDetectionText();
     }
+
+    public void SetLocked(bool locked)
+    {
+        isDoorLock = locked;
+        UpdateDetectionText();
+    }
+
     public void UpdateDetectionText()
     {
         if (isDoorLock) detectionText = "Door is Locked";
@@ -35,7 +42,11 @@ public class DoorController : Interactable
     }
     public void DoorOpenClose()
     {
-        if(isDoorLock) ObjectiveManager.OnTaskEventReceived(onLockedCheckTask);
+        if(isDoorLock)
+        {
+            ObjectiveManager.OnTaskEventReceived(onLockedCheckTask);
+            AA_AnalyticsManager.Agent.TrackButtonClick("locked_door_hit");
+        }
         if (isDoorLock == false)
         {
             onDoorOpen.Invoke(!isDoorOpen);
@@ -79,8 +90,9 @@ public class DoorController : Interactable
                 }
                 else 
                 {
+                    AA_AnalyticsManager.Agent.TrackButtonClick("door_break");
                     ObjectiveManager.OnTaskEventReceived(onDoorBreakTask);
-                    isDoorLock = false;
+                    SetLocked(false);
                     DoorOpenClose();
                 }
             }

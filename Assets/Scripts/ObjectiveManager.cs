@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,7 +12,6 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
 {
     [SerializeField] private List<LevelTasks> levelsTasks;
     [SerializeField] private ObjectiveUIController objectiveUIController;
-
     public int TotalTasks { get; private set; }
     public LevelTasks CurrentLevelTasks { get; private set; }
     
@@ -47,11 +47,18 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
             }
         }
     }
+    float _lastObjectiveTime;
+    bool _stallReported;
+    const float StallThresholdSeconds = 120f;
+
     private void Start()
     {
         CurrentLevelTasks = levelsTasks[GamePreference.selectedLevel - 1];
         TotalTasks = CurrentLevelTasks.taskInfos.Count;
         objectiveUIController.Initialize(CurrentLevelTasks);
+        _lastObjectiveTime = Time.realtimeSinceStartup;
+        _stallReported = false;
+        StartCoroutine(StallDetectionLoop());
     }
 
     public static void OnTaskEventReceived(TaskType taskType)
@@ -96,8 +103,31 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
         OnTaskReceived?.Invoke(taskType);
         objectiveUIController.UpdateTask(taskIndex);
 
+        _lastObjectiveTime = Time.realtimeSinceStartup;
+        _stallReported = false;
+        AnalyticsTracker.OnObjectiveCompleted(taskIndex);
+        AA_AnalyticsManager.Agent.TrackObjectiveCompleted(
+            GamePreference.selectedLevel, taskIndex, taskType.ToString());
+
         if (IsLevelCompleted()) 
             GamePlayManager.Instance.LevelComplete();
+    }
+
+    IEnumerator StallDetectionLoop()
+    {
+        var wait = new WaitForSecondsRealtime(30f);
+        while (true)
+        {
+            yield return wait;
+            if (_stallReported) continue;
+            float elapsed = Time.realtimeSinceStartup - _lastObjectiveTime;
+            if (elapsed >= StallThresholdSeconds)
+            {
+                _stallReported = true;
+                AA_AnalyticsManager.Agent.TrackObjectiveStalled(
+                    GamePreference.selectedLevel, CurrentTaskIndex, elapsed);
+            }
+        }
     }
 
     [Serializable]

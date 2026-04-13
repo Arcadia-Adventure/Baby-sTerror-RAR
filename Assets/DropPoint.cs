@@ -25,6 +25,7 @@ public class DropPoint : Interactable
         dropAreaVFX.Stop();
         item.rb.isKinematic = true;
         item.ReleaseObject();
+        DOTween.Kill(item.transform);
         item.transform.DOLocalJump(transform.position, 0.5f, 1, 0.5f);
         item.transform.DORotate(transform.eulerAngles, 0.5f);
         ObjectiveManager.OnTaskEventReceived(onDropTaskType);

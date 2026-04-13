@@ -20,6 +20,7 @@ public class BabyItemHandler : MonoBehaviour
         var baby = BabyController.Instance;
         Debug.Log("item: " + item.itemType + " given to baby");
 
+        DOTween.Kill(item.transform);
         item.ReleaseObject();
         item.rb.isKinematic = true;
         item.collider.enabled = false;
@@ -32,6 +33,7 @@ public class BabyItemHandler : MonoBehaviour
         {
             ApplyItemEffect(item.itemType);
             baby.requireItem = ItemType.None;
+            DOTween.Kill(item.transform);
             Destroy(item.gameObject);
         });
     }

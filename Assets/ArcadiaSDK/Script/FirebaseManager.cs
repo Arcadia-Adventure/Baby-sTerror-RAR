@@ -71,8 +71,35 @@ public class FirebaseManager : MonoBehaviour
 
     public static void LogLevelCompleteEvent(int levelName, int score=-1)
     {
-       FirebaseAnalytics.LogEvent("levelComplete",
+       FirebaseAnalytics.LogEvent("level_complete",
            new Parameter(FirebaseAnalytics.ParameterLevelName, levelName),
            new Parameter(FirebaseAnalytics.ParameterScore, score));
+    }
+
+    public static void LogScreenView(string screenName)
+    {
+        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventScreenView,
+            new Parameter(FirebaseAnalytics.ParameterScreenName, screenName));
+    }
+
+    public static void LogDesignEvent(string eventName, params Parameter[] parameters)
+    {
+        FirebaseAnalytics.LogEvent(eventName, parameters);
+    }
+
+    public static void LogAdEvent(string eventType, string adType, string placement)
+    {
+        FirebaseAnalytics.LogEvent("ad_event",
+            new Parameter("event_type", eventType),
+            new Parameter("ad_type", adType),
+            new Parameter("placement", placement));
+    }
+
+    public static void LogSessionEnd(string reason, string scene, float duration)
+    {
+        FirebaseAnalytics.LogEvent("session_end",
+            new Parameter("reason", reason),
+            new Parameter("scene", scene),
+            new Parameter("duration_seconds", (int)duration));
     }
 }

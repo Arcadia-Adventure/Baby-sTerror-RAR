@@ -23,6 +23,7 @@ public class HintButton : BaseButton
     }
     public void RechargeAndShowHint()
     {
+        ArcadiaSdkManager.CurrentAdPlacement = "hint_rewarded";
         ArcadiaSdkManager.Agent.ShowRewardedAd((int x) =>
         {
             GamePreference.hintCount++;

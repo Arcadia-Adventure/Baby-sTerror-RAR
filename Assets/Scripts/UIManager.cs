@@ -176,6 +176,7 @@ public class UIManager : MonoBehaviour
     }
     public void RateUsClick()
     {
+        AA_AnalyticsManager.Agent.TrackButtonClick("rate_us");
         Application.OpenURL("market://details?id=" + Application.identifier);
     }
     public void LvlCompleteON()
@@ -187,7 +188,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnApplicationQuit() 
     {
-		AA_AnalyticsManager.Agent.CustomEvent("Exit Game Level",GamePreference.selectedLevel.ToString());
+		AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "app_quit");
+		AA_AnalyticsManager.Agent.TrackSessionEnd("app_quit", AnalyticsTracker.GetCurrentScene());
     }
     public void DoorOpenCloseBtn()
     {
@@ -198,6 +200,8 @@ public class UIManager : MonoBehaviour
 
     public void PauseBtn()
     {
+        AA_AnalyticsManager.Agent.TrackButtonClick("pause");
+        ArcadiaSdkManager.CurrentAdPlacement = "pause_interstitial";
         ArcadiaSdkManager.Agent.ShowInterstitialAd();
         Time.timeScale = 0;
         pausePanel.SetActive(true);
@@ -210,6 +214,7 @@ public class UIManager : MonoBehaviour
 
     public void ResumeBtn()
     {
+        AA_AnalyticsManager.Agent.TrackButtonClick("resume");
         Time.timeScale = 1;
         ArcadiaSdkManager.Agent.ShowBanner();
         pausePanel.SetActive(false);
@@ -222,6 +227,7 @@ public class UIManager : MonoBehaviour
 
     public void HomeBtn() 
     {
+        AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "home_button");
         Time.timeScale = 1;
         SceneManager.LoadScene("MainMenu");
         AudioManager.Instance.PlaySFX(SFX.Click);
@@ -230,7 +236,9 @@ public class UIManager : MonoBehaviour
 
     public void ReplayBtn()
     {
+        AA_AnalyticsManager.Agent.TrackLevelRetry(GamePreference.selectedLevel);
         Time.timeScale = 1;
+        ArcadiaSdkManager.CurrentAdPlacement = "replay_rewarded";
         if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
@@ -240,7 +248,9 @@ public class UIManager : MonoBehaviour
    
     public void NextBtn()
     {
+        AA_AnalyticsManager.Agent.TrackButtonClick("next_level");
         Time.timeScale = 1;
+        ArcadiaSdkManager.CurrentAdPlacement = "next_rewarded";
         if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
         GamePreference.selectedLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
