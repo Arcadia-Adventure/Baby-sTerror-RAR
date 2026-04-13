@@ -168,6 +168,7 @@ public class PickDropController : MonoBehaviour
 
     public void PickupObject()
     {
+        if (detectedPickable == null) return;
         heldPickable = detectedPickable;
         heldPickable.PickObject(holdArea);
     }

@@ -36,11 +36,7 @@ public class UIManager : MonoBehaviour
 
     public static UIManager instance;
 
-    // Tween state tracking (optimized - only creates tweens when state changes)
     private CrosshairState currentCrosshairState = CrosshairState.None;
-    private bool doorButtonVisible = false;
-    private bool pickButtonVisible = false;
-    private bool useDeviceButtonVisible = false;
     private void Awake()
     {
         if (instance == null)
@@ -103,69 +99,33 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-    #region Optimized Button Methods
+    #region Button Visibility Methods
 
-    /// <summary>
-    /// Shows/hides door button with fade animation (only if state changed)
-    /// </summary>
     public void SetDoorButtonVisible(bool visible)
     {
-        if (doorButtonVisible == visible) return;
-        
-        doorButtonVisible = visible;
-        door.image.DOKill();
-        
-        if (visible)
-        {
-            door.image.DOFade(1, 1);
-            door.transform.parent.GetComponent<TouchButton>().enabled = true;
-        }
-        else
-        {
-            door.image.DOFade(0, 1);
-            door.transform.parent.GetComponent<TouchButton>().enabled = false;
-        }
+        SetButtonVisible(door, visible);
     }
 
-    /// <summary>
-    /// Shows/hides pick button with fade animation (only if state changed)
-    /// </summary>
     public void SetPickButtonVisible(bool visible)
     {
-        if (pickButtonVisible == visible) return;
-        
-        pickButtonVisible = visible;
-        pick.image.DOKill();
-        
-        if (visible)
-        {
-            pick.image.DOFade(1, 1);
-            pick.transform.parent.GetComponent<TouchButton>().enabled = true;
-        }
-        else
-        {
-            pick.image.DOFade(0, 1);
-            pick.transform.parent.GetComponent<TouchButton>().enabled = false;
-        }
+        SetButtonVisible(pick, visible);
     }
-    /// <summary>
-    /// Shows/hides use device button with fade animation (only if state changed)
-    /// </summary>
+
     public void SetUseDeviceButtonVisible(bool visible)
     {
-        if (useDeviceButtonVisible == visible) return;
-        useDeviceButtonVisible = visible;
-        useDevice.image.DOKill();
-        if (visible)
-        {
-            useDevice.image.DOFade(1, 1);
-            useDevice.transform.parent.GetComponent<TouchButton>().enabled = true;
-        }
-        else
-        {
-            useDevice.image.DOFade(0, 1);
-            useDevice.transform.parent.GetComponent<TouchButton>().enabled = false;
-        }
+        SetButtonVisible(useDevice, visible);
+    }
+
+    void SetButtonVisible(TouchButtonSpriteAnimator button, bool visible)
+    {
+        var img = button.image;
+        float targetAlpha = visible ? 1f : 0f;
+        button.transform.parent.GetComponent<TouchButton>().enabled = visible;
+
+        if (Mathf.Approximately(img.color.a, targetAlpha)) return;
+
+        img.DOKill();
+        img.DOFade(targetAlpha, 0.3f);
     }
 
     #endregion

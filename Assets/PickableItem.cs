@@ -81,6 +81,7 @@ public class PickableItem : Interactable
         rb.useGravity = true;
         rb.linearDamping = 1;
         rb.constraints = RigidbodyConstraints.None;
+        collider.enabled = true;
         transform.parent = null;
         gameObject.layer = LayerMask.NameToLayer("Interactable");
     }

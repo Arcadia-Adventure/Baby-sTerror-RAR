@@ -42,30 +42,23 @@ public class BabyController : PickableItem
     {
         rb.useGravity = true;
         rb.linearDamping = 1;
+        collider.enabled = true;
         transform.parent = null;
         gameObject.layer = LayerMask.NameToLayer("Interactable");
     }
     public override void DropObject()
     {
-        OnDropBaby();
         base.DropObject();
+        OnDropBaby();
     }
     public void OnDropBaby()
     {
-        //play crying sound if hit with speed more than 10
-        if(rb.linearVelocity.magnitude > cryThreshold)
-        {
-            SetAnimation(BabyAnimationType.Drop, 
-            onComplete: () => 
+        SetAnimation(BabyAnimationType.Drop,
+            onComplete: () =>
             {
                 SetAnimation(BabyAnimationType.CryStand);
             }
-            );
-        }
-        else
-        {
-            SetAnimation(BabyAnimationType.Drop);
-        }
+        );
     }
     public void SetActiveAndPositionAndRotation(bool active, Transform targetTransform)
     {
