@@ -70,6 +70,6 @@ public class BabyItemHandler : MonoBehaviour
             fRb.useGravity = true;
             fRb.isKinematic = false;
         }
-        Items.instance.cradleDropPoint.gameObject.SetActive(true);
+        GamePlayManager.Instance.cradleDropPoint.gameObject.SetActive(true);
     }
 }

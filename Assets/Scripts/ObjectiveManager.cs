@@ -12,17 +12,19 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
 {
     [SerializeField] private List<LevelTasks> levelsTasks;
     [SerializeField] private ObjectiveUIController objectiveUIController;
+
     public int TotalTasks { get; private set; }
     public LevelTasks CurrentLevelTasks { get; private set; }
-    
+
     [ShowInInspector("Current Task Index")]
     public int CurrentTaskIndex => TotalTasks - PendingTasks;
-    
+
     [ShowInInspector("Pending Tasks")]
     public int PendingTasks => CurrentLevelTasks.taskInfos.Count(t => !t.isCompleted);
 
     public static event Action<TaskType> OnTaskReceived;
-    public TasksDetail tasksDetail; // for mapping level
+
+    public TasksDetail tasksDetail;
     [InspectorButton]
     public void MapTaskDetail()
     {
@@ -47,13 +49,35 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
             }
         }
     }
+
     float _lastObjectiveTime;
     bool _stallReported;
     const float StallThresholdSeconds = 120f;
 
     private void Start()
     {
-        CurrentLevelTasks = levelsTasks[GamePreference.selectedLevel - 1];
+        int levelIndex = GamePreference.selectedLevel - 1;
+
+        var jsonData = LevelConfigLoader.GetLevelData(GamePreference.selectedLevel);
+        if (jsonData != null && jsonData.tasks != null && jsonData.tasks.Length > 0)
+        {
+            CurrentLevelTasks = BuildFromJson(jsonData, levelIndex);
+        }
+        else if (levelIndex >= 0 && levelIndex < levelsTasks.Count)
+        {
+            CurrentLevelTasks = levelsTasks[levelIndex];
+        }
+        else
+        {
+            Debug.LogError($"[ObjectiveManager] No task data for level {GamePreference.selectedLevel}");
+            CurrentLevelTasks = new LevelTasks
+            {
+                levelNO = GamePreference.selectedLevel.ToString(),
+                missionName = "Unknown",
+                taskInfos = new List<TaskInfo>()
+            };
+        }
+
         TotalTasks = CurrentLevelTasks.taskInfos.Count;
         objectiveUIController.Initialize(CurrentLevelTasks);
         _lastObjectiveTime = Time.realtimeSinceStartup;
@@ -61,8 +85,47 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
         StartCoroutine(StallDetectionLoop());
     }
 
+    LevelTasks BuildFromJson(LevelData jsonData, int levelIndex)
+    {
+        var inspectorTasks = (levelIndex >= 0 && levelIndex < levelsTasks.Count)
+            ? levelsTasks[levelIndex]
+            : null;
+
+        var levelTasks = new LevelTasks
+        {
+            levelNO = inspectorTasks?.levelNO ?? jsonData.level.ToString(),
+            missionName = jsonData.missionName,
+            taskInfos = new List<TaskInfo>()
+        };
+
+        for (int i = 0; i < jsonData.tasks.Length; i++)
+        {
+            var taskData = jsonData.tasks[i];
+            var taskType = LevelConfigLoader.ParseTaskType(taskData.taskType);
+
+            var newTask = new TaskInfo
+            {
+                taskType = taskType,
+                description = taskData.description,
+                completePreviousTasks = taskData.completePreviousTasks,
+                isCompleted = false
+            };
+
+            if (inspectorTasks != null && i < inspectorTasks.taskInfos.Count)
+            {
+                var inspectorTask = inspectorTasks.taskInfos[i];
+                newTask.OnComplete = inspectorTask.OnComplete;
+            }
+
+            levelTasks.taskInfos.Add(newTask);
+        }
+
+        return levelTasks;
+    }
+
     public static void OnTaskEventReceived(TaskType taskType)
     {
+        if (taskType == TaskType.None || Instance == null || Instance.CurrentLevelTasks == null) return;
         Instance.OnTaskCompleted(taskType);
     }
 
@@ -98,6 +161,7 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
                 }
             }
         }
+
         taskInfo.isCompleted = true;
         taskInfo.OnComplete?.Invoke(taskType);
         OnTaskReceived?.Invoke(taskType);
@@ -109,7 +173,7 @@ public class ObjectiveManager : Singleton<ObjectiveManager>
         AA_AnalyticsManager.Agent.TrackObjectiveCompleted(
             GamePreference.selectedLevel, taskIndex, taskType.ToString());
 
-        if (IsLevelCompleted()) 
+        if (IsLevelCompleted())
             GamePlayManager.Instance.LevelComplete();
     }
 

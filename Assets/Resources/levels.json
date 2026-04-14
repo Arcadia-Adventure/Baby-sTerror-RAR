@@ -1,0 +1,315 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "missionName": "Who\u2019s at the Door?",
+      "baby": {
+        "active": true,
+        "requireItem": "None",
+        "canPickBaby": true,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": false,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": true, "initialDelay": 2.0, "interval": 5.0 },
+        "doorBell": true
+      },
+      "features": {
+        "cradleActive": true,
+        "fireActive": false,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "PickBaby", "description": "-Answer the ringing doorbell and find the baby.", "completePreviousTasks": false },
+        { "taskType": "DropBabyCradle", "description": "-Pick up the baby and settle it in Bedroom.", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 2,
+      "missionName": "The Baby is Hungry",
+      "baby": {
+        "active": true,
+        "requireItem": "Feeder",
+        "canPickBaby": true,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": false,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "PickFeeder", "description": "-Find the Feeder in the Kitchen.", "completePreviousTasks": false },
+        { "taskType": "DropFeederOnBaby", "description": "-Feed the baby.", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 3,
+      "missionName": "Something Feels Wrong",
+      "baby": {
+        "active": true,
+        "requireItem": "Facewash",
+        "canPickBaby": true,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": true
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": false,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "DropBabyWashroom", "description": "-Pick up the baby and take it to the washroom.", "completePreviousTasks": false },
+        { "taskType": "DropFacewashOnBaby", "description": "-Find the facewash and clean the baby\u2019s face.", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 4,
+      "missionName": "Cold Whispers",
+      "baby": {
+        "active": true,
+        "requireItem": "Cloth",
+        "canPickBaby": true,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": false,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "PickCloth", "description": "-Find warm clothes for the baby.", "completePreviousTasks": false },
+        { "taskType": "DropClothOnBaby", "description": "-Change the baby\u2019s clothes.", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 5,
+      "missionName": "The Baby\u2019s Silent Tears",
+      "baby": {
+        "active": true,
+        "requireItem": "Toy",
+        "canPickBaby": true,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": false,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "PickToy", "description": "-Find a toy to cheer up the baby.", "completePreviousTasks": false },
+        { "taskType": "DropToyOnBaby", "description": "-Give the toy to the baby.", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 6,
+      "missionName": "Vanishing Baby",
+      "baby": {
+        "active": false,
+        "requireItem": "None",
+        "canPickBaby": true,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": false,
+        "flyingFurniture": false,
+        "babyCryingCradle": true,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "CheckBabyRoom", "description": "-The baby is crying\u2014check the baby\u2019s Bedroom.", "completePreviousTasks": false },
+        { "taskType": "DropBabyCradle", "description": "-The baby is hiding\u2014find it and put it back to bed.", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 7,
+      "missionName": "Smoke in the Air",
+      "baby": {
+        "active": true,
+        "requireItem": "None",
+        "canPickBaby": false,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": true,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "PickFireExtinguisher", "description": "-Find the fire extinguisher", "completePreviousTasks": false },
+        { "taskType": "FireEnded", "description": "-Put out the fire\u2026 but who started it?", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 8,
+      "missionName": "Trapped Baby.",
+      "baby": {
+        "active": true,
+        "requireItem": "None",
+        "canPickBaby": true,
+        "initialAnimation": "CrySit",
+        "possessed": false,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": true,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": true,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "CheckBabyRoom", "description": "-Check the baby\u2019s Bedroom.", "completePreviousTasks": false },
+        { "taskType": "BedroomDoorBreak", "description": "-The Bed door won\u2019t open, find an axe and break the door.", "completePreviousTasks": false },
+        { "taskType": "PickBaby", "description": "-Pick up the baby and leave the room", "completePreviousTasks": true }
+      ]
+    },
+    {
+      "level": 9,
+      "missionName": "The Baby\u2019s Voice",
+      "baby": {
+        "active": true,
+        "requireItem": "None",
+        "canPickBaby": false,
+        "initialAnimation": "AngrySit",
+        "possessed": true,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": false,
+        "flyingFurniture": false,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "None",
+        "showNextButton": true,
+        "showRateUsButton": false
+      },
+      "tasks": [
+        { "taskType": "FollowBabyVoice", "description": "-Follow the baby\u2019s voice.", "completePreviousTasks": false }
+      ]
+    },
+    {
+      "level": 10,
+      "missionName": "The Cursed Talisman.",
+      "baby": {
+        "active": true,
+        "requireItem": "Talisman",
+        "canPickBaby": false,
+        "initialAnimation": "AngrySit",
+        "possessed": true,
+        "dirtyFace": false
+      },
+      "doors": {
+        "houseExitLocked": true,
+        "babyRoomLocked": false,
+        "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
+        "doorBell": false
+      },
+      "features": {
+        "cradleActive": false,
+        "fireActive": true,
+        "flyingFurniture": true,
+        "babyCryingCradle": false,
+        "playerStartAnimation": "GettingUp",
+        "showNextButton": false,
+        "showRateUsButton": true
+      },
+      "tasks": [
+        { "taskType": "PickTalisman", "description": "-Find the talisman.", "completePreviousTasks": false },
+        { "taskType": "DropTalisman", "description": "-Give the talisman to the baby.", "completePreviousTasks": false },
+        { "taskType": "DropBabyCradle", "description": "-Pick up the baby and put it to bed.", "completePreviousTasks": false }
+      ]
+    }
+  ]
+}

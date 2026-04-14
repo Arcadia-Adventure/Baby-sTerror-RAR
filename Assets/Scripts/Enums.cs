@@ -68,3 +68,12 @@ public enum PlayerAnimation
     Unconscious = 1,
     GettingUp = 2,
 }
+
+public enum CrosshairState
+{
+    None,
+    Pick,
+    Drop,
+    DoorOpen,
+    DoorClose
+}

@@ -1,72 +1,63 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 using UnityEngine.UI;
-using ControlFreak2.UI;
+using TMPro;
 using ControlFreak2;
+using ControlFreak2.UI;
 using DG.Tweening;
 using Ommy.Prefs;
 using Ommy.Audio;
+using Ommy.Singleton;
 
-public enum CrosshairState { None, Pick, Drop, DoorOpen, DoorClose }
-
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
-    public GameObject nextButton, rateusButton;
+    [Header("Level Complete")]
+    public GameObject nextButton;
+    public GameObject rateusButton;
     public GameObject levelCompletePanel;
+
+    [Header("Pause")]
     public GameObject pausePanel;
 
-    // Crosshair sprites
+    [Header("Crosshair")]
     public Sprite knobImage;
     public Sprite doorOpenImage;
     public Sprite doorCloseImage;
     public Sprite pickImage;
     public Sprite dropImage;
+    public Image crossHairDetection;
+    public TextMeshProUGUI detectionTxt;
+    public RectTransform rt;
 
+    [Header("Touch Buttons")]
     public TouchButtonSpriteAnimator door;
     public TouchButtonSpriteAnimator pick;
     public TouchButtonSpriteAnimator useDevice;
 
-    public Image crossHairDetection;
-    public TextMeshProUGUI detectionTxt;
-    public RectTransform rt;
+    [Header("Settings")]
     public FirstPersonController fps;
-
-    public static UIManager instance;
-
-    private CrosshairState currentCrosshairState = CrosshairState.None;
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-    }
-
     public Slider sl;
+
+    CrosshairState currentCrosshairState = CrosshairState.None;
 
     private void Start()
     {
         Time.timeScale = 1f;
-        sl.value = PlayerPrefs.GetFloat("MouseSensitivity");
-        fps.mouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity");
+        sl.value = PlayerPrefs.GetFloat(PrefKeys.MouseSensitivity);
+        fps.mouseSensitivity = PlayerPrefs.GetFloat(PrefKeys.MouseSensitivity);
         crossHairDetection.sprite = knobImage;
         detectionTxt.text = null;
     }
 
-    #region Optimized Crosshair Methods
-    
-    /// <summary>
-    /// Sets crosshair state with optimized tween (only creates tween if state changed)
-    /// </summary>
+    #region Crosshair
+
     public void SetCrosshair(CrosshairState state, string detectionText)
     {
         detectionTxt.text = detectionText;
         if (currentCrosshairState == state) return;
         currentCrosshairState = state;
         crossHairDetection.DOKill();
+
         switch (state)
         {
             case CrosshairState.None:
@@ -75,46 +66,34 @@ public class UIManager : MonoBehaviour
                 detectionTxt.text = null;
                 break;
             case CrosshairState.Pick:
-                rt.sizeDelta = new Vector2(50, 50);
-                crossHairDetection.sprite = pickImage;
-                crossHairDetection.DOFade(1, 1);
+                SetCrosshairSprite(pickImage);
                 break;
             case CrosshairState.Drop:
-                rt.sizeDelta = new Vector2(50, 50);
-                crossHairDetection.sprite = dropImage;
-                crossHairDetection.DOFade(1, 1);
+                SetCrosshairSprite(dropImage);
                 break;
             case CrosshairState.DoorOpen:
-                rt.sizeDelta = new Vector2(50, 50);
-                crossHairDetection.sprite = doorOpenImage;
-                crossHairDetection.DOFade(1, 1);
+                SetCrosshairSprite(doorOpenImage);
                 break;
             case CrosshairState.DoorClose:
-                rt.sizeDelta = new Vector2(50, 50);
-                crossHairDetection.sprite = doorCloseImage;
-                crossHairDetection.DOFade(1, 1);
+                SetCrosshairSprite(doorCloseImage);
                 break;
         }
     }
 
+    void SetCrosshairSprite(Sprite sprite)
+    {
+        rt.sizeDelta = new Vector2(50, 50);
+        crossHairDetection.sprite = sprite;
+        crossHairDetection.DOFade(1, 1);
+    }
+
     #endregion
 
-    #region Button Visibility Methods
+    #region Button Visibility
 
-    public void SetDoorButtonVisible(bool visible)
-    {
-        SetButtonVisible(door, visible);
-    }
-
-    public void SetPickButtonVisible(bool visible)
-    {
-        SetButtonVisible(pick, visible);
-    }
-
-    public void SetUseDeviceButtonVisible(bool visible)
-    {
-        SetButtonVisible(useDevice, visible);
-    }
+    public void SetDoorButtonVisible(bool visible) => SetButtonVisible(door, visible);
+    public void SetPickButtonVisible(bool visible) => SetButtonVisible(pick, visible);
+    public void SetUseDeviceButtonVisible(bool visible) => SetButtonVisible(useDevice, visible);
 
     void SetButtonVisible(TouchButtonSpriteAnimator button, bool visible)
     {
@@ -129,98 +108,103 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
-    public void OnDisable() 
-    {
-        int killedTweens = DOTween.KillAll();
-        Debug.Log("killed " + killedTweens + " tweens");
-    }
+
+    #region Game UI Actions
+
+    public void LvlCompleteON() => levelCompletePanel.SetActive(true);
+
     public void RateUsClick()
     {
-        AA_AnalyticsManager.Agent.TrackButtonClick("rate_us");
         Application.OpenURL("market://details?id=" + Application.identifier);
+        AA_AnalyticsManager.Agent.TrackButtonClick("rate_us");
     }
-    public void LvlCompleteON()
-    {
-        levelCompletePanel.SetActive(true);
-    }
-    /// <summary>
-    /// UI BUTTONS
-    /// </summary>
-    private void OnApplicationQuit() 
-    {
-		AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "app_quit");
-		AA_AnalyticsManager.Agent.TrackSessionEnd("app_quit", AnalyticsTracker.GetCurrentScene());
-    }
+
+    #endregion
+
+    #region Pause & Navigation
+
     public void DoorOpenCloseBtn()
     {
-        Debug.Log("door click");
-        PickDropController.instance.DoorOpenCloseBtn();
-
+        PickDropController.Instance.DoorOpenCloseBtn();
     }
 
     public void PauseBtn()
     {
-        AA_AnalyticsManager.Agent.TrackButtonClick("pause");
-        ArcadiaSdkManager.CurrentAdPlacement = "pause_interstitial";
-        ArcadiaSdkManager.Agent.ShowInterstitialAd();
         Time.timeScale = 0;
         pausePanel.SetActive(true);
         AudioManager.Instance.PlaySFX(SFX.Click);
         AudioManager.Instance.PauseAll();
         AudioManager.Instance.SetBGSetting(true);
         AudioManager.Instance.StartGame();
+        AA_AnalyticsManager.Agent.TrackButtonClick("pause");
+        ArcadiaSdkManager.CurrentAdPlacement = "pause_interstitial";
+        ArcadiaSdkManager.Agent.ShowInterstitialAd();
     }
-
 
     public void ResumeBtn()
     {
-        AA_AnalyticsManager.Agent.TrackButtonClick("resume");
         Time.timeScale = 1;
-        ArcadiaSdkManager.Agent.ShowBanner();
         pausePanel.SetActive(false);
         AudioManager.Instance.PlaySFX(SFX.Click);
         AudioManager.Instance.ResumeAll();
         AudioManager.Instance.GameEnd();
         AudioManager.Instance.SetBGSetting(false);
+        AA_AnalyticsManager.Agent.TrackButtonClick("resume");
+        ArcadiaSdkManager.Agent.ShowBanner();
     }
 
-
-    public void HomeBtn() 
+    public void HomeBtn()
     {
-        AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "home_button");
         Time.timeScale = 1;
-        SceneManager.LoadScene("MainMenu");
         AudioManager.Instance.PlaySFX(SFX.Click);
+        AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "home_button");
+        SceneManager.LoadScene("MainMenu");
     }
-
 
     public void ReplayBtn()
     {
-        AA_AnalyticsManager.Agent.TrackLevelRetry(GamePreference.selectedLevel);
         Time.timeScale = 1;
-        ArcadiaSdkManager.CurrentAdPlacement = "replay_rewarded";
-        if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
         AudioManager.Instance.PlaySFX(SFX.Click);
+        AA_AnalyticsManager.Agent.TrackLevelRetry(GamePreference.selectedLevel);
+        ArcadiaSdkManager.CurrentAdPlacement = "replay_rewarded";
+        if (!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-   
     public void NextBtn()
     {
-        AA_AnalyticsManager.Agent.TrackButtonClick("next_level");
         Time.timeScale = 1;
-        ArcadiaSdkManager.CurrentAdPlacement = "next_rewarded";
-        if(!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
         GamePreference.selectedLevel++;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         AudioManager.Instance.PlaySFX(SFX.Click);
+        AA_AnalyticsManager.Agent.TrackButtonClick("next_level");
+        ArcadiaSdkManager.CurrentAdPlacement = "next_rewarded";
+        if (!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
     public void SensivitySlider()
     {
-        PlayerPrefs.SetFloat("MouseSensitivity", sl.value);
-
-        fps.mouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity");
+        PlayerPrefs.SetFloat(PrefKeys.MouseSensitivity, sl.value);
+        fps.mouseSensitivity = PlayerPrefs.GetFloat(PrefKeys.MouseSensitivity);
     }
 
+    #endregion
+
+    #region Lifecycle
+
+    private void OnDisable()
+    {
+        DOTween.Kill(crossHairDetection);
+        if (door != null) DOTween.Kill(door.image);
+        if (pick != null) DOTween.Kill(pick.image);
+        if (useDevice != null) DOTween.Kill(useDevice.image);
+    }
+
+    private void OnApplicationQuit()
+    {
+        AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "app_quit");
+        AA_AnalyticsManager.Agent.TrackSessionEnd("app_quit", AnalyticsTracker.GetCurrentScene());
+    }
+
+    #endregion
 }

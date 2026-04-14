@@ -1,46 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using GameAnalyticsSDK;
-using GameAnalyticsSDK.Events;
-using GameAnalyticsSDK.Setup;
 using UnityEngine;
 using UnityEngine.Events;
-using Random = UnityEngine.Random;
-public class GameAnalyticsManager : MonoBehaviour
-{
- private static GameAnalyticsManager _instance = null;
-    
-    static public GameAnalyticsManager Agent
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = UnityEngine.Object.FindObjectOfType(typeof(GameAnalyticsManager)) as GameAnalyticsManager;
-                if (_instance == null)
-                {
-                    GameObject obj = new GameObject("GameAnalyticsManager");
-                    DontDestroyOnLoad(obj);
-                    _instance = obj.AddComponent<GameAnalyticsManager>();
-                }
-            }
-            return _instance;
-        }
-    }
-    void Awake()
-    {
-        if(_instance == null)
-        {	
-            _instance = this.gameObject.GetComponent<GameAnalyticsManager>();
-            DontDestroyOnLoad(this);
-        }
-        else
-        {
-            if(this != _instance)
-                Destroy(this.gameObject);
-        }
-    }
+public class GameAnalyticsManager
+{    
     public static UnityEvent<bool> OnInitialize;
     public static void Initialize()
     {

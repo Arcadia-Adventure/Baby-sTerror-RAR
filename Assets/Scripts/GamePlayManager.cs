@@ -15,7 +15,6 @@ public class GamePlayManager : Singleton<GamePlayManager>
         public GameObject levelObject;
         public Transform playerSpawnPoint, babySpawnPoint;
         public DropPoint initDropPoint;
-        public BabyAnimationType babyAnimationType;
     }
 
     [Header("Level Setup")]
@@ -35,6 +34,9 @@ public class GamePlayManager : Singleton<GamePlayManager>
     public ParticleSystem axeBlueGlow;
     public GameObject[] flyingFurniture;
     public GameObject[] Cracker;
+
+    [Header("Scene References")]
+    public FireArea bedroomFireArea;
 
     int Level => GamePreference.selectedLevel;
     LevelConfig CurrentConfig => levelConfigs[Level - 1];
@@ -75,18 +77,27 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
         CurrentConfig.levelObject.SetActive(true);
 
-        var spawnPoint = CurrentConfig.babySpawnPoint;
-        if(CurrentConfig.initDropPoint != null)
-        {
-            CurrentConfig.initDropPoint.DropOnPoint(baby);
-        }
-        else
-        {
-            baby.SetActiveAndPositionAndRotation(spawnPoint != null, spawnPoint);
-        }
-        baby.SetAnimation(CurrentConfig.babyAnimationType);
+        var levelData = LevelConfigLoader.GetLevelData(Level);
+        if (levelData != null)
+            ApplyLevelData(levelData);
 
-        SetupLevel();
+        if (baby.gameObject.activeSelf)
+        {
+            var spawnPoint = CurrentConfig.babySpawnPoint;
+            if (CurrentConfig.initDropPoint != null)
+            {
+                CurrentConfig.initDropPoint.DropOnPoint(baby);
+            }
+            else
+            {
+                baby.SetActiveAndPositionAndRotation(spawnPoint != null, spawnPoint);
+            }
+
+            var babyAnim = levelData != null
+                ? LevelConfigLoader.ParseBabyAnimation(levelData.baby.initialAnimation)
+                : BabyAnimationType.CrySit;
+            baby.SetAnimation(babyAnim);
+        }
 
         ArcadiaSdkManager.CurrentAdPlacement = "gameplay_banner";
         ArcadiaSdkManager.Agent.ShowBanner();
@@ -101,75 +112,68 @@ public class GamePlayManager : Singleton<GamePlayManager>
             ObjectiveManager.OnTaskEventReceived(TaskType.CheckBabyRoom);
     }
 
-    void SetupLevel()
+    void ApplyLevelData(LevelData data)
     {
-        houseExitDoor.SetLocked(Level != 1);
-        babyRoomDoor.SetLocked(Level == 8);
+        ApplyDoorSetup(data.doors);
+        ApplyBabySetup(data.baby);
+        ApplyFeatures(data.features);
+    }
+
+    void ApplyDoorSetup(DoorSetup doors)
+    {
+        houseExitDoor.SetLocked(doors.houseExitLocked);
+        babyRoomDoor.SetLocked(doors.babyRoomLocked);
+
+        if (doors.doorKnocking != null && doors.doorKnocking.enabled)
+            houseExitDoor.PlayDoorKnocking(doors.doorKnocking.initialDelay, doors.doorKnocking.interval);
+
+        if (doors.doorBell)
+            houseExitDoor.PlayDoorBell(true);
+    }
+
+    void ApplyBabySetup(BabySetup setup)
+    {
         baby.babyEyesRed.color = Color.white;
+        baby.requireItem = LevelConfigLoader.ParseItemType(setup.requireItem);
+        baby.canPickBaby = setup.canPickBaby;
 
-        switch (Level)
+        if (setup.dirtyFace)
+            baby.babyDirtyFace.SetActive(true);
+
+        if (!setup.active)
+            baby.SetActiveAndPositionAndRotation(false, null);
+
+        if (setup.possessed)
         {
-            case 1:
-                houseExitDoor.PlayDoorKnocking(2f,5f);
-                cradleDropPoint.gameObject.SetActive(true);
-                houseExitDoor.PlayDoorBell(true);
-                break;
-
-            case 2:
-                baby.requireItem = ItemType.Feeder;
-                break;
-
-            case 3:
-                baby.requireItem = ItemType.Facewash;
-                baby.babyDirtyFace.SetActive(true);
-                break;
-
-            case 4:
-                baby.requireItem = ItemType.Cloth;
-                break;
-
-            case 5:
-                baby.requireItem = ItemType.Toy;
-                break;
-
-            case 6:
-                babyCryingCradle.Play();
-                baby.SetActiveAndPositionAndRotation(false, null);
-                break;
-
-            case 7:
-                Items.instance.bedroomFireArea.ActivateFire();
-                baby.canPickBaby = false;
-                break;
-
-            case 8:
-                Items.instance.bedroomFireArea.ActivateFire();
-                break;
-
-            case 9:
-                SetupPossessedBaby();
-                baby.canPickBaby = false;
-                break;
-
-            case 10:
-                player.SetAnimation(PlayerAnimation.GettingUp);
-                Items.instance.bedroomFireArea.ActivateFire();
-                SetupPossessedBaby();
-                SetupFlyingFurniture();
-                baby.requireItem = ItemType.Talisman;
-                baby.canPickBaby = false;
-                baby.PlayAudio(BabyAnimationType.AngrySit);
-                UIManager.instance.nextButton.SetActive(false);
-                UIManager.instance.rateusButton.SetActive(true);
-                break;
+            baby.babyEyesRed.color = Color.red;
+            baby.rb.isKinematic = true;
+            baby.rb.useGravity = false;
         }
     }
 
-    void SetupPossessedBaby()
+    void ApplyFeatures(FeatureFlags features)
     {
-        baby.babyEyesRed.color = Color.red;
-        baby.rb.isKinematic = true;
-        baby.rb.useGravity = false;
+        if (features.cradleActive)
+            cradleDropPoint.gameObject.SetActive(true);
+
+        if (features.babyCryingCradle)
+            babyCryingCradle.Play();
+
+        if (features.fireActive && bedroomFireArea != null)
+            bedroomFireArea.ActivateFire();
+
+        if (features.flyingFurniture)
+            SetupFlyingFurniture();
+
+        var playerAnim = LevelConfigLoader.ParsePlayerAnimation(features.playerStartAnimation);
+        if (playerAnim != PlayerAnimation.None)
+            player.SetAnimation(playerAnim);
+
+        if (!features.showNextButton)
+            UIManager.Instance.nextButton.SetActive(false);
+
+        if (features.showRateUsButton)
+            UIManager.Instance.rateusButton.SetActive(true);
     }
 
     void SetupFlyingFurniture()
@@ -187,15 +191,15 @@ public class GamePlayManager : Singleton<GamePlayManager>
     {
         DOVirtual.DelayedCall(2f, () =>
         {
-            UIManager.instance.LvlCompleteON();
+            UIManager.Instance.LvlCompleteON();
             AudioManager.Instance.PlaySFX(SFX.LevelComplete);
 
             int currentOpen = GamePreference.openLevels;
             if (currentOpen < 9 && Level == currentOpen + 1)
                 GamePreference.openLevels = currentOpen + 1;
 
-            ArcadiaSdkManager.Agent.ShowRateUs();
             AA_AnalyticsManager.Agent.GameCompleteAnalytics(Level);
+            ArcadiaSdkManager.Agent.ShowRateUs();
         });
     }
 
@@ -203,7 +207,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
     {
         if (taskType == TaskType.CheckBabyRoom)
             SpawnBabyInKitchen();
-        if(taskType == TaskType.FollowBabyVoice)
+        if (taskType == TaskType.FollowBabyVoice)
             player.SetAnimation(PlayerAnimation.Unconscious);
     }
 

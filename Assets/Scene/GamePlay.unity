@@ -48255,52 +48255,42 @@ MonoBehaviour:
     playerSpawnPoint: {fileID: 1578880540}
     babySpawnPoint: {fileID: 713404738}
     initDropPoint: {fileID: 0}
-    babyAnimationType: 6
   - levelObject: {fileID: 714765639}
     playerSpawnPoint: {fileID: 1668983227}
     babySpawnPoint: {fileID: 276850624}
     initDropPoint: {fileID: 276850628}
-    babyAnimationType: 1
   - levelObject: {fileID: 1538947700}
     playerSpawnPoint: {fileID: 612689954}
     babySpawnPoint: {fileID: 585127257}
     initDropPoint: {fileID: 276850628}
-    babyAnimationType: 1
   - levelObject: {fileID: 502246499}
     playerSpawnPoint: {fileID: 1859416484}
     babySpawnPoint: {fileID: 1636765441}
     initDropPoint: {fileID: 276850628}
-    babyAnimationType: 1
   - levelObject: {fileID: 132729464}
     playerSpawnPoint: {fileID: 581173242}
     babySpawnPoint: {fileID: 1371754129}
     initDropPoint: {fileID: 276850628}
-    babyAnimationType: 1
   - levelObject: {fileID: 457006481}
     playerSpawnPoint: {fileID: 362435688}
     babySpawnPoint: {fileID: 1877317612}
     initDropPoint: {fileID: 0}
-    babyAnimationType: 1
   - levelObject: {fileID: 1663350524}
     playerSpawnPoint: {fileID: 795651783}
     babySpawnPoint: {fileID: 70840964}
     initDropPoint: {fileID: 276850628}
-    babyAnimationType: 1
   - levelObject: {fileID: 1581816476}
     playerSpawnPoint: {fileID: 1525860672}
     babySpawnPoint: {fileID: 847273872}
     initDropPoint: {fileID: 276850628}
-    babyAnimationType: 1
   - levelObject: {fileID: 1319783506}
     playerSpawnPoint: {fileID: 548599691}
     babySpawnPoint: {fileID: 1312691404}
     initDropPoint: {fileID: 0}
-    babyAnimationType: 5
   - levelObject: {fileID: 2006052383}
     playerSpawnPoint: {fileID: 77056896}
     babySpawnPoint: {fileID: 305083197}
     initDropPoint: {fileID: 0}
-    babyAnimationType: 2
   levelsParent: {fileID: 918091512}
   playerSpawnPointsParent: {fileID: 2051279664}
   babySpawnPointsParent: {fileID: 434498938}
@@ -48324,6 +48314,7 @@ MonoBehaviour:
   - {fileID: 554415688}
   - {fileID: 2141851924}
   - {fileID: 59533185}
+  bedroomFireArea: {fileID: 1289085332}
 --- !u!1 &1375689546
 GameObject:
   m_ObjectHideFlags: 0
@@ -69450,6 +69441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99048c78d5ccb2e49a97d7738cad47c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 0
   nextButton: {fileID: 1431262743}
   rateusButton: {fileID: 510581871}
   levelCompletePanel: {fileID: 179826594}
@@ -69459,12 +69451,12 @@ MonoBehaviour:
   doorCloseImage: {fileID: 21300000, guid: 4c241dbf384fe2347ab256da622e9bb9, type: 3}
   pickImage: {fileID: 21300000, guid: e6e636324ce0eb94ab3d9569cc4ac346, type: 3}
   dropImage: {fileID: 21300000, guid: 0d72680e627963b4f851fa4ae089af48, type: 3}
-  door: {fileID: 1103988898}
-  pick: {fileID: 1994399089}
-  useDevice: {fileID: 1192042211}
   crossHairDetection: {fileID: 432294272}
   detectionTxt: {fileID: 1504116546}
   rt: {fileID: 432294271}
+  door: {fileID: 1103988898}
+  pick: {fileID: 1994399089}
+  useDevice: {fileID: 1192042211}
   fps: {fileID: 54471721415885040}
   sl: {fileID: 1445670738}
 --- !u!1 &1532670344

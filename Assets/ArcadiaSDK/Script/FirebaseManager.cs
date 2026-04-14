@@ -5,22 +5,8 @@ using Firebase.Crashlytics;
 using Firebase.Extensions;
 using UnityEngine.Events;
 
-public class FirebaseManager : MonoBehaviour
+public class FirebaseManager
 {
-    private static FirebaseManager Agent;
-
-    void Awake()
-    {
-        if (Agent == null)
-        {
-            Agent = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
     public static UnityEvent<bool> onInitialize;
     static FirebaseApp app;
     public static void InitializeFirebase()

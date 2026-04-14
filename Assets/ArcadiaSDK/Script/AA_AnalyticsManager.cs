@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using GameAnalyticsSDK;
-using GameAnalyticsSDK.Events;
-using GameAnalyticsSDK.Setup;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
-using Random = UnityEngine.Random;
 
 public class AA_AnalyticsManager : MonoBehaviour
 {

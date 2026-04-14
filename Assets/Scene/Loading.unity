@@ -1320,7 +1320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: enableLogs
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7555396864995659625, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
       propertyPath: Ids.gameName
@@ -1330,7 +1330,9 @@ PrefabInstance:
       propertyPath: initializationDelay
       value: 2
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5716675043621135952, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
+    - {fileID: 1161597318279649010, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

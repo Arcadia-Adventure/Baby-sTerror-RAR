@@ -895,6 +895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 175920979}
   - component: {fileID: 175920980}
+  - component: {fileID: 175920981}
   m_Layer: 0
   m_Name: MainMenuManager
   m_TagString: Untagged
@@ -929,17 +930,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32afc7c2b04ba114eb97628767866b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 0
   settingPanel: {fileID: 769094390}
   quitPanel: {fileID: 1833979349}
   slider: {fileID: 988123172}
+  audioSettings: {fileID: 175920981}
+  restoreButton: {fileID: 1597870660}
+  versionText: {fileID: 455146198}
+--- !u!114 &175920981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175920978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1965a46a7cb014573981b8b59d16e37f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   musicOn: {fileID: 683099579}
   musicOff: {fileID: 533700769}
   soundOn: {fileID: 1323815263}
   soundOff: {fileID: 1103797839}
-  restoreButton: {fileID: 1597870660}
-  versionText: {fileID: 455146198}
-  music: 1
-  sound: 1
 --- !u!1 &177819020
 GameObject:
   m_ObjectHideFlags: 0

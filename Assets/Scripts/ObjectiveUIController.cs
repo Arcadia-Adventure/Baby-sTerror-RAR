@@ -11,6 +11,7 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     [SerializeField] private Color completeTaskColor;
 
     private int totalTaskCount;
+    private int displayableTaskCount;
     private List<TaskInfo> taskInfos;
 
     public void Initialize(ObjectiveManager.LevelTasks levelTasks)
@@ -18,27 +19,32 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
         levelnoTxt.text = levelTasks.levelNO;
         missionNameTxt.text = levelTasks.missionName;
         totalTaskCount = levelTasks.taskInfos.Count;
+        displayableTaskCount = Mathf.Min(totalTaskCount, taskTxt.Length);
         taskInfos = levelTasks.taskInfos;
 
-        for (int i = 0; i < totalTaskCount; i++)
+        for (int i = 0; i < taskTxt.Length; i++)
         {
-            taskTxt[i].text = levelTasks.taskInfos[i].description;
-            taskTxt[i].gameObject.SetActive(i == 0);
+            if (i < totalTaskCount)
+            {
+                taskTxt[i].text = levelTasks.taskInfos[i].description;
+                taskTxt[i].gameObject.SetActive(i == 0);
+            }
+            else
+            {
+                taskTxt[i].gameObject.SetActive(false);
+            }
         }
     }
 
     public void UpdateTask(int taskIndex)
     {
-        if (taskIndex < 0 || taskIndex >= totalTaskCount) return;
-
-        print($"Updating Task [{taskIndex}]: {taskInfos[taskIndex].description}");
+        if (taskIndex < 0 || taskIndex >= displayableTaskCount) return;
 
         taskTxt[taskIndex].text = $"{taskInfos[taskIndex].description} (complete)";
         taskTxt[taskIndex].color = completeTaskColor;
         taskTxt[taskIndex].gameObject.SetActive(true);
 
-        // Reveal the next pending task that isn't visible yet
-        for (int i = 0; i < totalTaskCount; i++)
+        for (int i = 0; i < displayableTaskCount; i++)
         {
             if (!taskInfos[i].isCompleted && !taskTxt[i].gameObject.activeSelf)
             {

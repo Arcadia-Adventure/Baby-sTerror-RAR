@@ -3,15 +3,11 @@ using DG.Tweening;
 using ControlFreak2;
 using Ommy.Attributes;
 using Ommy.Audio;
+using Ommy.Singleton;
 
-public class PickDropController : MonoBehaviour
+public class PickDropController : Singleton<PickDropController>
 {
-    public static PickDropController instance;
 
-    private void Awake()
-    {
-        instance = this;
-    }
     public QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Collide;
     public LayerMask detectionLayers;
 
@@ -19,104 +15,41 @@ public class PickDropController : MonoBehaviour
     [SerializeField] Transform holdArea;
 
     [Header("Physics Parameters")]
-    [SerializeField] private float pickupRange = 10f;
-    [SerializeField] private float pickupForce = 150.0f;
+    [SerializeField] float pickupRange = 10f;
+    [SerializeField] float pickupForce = 150f;
 
     [Header("Wall Stuck Prevention")]
-    [SerializeField] private float maxDistanceFromHoldArea = 1.5f;
+    [SerializeField] float maxDistanceFromHoldArea = 1.5f;
 
     public FirstPersonController fpc;
 
-    public void DoorOpenCloseBtn()
-    {
-        doorController.DoorOpenClose();
-    }
-    [InspectorButton("ToggleZoom")]
-    public void ToggleZoom()
-    {
-        DetectedPickable(fpc.isZoomed);
-    }
-    public void DetectedPickable(bool detected)
-    {
-        fpc.isZoomed = detected;
-    }
-    RaycastHit hit;
     public DropPoint dropPoint;
     public BabyController babyController;
     public PickableItem detectedPickable;
     public DoorController doorController;
     public PickableItem heldPickable;
-    private void Update()
+
+    RaycastHit hit;
+    Vector3 moveDirection;
+
+    #region Input
+
+    public void DoorOpenCloseBtn()
     {
-        ButtonInputs();
-        //RaycastHit hit;
-        if(Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange, detectionLayers, queryTriggerInteraction))
-        {
-            Interactable interactable;
-            if(hit.transform.TryGetComponent<Interactable>(out interactable))
-            {
-                interactable.Detected();
-                if(interactable as DropPoint)
-                {
-                    bool canAccept = heldPickable != null && ((DropPoint)interactable).CanAcceptItem(heldPickable);
-                    if(canAccept)
-                    {
-                        dropPoint = (DropPoint)interactable;
-                        UIManager.instance.SetCrosshair(dropPoint.crosshairState, dropPoint.detectionText);
-                    }
-                }
-                if(interactable as DoorController)
-                {
-                    doorController = (DoorController)interactable;
-                    UIManager.instance.SetCrosshair(doorController.crosshairState, doorController.detectionText);
-                    UIManager.instance.SetDoorButtonVisible(true);
-                }
-                if(interactable as BabyController)
-                {
-                    babyController = (BabyController)interactable;
-                    if (heldPickable != null && heldPickable.itemType == babyController.requireItem)
-                    {
-                        UIManager.instance.SetCrosshair(CrosshairState.Drop, "Give " + heldPickable.itemType.ToString() + " to Baby");
-                    }
-                    else if (babyController.canPickBaby)
-                    {
-                        detectedPickable = babyController;
-                        DetectedPickable(true);
-                        UIManager.instance.SetPickButtonVisible(true);
-                        UIManager.instance.SetCrosshair(detectedPickable.crosshairState, detectedPickable.detectionText);
-                    }
-                    else
-                    {
-                        UIManager.instance.SetCrosshair(CrosshairState.None, "Need "+babyController.requireItem.ToString());
-                    }
-                }
-                else if(interactable as PickableItem)
-                {
-                    detectedPickable = (PickableItem)interactable;
-                    DetectedPickable(true);
-                    UIManager.instance.SetPickButtonVisible(true);
-                    UIManager.instance.SetCrosshair(detectedPickable.crosshairState, detectedPickable.detectionText);
-                }
-            }
-        }
-        else
-        {
-            detectedPickable = null;
-            doorController = null;
-            dropPoint = null;
-            babyController = null;
-            DetectedPickable(false);
-            UIManager.instance.SetCrosshair(CrosshairState.None, null);
-            UIManager.instance.SetDoorButtonVisible(false);
-            if(heldPickable==null) UIManager.instance.SetPickButtonVisible(false);
-        }
+        if (doorController != null)
+            doorController.DoorOpenClose();
     }
+
+    [InspectorButton("ToggleZoom")]
+    public void ToggleZoom() => DetectedPickable(fpc.isZoomed);
+
+    public void DetectedPickable(bool detected) => fpc.isZoomed = detected;
+
     public void ButtonInputs()
     {
-        if (CF2Input.GetKeyDown(KeyCode.Mouse1))
-        {
+        if (CF2Input.GetKeyDown(KeyCode.Mouse1) && doorController != null)
             doorController.DoorOpenClose();
-        }
+
         if (CF2Input.GetKeyDown(KeyCode.P))
         {
             if (heldPickable != null)
@@ -124,44 +57,135 @@ public class PickDropController : MonoBehaviour
             else
                 PickupObject();
         }
-        if(CF2Input.GetKeyDown(KeyCode.F))
+
+        if (CF2Input.GetKeyDown(KeyCode.F) && heldPickable is UseableItem useable)
+            useable.UseDevice();
+    }
+
+    #endregion
+
+    #region Detection
+
+    private void Update()
+    {
+        ButtonInputs();
+
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward),
+                out hit, pickupRange, detectionLayers, queryTriggerInteraction))
         {
-            if(heldPickable is UseableItem)
-            {
-                ((UseableItem)heldPickable).UseDevice();
-            }
+            if (hit.transform.TryGetComponent<Interactable>(out var interactable))
+                HandleDetection(interactable);
+        }
+        else
+        {
+            ClearDetection();
         }
     }
+
+    void HandleDetection(Interactable interactable)
+    {
+        interactable.Detected();
+
+        switch (interactable)
+        {
+            case BabyController baby:
+                HandleBabyDetection(baby);
+                break;
+
+            case DropPoint drop:
+                HandleDropPointDetection(drop);
+                break;
+
+            case DoorController door:
+                HandleDoorDetection(door);
+                break;
+
+            case PickableItem pickable:
+                HandlePickableDetection(pickable);
+                break;
+        }
+    }
+
+    void HandleDropPointDetection(DropPoint drop)
+    {
+        if (heldPickable != null && drop.CanAcceptItem(heldPickable))
+        {
+            dropPoint = drop;
+            UIManager.Instance.SetCrosshair(drop.crosshairState, drop.detectionText);
+        }
+    }
+
+    void HandleDoorDetection(DoorController door)
+    {
+        doorController = door;
+        UIManager.Instance.SetCrosshair(door.crosshairState, door.detectionText);
+        UIManager.Instance.SetDoorButtonVisible(true);
+    }
+
+    void HandleBabyDetection(BabyController baby)
+    {
+        babyController = baby;
+
+        if (heldPickable != null && heldPickable.itemType == baby.requireItem)
+        {
+            UIManager.Instance.SetCrosshair(CrosshairState.Drop,
+                "Give " + heldPickable.itemType + " to Baby");
+        }
+        else if (baby.canPickBaby)
+        {
+            detectedPickable = baby;
+            DetectedPickable(true);
+            UIManager.Instance.SetPickButtonVisible(true);
+            UIManager.Instance.SetCrosshair(baby.crosshairState, baby.detectionText);
+        }
+        else
+        {
+            UIManager.Instance.SetCrosshair(CrosshairState.None,
+                "Need " + baby.requireItem);
+        }
+    }
+
+    void HandlePickableDetection(PickableItem pickable)
+    {
+        detectedPickable = pickable;
+        DetectedPickable(true);
+        UIManager.Instance.SetPickButtonVisible(true);
+        UIManager.Instance.SetCrosshair(pickable.crosshairState, pickable.detectionText);
+    }
+
+    void ClearDetection()
+    {
+        detectedPickable = null;
+        doorController = null;
+        dropPoint = null;
+        babyController = null;
+        DetectedPickable(false);
+        UIManager.Instance.SetCrosshair(CrosshairState.None, null);
+        UIManager.Instance.SetDoorButtonVisible(false);
+        if (heldPickable == null)
+            UIManager.Instance.SetPickButtonVisible(false);
+    }
+
+    #endregion
+
+    #region Pick & Drop
+
     private void FixedUpdate()
     {
         if (heldPickable != null)
-        {
-            //MoveObject
-            MoveObject();
-        }
+            MoveHeldObject();
     }
-    Vector3 moveDirection;
-    void MoveObject()
+
+    void MoveHeldObject()
     {
-        // Transform local offset to world space relative to holdArea's orientation
         Vector3 worldOffset = holdArea.TransformDirection(heldPickable.holdPositionOffset);
         Vector3 targetPosition = holdArea.position + worldOffset;
-        
+
         moveDirection = targetPosition - heldPickable.transform.position;
         float distanceFromHoldArea = moveDirection.magnitude;
 
-        // If object is too far (stuck in wall), disable collider temporarily
         if (heldPickable != null)
-        {
-            if (distanceFromHoldArea > maxDistanceFromHoldArea)
-            {
-                heldPickable.collider.enabled = false; // Disable to pass through walls
-            }
-            else
-            {
-                heldPickable.collider.enabled = true; // Re-enable when close
-            }
-        }
+            heldPickable.collider.enabled = distanceFromHoldArea <= maxDistanceFromHoldArea;
 
         heldPickable.rb.AddForce(moveDirection * pickupForce, ForceMode.Force);
     }
@@ -172,30 +196,27 @@ public class PickDropController : MonoBehaviour
         heldPickable = detectedPickable;
         heldPickable.PickObject(holdArea);
     }
+
     public void DropObject()
     {
-        if(heldPickable == null) return;
+        if (heldPickable == null) return;
 
         var droppedItem = heldPickable;
 
-        if(dropPoint != null)
-        {
+        if (dropPoint != null)
             dropPoint.DropOnPoint(heldPickable);
-        }
-        else if(babyController != null && babyController.requireItem == heldPickable.itemType)
-        {
+        else if (babyController != null && babyController.requireItem == heldPickable.itemType)
             babyController.GiveItemToBaby(heldPickable);
-        }
         else
-        {
             heldPickable.DropObject();
-        }
 
         heldPickable = null;
 
-        if(droppedItem.dropSFX != null)
+        if (droppedItem.dropSFX != null)
             AudioManager.Instance.PlaySFX(droppedItem.dropSFX);
         else
-            Debug.LogWarning("No drop sfx for " + droppedItem.itemType.ToString());
+            Debug.LogWarning("No drop sfx for " + droppedItem.itemType);
     }
+
+    #endregion
 }

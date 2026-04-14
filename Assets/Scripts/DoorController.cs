@@ -19,10 +19,10 @@ public class DoorController : Interactable
     public AudioClip doorCloseSFX;
     public AudioClip doorBellSFX;
     public UnityEvent<bool> onDoorOpen;
-    public bool isDoorOpen = false;
-
+    public bool isDoorOpen;
     public bool isDoorLock;
-    public override void Start() 
+
+    public override void Start()
     {
         base.Start();
         UpdateDetectionText();
@@ -36,72 +36,69 @@ public class DoorController : Interactable
 
     public void UpdateDetectionText()
     {
-        if (isDoorLock) detectionText = "Door is Locked";
-        else detectionText = isDoorOpen ? "Close Door" : "Open Door"; 
+        if (isDoorLock)
+            detectionText = "Door is Locked";
+        else
+            detectionText = isDoorOpen ? "Close Door" : "Open Door";
+
         crosshairState = isDoorOpen ? CrosshairState.DoorClose : CrosshairState.DoorOpen;
     }
+
     public void DoorOpenClose()
     {
-        if(isDoorLock)
+        if (isDoorLock)
         {
             ObjectiveManager.OnTaskEventReceived(onLockedCheckTask);
             AA_AnalyticsManager.Agent.TrackButtonClick("locked_door_hit");
+            transform.DOPunchRotation(Vector3.up * 2f, 0.5f, 8, 0.5f)
+                .OnComplete(() => transform.DORotate(doorClose, 0.1f));
+            AudioManager.Instance.PlaySFX(lockedDoorSFX);
         }
-        if (isDoorLock == false)
+        else if (!isDoorOpen)
         {
-            onDoorOpen.Invoke(!isDoorOpen);
-            if (isDoorOpen == false)
-            {
-                transform.DORotate(doorOpen, 0.5f);
-                isDoorOpen = true;
-                AudioManager.Instance.PlaySFX(doorOpenSFX);
-                PlayDoorBell(false);
-                StopDoorKnocking();
-            }
-            else
-            {
-                transform.DORotate(doorClose, 0.5f);
-                isDoorOpen = false;
-                AudioManager.Instance.PlaySFX(doorCloseSFX);
-            }
+            onDoorOpen.Invoke(true);
+            transform.DORotate(doorOpen, 0.5f);
+            isDoorOpen = true;
+            AudioManager.Instance.PlaySFX(doorOpenSFX);
+            PlayDoorBell(false);
+            StopDoorKnocking();
         }
         else
         {
-            // Door locked effect - punch then snap back
-            transform.DOPunchRotation(Vector3.up * 2f, 0.5f, 8, 0.5f)
-                .OnComplete(() => 
-                {
-                    transform.DORotate(doorClose, 0.1f);
-                });
-            AudioManager.Instance.PlaySFX(lockedDoorSFX);
+            onDoorOpen.Invoke(false);
+            transform.DORotate(doorClose, 0.5f);
+            isDoorOpen = false;
+            AudioManager.Instance.PlaySFX(doorCloseSFX);
         }
+
         UpdateDetectionText();
     }
+
     void OnCollisionExit(Collision other)
     {
-        if(other.collider.TryGetComponent(out AxeController axe))
+        if (!other.collider.TryGetComponent(out AxeController axe)) return;
+        if (!axe.isSwinging || !isDoorLock) return;
+
+        AudioManager.Instance.PlaySFX(SFX.DoorBreak);
+
+        var inactiveCrack = crackEffects.FirstOrDefault(e => !e.activeInHierarchy);
+        if (inactiveCrack != null)
         {
-            if(axe.isSwinging && isDoorLock)
-            {
-                AudioManager.Instance.PlaySFX(SFX.DoorBreak);
-                if(crackEffects.Any(e => e.activeInHierarchy == false))
-                {
-                    crackEffects.FirstOrDefault(e => e.activeInHierarchy == false)?.SetActive(true);
-                }
-                else 
-                {
-                    AA_AnalyticsManager.Agent.TrackButtonClick("door_break");
-                    ObjectiveManager.OnTaskEventReceived(onDoorBreakTask);
-                    SetLocked(false);
-                    DoorOpenClose();
-                }
-            }
+            inactiveCrack.SetActive(true);
+        }
+        else
+        {
+            AA_AnalyticsManager.Agent.TrackButtonClick("door_break");
+            ObjectiveManager.OnTaskEventReceived(onDoorBreakTask);
+            SetLocked(false);
+            DoorOpenClose();
         }
     }
+
     public void PlayDoorKnocking(float initialDelay, float interval = 1f)
     {
-        if (doorKnockingSource == null) return;
-        doorKnockingSource.PlayRepeating(initialDelay, interval);
+        if (doorKnockingSource != null)
+            doorKnockingSource.PlayRepeating(initialDelay, interval);
     }
 
     public void StopDoorKnocking()
@@ -112,8 +109,9 @@ public class DoorController : Interactable
 
     public void PlayDoorBell(bool play)
     {
-        if(audioSource == null) return;
-        if(!play)
+        if (audioSource == null) return;
+
+        if (!play)
         {
             audioSource.Stop();
             audioSource.clip = null;

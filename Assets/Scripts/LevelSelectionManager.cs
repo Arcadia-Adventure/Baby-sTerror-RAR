@@ -23,16 +23,16 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
     public GameObject[] barImg;
     public void OnPurchaseSuccess()
     {
-        PlayerPrefs.SetInt("UnlockAllLevels", 1);
+        PlayerPrefs.SetInt(PrefKeys.UnlockAllLevels, 1);
         unlockAllLevelsButton.enabled = false;
         UnlockLevelsIfNeeded();
     }
     private void Start()
     {
 		ArcadiaSdkManager.Agent.HideBanner();
-        if (PlayerPrefs.GetInt("UnlockAllLevels") == 1)
+        if (PlayerPrefs.GetInt(PrefKeys.UnlockAllLevels) == 1)
         {
-            unlockAllLevelsButton.enabled= false;
+            unlockAllLevelsButton.enabled = false;
         }
         ArcadiaSdkManager.Agent.ShowBanner();
         UnlockLevelsIfNeeded();
@@ -41,8 +41,7 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
     }
     void OnDisable()
     {
-        int killedTweens = DOTween.KillAll(); // for kill scroll animation tween when user start game during animation
-        Debug.Log("killed " + killedTweens + " tweens");
+        DOTween.Kill(scrollView);
     }
     [InspectorButton("MoveContentView")]
     public void MoveContentView()
@@ -80,7 +79,7 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
     void UnlockLevelsIfNeeded()
     {
         int totalUnlockLevel = GamePreference.openLevels;
-        if (PlayerPrefs.GetInt("UnlockAllLevels") == 1)
+        if (PlayerPrefs.GetInt(PrefKeys.UnlockAllLevels) == 1)
         {
             onPurchaseAllLevels?.Invoke();
             totalUnlockLevel = lockSprite.Length;

@@ -2,13 +2,16 @@ using System;
 using Ommy.Prefs;
 using UnityEngine;
 using DG.Tweening;
+using Ommy.Audio;
 
 public class BabyController : PickableItem
 {
-    public static BabyController Instance;
-    private void Awake() 
+    public static BabyController Instance { get; private set; }
+
+    private void Awake()
     {
-        if(Instance == null) Instance = this;
+        if (Instance == null) Instance = this;
+        else if (Instance != this) Destroy(gameObject);
     }
     public float cryThreshold = 10f;
     public bool canPickBaby = true;
@@ -42,8 +45,11 @@ public class BabyController : PickableItem
     {
         rb.useGravity = true;
         rb.linearDamping = 1;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
         collider.enabled = true;
         transform.parent = null;
+        Vector3 targetRotation = new Vector3(0f, transform.eulerAngles.y, 0f);
+        transform.DORotate(targetRotation, 0.3f).SetEase(Ease.OutSine);
         gameObject.layer = LayerMask.NameToLayer("Interactable");
     }
     public override void DropObject()

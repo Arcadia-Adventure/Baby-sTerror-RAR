@@ -28,6 +28,6 @@ public class TriggerTask : MonoBehaviour
     }
     public bool HaveRequireItem()=>
         requireItem == ItemType.None || 
-        (PickDropController.instance.heldPickable != null 
-        && PickDropController.instance.heldPickable.itemType == requireItem);
+        (PickDropController.Instance.heldPickable != null 
+        && PickDropController.Instance.heldPickable.itemType == requireItem);
 }

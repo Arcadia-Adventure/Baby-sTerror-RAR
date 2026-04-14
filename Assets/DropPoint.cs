@@ -32,7 +32,10 @@ public class DropPoint : Interactable
         if(item is BabyController)
         {
             BabyController baby = (BabyController)item;
-            baby.SetAnimation(whenDropBabyPlayAnim);
+            if(baby.requireItem != ItemType.None)
+                baby.SetAnimation(BabyAnimationType.CrySit);
+            else
+                baby.SetAnimation(whenDropBabyPlayAnim);
         }
         onItemDrop.Invoke();
         FilledBy = item.itemType;

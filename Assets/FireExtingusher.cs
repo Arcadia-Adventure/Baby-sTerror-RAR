@@ -60,12 +60,12 @@ public class UseableItem : PickableItem
     }
     public virtual void OnPickDevice()
     {
-        if(useSprite)UIManager.instance.useDevice.SetSprite(useSprite);
-        UIManager.instance.SetUseDeviceButtonVisible(true);
+        if(useSprite)UIManager.Instance.useDevice.SetSprite(useSprite);
+        UIManager.Instance.SetUseDeviceButtonVisible(true);
     }
     public virtual void OnDropDevice()
     {
-        UIManager.instance.SetUseDeviceButtonVisible(false);
+        UIManager.Instance.SetUseDeviceButtonVisible(false);
     }
     public virtual void UseDevice()
     {

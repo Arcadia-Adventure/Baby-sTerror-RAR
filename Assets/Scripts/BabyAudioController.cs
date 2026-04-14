@@ -2,8 +2,17 @@ using System;
 using System.Collections.Generic;
 using Ommy.Audio;
 using UnityEngine;
+
 public class BabyAudioController : MonoBehaviour
 {
+    static readonly HashSet<BabyAnimationType> LoopingAnimations = new()
+    {
+        BabyAnimationType.CrySit,
+        BabyAnimationType.CryLay,
+        BabyAnimationType.CryStand,
+        BabyAnimationType.AngrySit
+    };
+
     [Serializable]
     public class AudioEntry
     {
@@ -14,7 +23,7 @@ public class BabyAudioController : MonoBehaviour
     [SerializeField] private MyAudioSource audioSource;
     [SerializeField] private List<AudioEntry> audioEntries = new();
 
-    private Dictionary<BabyAnimationType, AudioClip> _clipLookup;
+    Dictionary<BabyAnimationType, AudioClip> _clipLookup;
 
     private void Awake()
     {
@@ -32,7 +41,7 @@ public class BabyAudioController : MonoBehaviour
             return;
 
         audioSource.Stop();
-        audioSource.loop = audioType.ToString().Contains("Cry") || audioType.ToString().Contains("Angry");
+        audioSource.loop = LoopingAnimations.Contains(audioType);
         audioSource.clip = clip;
         audioSource.Play();
     }
