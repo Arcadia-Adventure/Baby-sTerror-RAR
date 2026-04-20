@@ -8,9 +8,6 @@ public class GameManager : Singleton<GameManager>
 {
     public int targetFrameRate = 30;
 
-    [Header("Tasks Details override daily notification")]
-    public TasksDetail tasksDetail;
-
     protected override void Awake()
     {
         base.Awake();
@@ -28,15 +25,14 @@ public class GameManager : Singleton<GameManager>
 
     void OverrideDailyNotification()
     {
-        int openLevels = GamePreference.openLevels;
-        if (tasksDetail == null || openLevels < 0 || openLevels >= tasksDetail.Objectives.Count)
-            return;
+        int nextLevel = GamePreference.openLevels + 1;
+        var levelData = LevelConfigLoader.GetLevelData(nextLevel);
+        if (levelData == null) return;
 
-        var currentObjective = tasksDetail.Objectives[openLevels];
         var notificationData = new NotificationData
         {
-            title = currentObjective.levelNO,
-            message = currentObjective.missionName
+            title = "Level " + levelData.level,
+            message = levelData.missionName
         };
         NotificationManager.Instance.dailyMessages = new List<NotificationData> { notificationData };
     }

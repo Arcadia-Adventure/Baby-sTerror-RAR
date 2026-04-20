@@ -26,7 +26,7 @@ public class BabyItemHandler : MonoBehaviour
         item.collider.enabled = false;
         item.transform.DOLocalJump(baby.transform.position, 0.5f, 1, 0.5f);
         item.transform.DORotate(baby.transform.eulerAngles, 0.5f);
-        ObjectiveManager.OnTaskEventReceived(item.OnDropForBabyTaskType);
+        ObjectiveUIController.OnTaskEventReceived(item.OnDropForBabyTaskType);
         baby.SetAnimation(BabyAnimationType.Happy);
 
         DOVirtual.DelayedCall(0.5f, () =>

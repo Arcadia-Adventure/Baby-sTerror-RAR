@@ -14,7 +14,7 @@ public class FireArea : MonoBehaviour
         Destroy(fireObj);
         if(fireObjs.Count == 0)
         {
-            ObjectiveManager.OnTaskEventReceived(onFireEndTask);
+            ObjectiveUIController.OnTaskEventReceived(onFireEndTask);
             fireAudio.Stop();
         }
     } 

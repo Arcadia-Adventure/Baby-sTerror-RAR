@@ -9,15 +9,12 @@ public class HintManager : Singleton<HintManager>
     public List<LevelObject> levelObjects;
     public void ShowCurrentHint()
     {
-        ActivateIndicator(GamePreference.selectedLevel-1, ObjectiveManager.Instance.CurrentTaskIndex);
+        ActivateIndicator(GamePreference.selectedLevel-1, ObjectiveUIController.Instance.CurrentTaskIndex);
     }
     public bool IsCurrentHintActive()
     {
-        return IsIndicatorActivated(GamePreference.selectedLevel-1, ObjectiveManager.Instance.CurrentTaskIndex);
+        return IsIndicatorActivated(GamePreference.selectedLevel-1, ObjectiveUIController.Instance.CurrentTaskIndex);
     }
-    /// <summary>
-    /// Called by ObjectiveManager when a task is completed to update hint indicator
-    /// </summary>
     public void UpdateHint()
     {
         DeactiveAllIndicators();

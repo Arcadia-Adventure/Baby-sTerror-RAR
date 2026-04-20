@@ -48,7 +48,7 @@ public class DoorController : Interactable
     {
         if (isDoorLock)
         {
-            ObjectiveManager.OnTaskEventReceived(onLockedCheckTask);
+            ObjectiveUIController.OnTaskEventReceived(onLockedCheckTask);
             AA_AnalyticsManager.Agent.TrackButtonClick("locked_door_hit");
             transform.DOPunchRotation(Vector3.up * 2f, 0.5f, 8, 0.5f)
                 .OnComplete(() => transform.DORotate(doorClose, 0.1f));
@@ -89,7 +89,7 @@ public class DoorController : Interactable
         else
         {
             AA_AnalyticsManager.Agent.TrackButtonClick("door_break");
-            ObjectiveManager.OnTaskEventReceived(onDoorBreakTask);
+            ObjectiveUIController.OnTaskEventReceived(onDoorBreakTask);
             SetLocked(false);
             DoorOpenClose();
         }

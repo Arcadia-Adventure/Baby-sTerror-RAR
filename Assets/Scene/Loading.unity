@@ -636,7 +636,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
   targetFrameRate: 30
-  tasksDetail: {fileID: 11400000, guid: 47fb33193745a44c9b244cb2ac8189e1, type: 2}
 --- !u!1 &950804216
 GameObject:
   m_ObjectHideFlags: 0
@@ -1330,9 +1329,7 @@ PrefabInstance:
       propertyPath: initializationDelay
       value: 2
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5716675043621135952, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
-    - {fileID: 1161597318279649010, guid: a76bc769e3d6a49e5b1bd010ceafb275, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

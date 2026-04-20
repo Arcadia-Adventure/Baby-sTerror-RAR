@@ -28,7 +28,7 @@ public class DropPoint : Interactable
         DOTween.Kill(item.transform);
         item.transform.DOLocalJump(transform.position, 0.5f, 1, 0.5f);
         item.transform.DORotate(transform.eulerAngles, 0.5f);
-        ObjectiveManager.OnTaskEventReceived(onDropTaskType);
+        ObjectiveUIController.OnTaskEventReceived(onDropTaskType);
         if(item is BabyController)
         {
             BabyController baby = (BabyController)item;

@@ -5,7 +5,7 @@ using Firebase.Crashlytics;
 using Firebase.Extensions;
 using UnityEngine.Events;
 
-public class FirebaseManager
+public class FirebaseManager : MonoBehaviour
 {
     public static UnityEvent<bool> onInitialize;
     static FirebaseApp app;

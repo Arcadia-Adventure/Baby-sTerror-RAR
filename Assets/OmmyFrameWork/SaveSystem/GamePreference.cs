@@ -32,30 +32,7 @@ namespace Ommy.Prefs
             get => PlayerPrefs.GetInt(HintCountPrefs, 2);
             set => PlayerPrefs.SetInt(HintCountPrefs, value);
         }
-        public static int GetRandomLevel()
-        {
-            int totalLevels = 9;  // Total number of levels
-            int loadLevel = Random.Range(0, totalLevels + 1);
-            if (loadLevel == loadedLevel)
-            {
-                if (loadLevel < totalLevels)
-                {
-                    loadLevel++;
-                }
-                else
-                {
-                    loadLevel--;
-                }
-            }
-            // while (loadLevel == loadedLevel)
-            // {
-            //     loadLevel = (loadLevel + 1) % totalLevels;  // Move to the next level in a circular manner
-            // }
 
-            loadedLevel = loadLevel;  // Update the last loaded level
-
-            return loadLevel;
-        }
         public static bool tutorial
         {
             get

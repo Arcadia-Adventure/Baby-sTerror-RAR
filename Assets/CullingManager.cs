@@ -1,35 +1,18 @@
 using System.Collections.Generic;
 using Ommy.Attributes;
+using Ommy.Singleton;
 using UnityEngine;
 
-public class CullingManager : MonoBehaviour
+public class CullingManager : Singleton<CullingManager>
 {
-    public static CullingManager Instance { get; private set; }
-
-    [Header("Settings")]
-    public bool exclusiveMode = true; // Only one area enabled at a time
-    
     [Header("References")]
     public List<CullingArea> cullingAreas = new List<CullingArea>();
     public CullingArea defaultArea;
-    
     private CullingArea currentActiveArea;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     private void Start()
     {
-        if (defaultArea != null)
+        if (currentActiveArea == null && defaultArea != null)
         {
             SetActiveArea(defaultArea);
         }
@@ -38,7 +21,7 @@ public class CullingManager : MonoBehaviour
     [InspectorButton("FindAllCullingAreas")]
     public void FindAllCullingAreas()
     {
-        cullingAreas = new List<CullingArea>(FindObjectsOfType<CullingArea>());
+        cullingAreas = new List<CullingArea>(FindObjectsByType<CullingArea>(FindObjectsSortMode.None));
     }
 
     public void RegisterArea(CullingArea area)

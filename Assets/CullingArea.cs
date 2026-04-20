@@ -18,7 +18,8 @@ public class CullingArea : MonoBehaviour
 
     private void Start()
     {
-        SetEnabled(startEnabled);
+        if (CullingManager.Instance == null)
+            SetEnabled(startEnabled);
     }
 
     [InspectorButton("GetMeshRenderers")]

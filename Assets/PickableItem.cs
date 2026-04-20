@@ -50,7 +50,7 @@ public class PickableItem : Interactable
         transform.localPosition = holdPositionOffset;
         transform.localEulerAngles = holdRotationOffset;
         gameObject.layer = LayerMask.NameToLayer("HeldItem");
-        ObjectiveManager.OnTaskEventReceived(OnPickTaskType);
+        ObjectiveUIController.OnTaskEventReceived(OnPickTaskType);
         if(currentDropPoint != null)
         {
             currentDropPoint.ClearDropPoint();

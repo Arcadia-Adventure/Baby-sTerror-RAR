@@ -1,7 +1,7 @@
 using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.Events;
-public class GameAnalyticsManager
+public class GameAnalyticsManager : MonoBehaviour
 {    
     public static UnityEvent<bool> OnInitialize;
     public static void Initialize()

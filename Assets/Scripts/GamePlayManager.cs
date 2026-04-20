@@ -15,6 +15,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
         public GameObject levelObject;
         public Transform playerSpawnPoint, babySpawnPoint;
         public DropPoint initDropPoint;
+        public CullingArea spawnCullingArea;
     }
 
     [Header("Level Setup")]
@@ -62,8 +63,8 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     #endregion
 
-    private void OnEnable() => ObjectiveManager.OnTaskReceived += OnTaskReceived;
-    private void OnDisable() => ObjectiveManager.OnTaskReceived -= OnTaskReceived;
+    private void OnEnable() => ObjectiveUIController.OnTaskReceived += OnTaskReceived;
+    private void OnDisable() => ObjectiveUIController.OnTaskReceived -= OnTaskReceived;
 
     private void Start()
     {
@@ -74,6 +75,8 @@ public class GamePlayManager : Singleton<GamePlayManager>
         player.gameObject.transform.SetPositionAndRotation(
             CurrentConfig.playerSpawnPoint.position,
             CurrentConfig.playerSpawnPoint.rotation);
+
+        CullingManager.Instance.SetActiveArea(CurrentConfig.spawnCullingArea);
 
         CurrentConfig.levelObject.SetActive(true);
 
@@ -109,7 +112,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
     public void OnInteractableInteract(ItemType itemType)
     {
         if (itemType == ItemType.BabyRoomDoor || Level == 6)
-            ObjectiveManager.OnTaskEventReceived(TaskType.CheckBabyRoom);
+            ObjectiveUIController.OnTaskEventReceived(TaskType.CheckBabyRoom);
     }
 
     void ApplyLevelData(LevelData data)

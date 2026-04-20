@@ -11,9 +11,9 @@ public class TriggerTask : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if(HaveRequireItem())
+            if(requireItem == ItemType.None || HaveRequireItem())
             {
-                ObjectiveManager.OnTaskEventReceived(triggerTaskType);
+                ObjectiveUIController.OnTaskEventReceived(triggerTaskType);
                 onTriggerSuccess.Invoke();
             }
         }
@@ -22,12 +22,12 @@ public class TriggerTask : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            if(HaveRequireItem())
-            ObjectiveManager.OnTaskEventReceived(collisionTaskType);
+            if(requireItem == ItemType.None || HaveRequireItem())
+            ObjectiveUIController.OnTaskEventReceived(collisionTaskType);
         }
     }
-    public bool HaveRequireItem()=>
-        requireItem == ItemType.None || 
-        (PickDropController.Instance.heldPickable != null 
-        && PickDropController.Instance.heldPickable.itemType == requireItem);
+    public bool HaveRequireItem()
+    {
+        return PickDropController.Instance.heldPickable.itemType == requireItem;
+    }
 }

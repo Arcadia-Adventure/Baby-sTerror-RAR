@@ -25,9 +25,19 @@ public class BabyController : PickableItem
     public Material babyEyesRed;
     public GameObject babyDirtyFace;
 
+    private CapsuleCollider _capsule;
+    private int _standingDirection;
+    private Vector3 _standingCenter;
+
     public override void Start()
     {
         base.Start();
+        _capsule = collider as CapsuleCollider;
+        if (_capsule != null)
+        {
+            _standingDirection = _capsule.direction;
+            _standingCenter = _capsule.center;
+        }
         if (GamePreference.selectedLevel > 4)
         {
             body.SetActive(false);
@@ -83,5 +93,22 @@ public class BabyController : PickableItem
     {
         if (withAudio) PlayAudio(animationType);
         babyAnimationController.SetAnimation(animationType, onComplete);
+        UpdateColliderForAnimation(animationType);
+    }
+
+    private void UpdateColliderForAnimation(BabyAnimationType animationType)
+    {
+        if (_capsule == null) return;
+
+        if (animationType == BabyAnimationType.CryLay)
+        {
+            _capsule.direction = 2; // Z-axis (laying down)
+            _capsule.center = new Vector3(_standingCenter.x, _standingCenter.z, _standingCenter.y);
+        }
+        else
+        {
+            _capsule.direction = _standingDirection;
+            _capsule.center = _standingCenter;
+        }
     }
 }
