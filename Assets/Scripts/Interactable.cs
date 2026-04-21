@@ -9,12 +9,7 @@ public class Interactable : MonoBehaviour
     {
         gameObject.layer = LayerMask.NameToLayer("Interactable");
     }
-    public virtual void Detected()
-    {
-        Debug.Log("Detected " + transform.name);
-    }
-    public virtual void Interacted()
-    {
-        Debug.Log("Interacting with " + transform.name);
-    }
+    public virtual void Detected() { }
+    public virtual void Undetected() { }
+    public virtual void Interacted() { }
 }

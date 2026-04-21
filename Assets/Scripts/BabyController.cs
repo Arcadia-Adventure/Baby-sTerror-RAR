@@ -15,7 +15,21 @@ public class BabyController : PickableItem
     }
     public float cryThreshold = 10f;
     public bool canPickBaby = true;
-    public ItemType requireItem = ItemType.None;
+
+    [SerializeField] private ItemType _requireItem = ItemType.None;
+    [SerializeField] private RequireItemIndicator requireItemIndicator;
+
+    public ItemType requireItem
+    {
+        get => _requireItem;
+        set
+        {
+            _requireItem = value;
+            if (requireItemIndicator != null)
+                requireItemIndicator.SetItem(value);
+        }
+    }
+
     [SerializeField] private BabyAnimationController babyAnimationController;
     [SerializeField] private BabyAudioController babyAudioController;
     [SerializeField] private BabyItemHandler babyItemHandler;
@@ -82,6 +96,17 @@ public class BabyController : PickableItem
         if(!active) return;
         transform.SetPositionAndRotation(targetTransform.position, targetTransform.rotation);
     }
+    public override void Detected()
+    {
+        if (_requireItem != ItemType.None)
+            requireItemIndicator?.Show();
+    }
+
+    public override void Undetected()
+    {
+        requireItemIndicator?.Hide();
+    }
+
     public void GiveItemToBaby(PickableItem item) => babyItemHandler.GiveItemToBaby(item);
 
     public void PlayAudio(BabyAnimationType animationType) =>
@@ -111,4 +136,5 @@ public class BabyController : PickableItem
             _capsule.center = _standingCenter;
         }
     }
+
 }

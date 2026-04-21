@@ -29,6 +29,7 @@ public class PickDropController : Singleton<PickDropController>
     public DoorController doorController;
     public PickableItem heldPickable;
 
+    Interactable lastDetected;
     RaycastHit hit;
     Vector3 moveDirection;
 
@@ -71,10 +72,10 @@ public class PickDropController : Singleton<PickDropController>
         ButtonInputs();
 
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward),
-                out hit, pickupRange, detectionLayers, queryTriggerInteraction))
+                out hit, pickupRange, detectionLayers, queryTriggerInteraction)
+            && hit.transform.TryGetComponent<Interactable>(out var interactable))
         {
-            if (hit.transform.TryGetComponent<Interactable>(out var interactable))
-                HandleDetection(interactable);
+            HandleDetection(interactable);
         }
         else
         {
@@ -84,6 +85,13 @@ public class PickDropController : Singleton<PickDropController>
 
     void HandleDetection(Interactable interactable)
     {
+        if (lastDetected != null && lastDetected != interactable)
+        {
+            lastDetected.Undetected();
+            lastDetected = null;
+        }
+
+        lastDetected = interactable;
         interactable.Detected();
 
         switch (interactable)
@@ -155,6 +163,12 @@ public class PickDropController : Singleton<PickDropController>
 
     void ClearDetection()
     {
+        if (lastDetected != null)
+        {
+            lastDetected.Undetected();
+            lastDetected = null;
+        }
+
         detectedPickable = null;
         doorController = null;
         dropPoint = null;

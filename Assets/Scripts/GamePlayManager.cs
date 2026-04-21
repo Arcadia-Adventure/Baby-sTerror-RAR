@@ -76,6 +76,10 @@ public class GamePlayManager : Singleton<GamePlayManager>
             CurrentConfig.playerSpawnPoint.position,
             CurrentConfig.playerSpawnPoint.rotation);
 
+        float spawnPitch = CurrentConfig.playerSpawnPoint.eulerAngles.x;
+        if (spawnPitch > 180f) spawnPitch -= 360f;
+        player.InitializeCameraPitch(spawnPitch);
+
         CullingManager.Instance.SetActiveArea(CurrentConfig.spawnCullingArea);
 
         CurrentConfig.levelObject.SetActive(true);

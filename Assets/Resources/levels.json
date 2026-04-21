@@ -7,7 +7,7 @@
         "active": true,
         "requireItem": "None",
         "canPickBaby": true,
-        "initialAnimation": "CrySit",
+        "initialAnimation": "CryLay",
         "possessed": false,
         "dirtyFace": false
       },
@@ -194,7 +194,7 @@
     },
     {
       "level": 7,
-      "missionName": "Trapped Baby.",
+      "missionName": "You Trapped.",
       "baby": {
         "active": true,
         "requireItem": "None",
@@ -220,9 +220,8 @@
         "showRateUsButton": false
       },
       "tasks": [
-        { "taskType": "CheckBabyRoom", "description": "-Check the baby\u2019s Bedroom.", "completePreviousTasks": false },
-        { "taskType": "BedroomDoorBreak", "description": "-The Bed door won\u2019t open, find an axe and break the door.", "completePreviousTasks": false },
-        { "taskType": "PickBaby", "description": "-Pick up the baby and leave the room", "completePreviousTasks": true }
+        { "taskType": "BedroomDoorBreak", "description": "-The baby trapped you! Find the axe and break the door.", "completePreviousTasks": false },
+        { "taskType": "GoOutside", "description": "-Pick up the baby and leave the room.", "completePreviousTasks": true }
       ]
     },
     {
@@ -295,7 +294,7 @@
         "active": true,
         "requireItem": "Talisman",
         "canPickBaby": false,
-        "initialAnimation": "AngrySit",
+        "initialAnimation": "Fly",
         "possessed": true,
         "dirtyFace": false
       },

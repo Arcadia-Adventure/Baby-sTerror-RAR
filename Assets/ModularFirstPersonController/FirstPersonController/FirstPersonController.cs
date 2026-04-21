@@ -37,6 +37,11 @@ public class FirstPersonController : MonoBehaviour
     // Internal Variables
     private float yaw = 0.0f;
     private float pitch = 0.0f;
+
+    public void InitializePitch(float angle)
+    {
+        pitch = angle;
+    }
    // private Image crosshairObject;
 
     #region Camera Zoom Variables
