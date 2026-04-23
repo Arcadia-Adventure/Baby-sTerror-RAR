@@ -5,6 +5,7 @@ using Ommy.Audio;
 using UnityEngine.VFX;
 public class DropPoint : Interactable
 {
+    public string referenceName;
     public ItemType FilledBy = ItemType.None;
     public ItemType acceptableItemType = ItemType.Any;
     public TaskType onDropTaskType = TaskType.None;

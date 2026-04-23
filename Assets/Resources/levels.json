@@ -23,8 +23,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": ["Cradle"]
       },
       "tasks": [
         { "taskType": "PickBaby", "description": "-Answer the ringing doorbell and find the baby.", "completePreviousTasks": false },
@@ -54,8 +53,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": []
       },
       "tasks": [
         { "taskType": "PickFeeder", "description": "-Find the Feeder in the Kitchen.", "completePreviousTasks": false },
@@ -85,8 +83,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": ["Washroom"]
       },
       "tasks": [
         { "taskType": "DropBabyWashroom", "description": "-Pick up the baby and take it to the washroom.", "completePreviousTasks": false },
@@ -116,8 +113,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": []
       },
       "tasks": [
         { "taskType": "PickCloth", "description": "-Find warm clothes for the baby.", "completePreviousTasks": false },
@@ -147,8 +143,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": []
       },
       "tasks": [
         { "taskType": "PickToy", "description": "-Find a toy to cheer up the baby.", "completePreviousTasks": false },
@@ -178,8 +173,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": ["Cradle", "HiddenDropPoint"]
       },
       "tasks": [
         { "taskType": "PickBaby", "description": "-The cradle is empty... Find the baby hiding in the house.", "completePreviousTasks": false },
@@ -209,8 +203,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": ["RockingChair"]
       },
       "tasks": [
         { "taskType": "BedroomDoorBreak", "description": "-The baby trapped you! Find the axe and break the door.", "completePreviousTasks": false },
@@ -240,8 +233,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": []
       },
       "tasks": [
         { "taskType": "PickFireExtinguisher", "description": "-Find the fire extinguisher", "completePreviousTasks": false },
@@ -271,8 +263,7 @@
         "flyingFurniture": false,
 
         "playerStartAnimation": "None",
-        "showNextButton": true,
-        "showRateUsButton": false
+        "activeDropPoints": []
       },
       "tasks": [
         { "taskType": "FollowBabyVoice", "description": "-Follow the baby\u2019s voice.", "completePreviousTasks": false }
@@ -301,8 +292,7 @@
         "flyingFurniture": true,
 
         "playerStartAnimation": "GettingUp",
-        "showNextButton": false,
-        "showRateUsButton": true
+        "activeDropPoints": ["Cradle"]
       },
       "tasks": [
         { "taskType": "PickTalisman", "description": "-Find the talisman.", "completePreviousTasks": false },

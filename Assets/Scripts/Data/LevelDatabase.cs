@@ -52,8 +52,7 @@ public class FeatureFlags
     public bool fireActive;
     public bool flyingFurniture;
     public string playerStartAnimation = "None";
-    public bool showNextButton = true;
-    public bool showRateUsButton;
+    public string[] activeDropPoints;
 }
 
 [Serializable]

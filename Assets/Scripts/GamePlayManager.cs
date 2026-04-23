@@ -33,6 +33,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
     public DoorController upperRoomDoor;
     public DoorController houseExitDoor;
     public DropPoint cradleDropPoint;
+    public DropPoint[] allDropPoints;
     public GameObject[] flyingFurniture;
 
     [Header("Scene References")]
@@ -159,8 +160,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     void ApplyFeatures(FeatureFlags features)
     {
-        if (features.cradleActive)
-            cradleDropPoint.gameObject.SetActive(true);
+        ApplyDropPoints(features.activeDropPoints);
 
         if (features.fireActive && bedroomFireArea != null)
             bedroomFireArea.ActivateFire();
@@ -171,12 +171,23 @@ public class GamePlayManager : Singleton<GamePlayManager>
         var playerAnim = LevelConfigLoader.ParsePlayerAnimation(features.playerStartAnimation);
         if (playerAnim != PlayerAnimation.None)
             player.SetAnimation(playerAnim);
+    }
 
-        if (!features.showNextButton)
-            UIManager.Instance.nextButton.SetActive(false);
+    void ApplyDropPoints(string[] activeDropPointNames)
+    {
+        foreach (var dp in allDropPoints)
+            dp.gameObject.SetActive(false);
 
-        if (features.showRateUsButton)
-            UIManager.Instance.rateusButton.SetActive(true);
+        if (activeDropPointNames == null || activeDropPointNames.Length == 0)
+            return;
+
+        var activeSet = new HashSet<string>(activeDropPointNames);
+
+        foreach (var dp in allDropPoints)
+        {
+            if (activeSet.Contains(dp.referenceName))
+                dp.gameObject.SetActive(true);
+        }
     }
 
     public void SetupFlyingFurniture(bool isFly = true)

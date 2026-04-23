@@ -2686,6 +2686,7 @@ MonoBehaviour:
   crosshairState: 2
   detectionText: Drop Baby
   collider: {fileID: 276850625}
+  referenceName: Cradle
   FilledBy: 0
   acceptableItemType: 1
   onDropTaskType: 8
@@ -3837,6 +3838,7 @@ Transform:
   - {fileID: 276850624}
   - {fileID: 1898096783}
   - {fileID: 2073274475}
+  - {fileID: 1217168999}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &418047544
@@ -42012,13 +42014,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1217168998}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.162, y: 0.904, z: -3.533}
   m_LocalScale: {x: 0.53029245, y: 0.53029245, z: 0.53029245}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1876079041}
-  m_Father: {fileID: 1538947701}
+  m_Father: {fileID: 415723518}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1217169000
 BoxCollider:
@@ -42109,6 +42111,7 @@ MonoBehaviour:
   crosshairState: 2
   detectionText: Drop Baby
   collider: {fileID: 1217169000}
+  referenceName: Washroom
   FilledBy: 0
   acceptableItemType: 1
   onDropTaskType: 19
@@ -53169,6 +53172,11 @@ MonoBehaviour:
   upperRoomDoor: {fileID: 8614458270723852696}
   houseExitDoor: {fileID: 8614911949788146860}
   cradleDropPoint: {fileID: 276850628}
+  allDropPoints:
+  - {fileID: 276850628}
+  - {fileID: 1898096784}
+  - {fileID: 2073274476}
+  - {fileID: 1217169003}
   flyingFurniture:
   - {fileID: 8615117738287794521}
   - {fileID: 8614448182195055604}
@@ -64157,8 +64165,8 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
+  m_IsKinematic: 1
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!1 &1475569175
@@ -74185,7 +74193,7 @@ Transform:
   m_GameObject: {fileID: 1525860671}
   serializedVersion: 2
   m_LocalRotation: {x: -0.053395364, y: 0.47785044, z: -0.029200353, w: -0.8763305}
-  m_LocalPosition: {x: -3.8688312, y: 1.01, z: 1.4795585}
+  m_LocalPosition: {x: -0.157, y: 1.01, z: 1.362}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -74807,7 +74815,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1217168999}
   - {fileID: 8618399824840867070}
   m_Father: {fileID: 918091513}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -78263,6 +78270,7 @@ MonoBehaviour:
   crosshairState: 2
   detectionText: Drop Baby
   collider: {fileID: 1898096785}
+  referenceName: RockingChair
   FilledBy: 0
   acceptableItemType: 1
   onDropTaskType: 14
@@ -79838,6 +79846,7 @@ MonoBehaviour:
   crosshairState: 2
   detectionText: Drop Baby
   collider: {fileID: 2073274477}
+  referenceName: HiddenDropPoint
   FilledBy: 0
   acceptableItemType: 1
   onDropTaskType: 0
@@ -89779,16 +89788,16 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4370947935827287085}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.73141557, z: -0, w: 0.6819321}
-  m_LocalPosition: {x: 0.002048027, y: 3.191, z: 6.089322}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.11, y: 3.611, z: -2.136}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1724956795}
   - {fileID: 1390829363}
   - {fileID: 185173842}
   m_Father: {fileID: 132729465}
-  m_LocalEulerAnglesHint: {x: 0, y: -94.01, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4055124554638288180
 GameObject:
   m_ObjectHideFlags: 0
@@ -108844,29 +108853,6 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 8635922066673315286}
-  m_Enabled: 1
---- !u!205 &8454153856572611523
-LODGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8614368509975636265}
-  serializedVersion: 2
-  m_LocalReferencePoint: {x: 0, y: 1.4281873, z: 0.30638295}
-  m_Size: 3.345314
-  m_FadeMode: 0
-  m_AnimateCrossFading: 0
-  m_LastLODIsBillboard: 0
-  m_LODs:
-  - screenRelativeHeight: 0.999
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 0}
-  - screenRelativeHeight: 0.034275327
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 8637682068107532509}
   m_Enabled: 1
 --- !u!205 &8454156421145539776
 LODGroup:
@@ -145100,7 +145086,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8612130435681246935}
-  - component: {fileID: 8454153856572611523}
   - component: {fileID: 8602614990069795051}
   - component: {fileID: 8602532617308375915}
   - component: {fileID: 8605548312152153259}

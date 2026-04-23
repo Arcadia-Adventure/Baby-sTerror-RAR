@@ -111,7 +111,13 @@ public class UIManager : Singleton<UIManager>
 
     #region Game UI Actions
 
-    public void LvlCompleteON() => levelCompletePanel.SetActive(true);
+    public void LvlCompleteON()
+    {
+        levelCompletePanel.SetActive(true);
+        bool isLastLevel = GamePreference.selectedLevel >= LevelConfigLoader.LevelCount;
+        nextButton.SetActive(!isLastLevel);
+        rateusButton.SetActive(isLastLevel);
+    }
 
     public void RateUsClick()
     {
