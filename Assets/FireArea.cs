@@ -20,10 +20,12 @@ public class FireArea : MonoBehaviour
     } 
     public void ActivateFire()
     {
-        foreach (var fireObj in fireObjs)
-        {
-            fireObj.Play();
-        }
+        foreach (var fireObj in fireObjs) fireObj.Play();
         fireAudio.Play();
+    }
+    public void DeactivateFire()
+    {
+        fireAudio.Stop();
+        foreach (var fireObj in fireObjs) fireObj.Stop();
     }
 }

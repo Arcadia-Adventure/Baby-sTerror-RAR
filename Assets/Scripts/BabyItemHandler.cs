@@ -64,12 +64,8 @@ public class BabyItemHandler : MonoBehaviour
         baby.SetAnimation(BabyAnimationType.Happy);
         baby.canPickBaby = true;
         baby.requireItem = ItemType.None;
-        foreach (var furniture in GamePlayManager.Instance.flyingFurniture)
-        {
-            var fRb = furniture.GetComponent<Rigidbody>();
-            fRb.useGravity = true;
-            fRb.isKinematic = false;
-        }
+        GamePlayManager.Instance.SetupFlyingFurniture(isFly: false);
+        GamePlayManager.Instance.bedroomFireArea.DeactivateFire();
         GamePlayManager.Instance.cradleDropPoint.gameObject.SetActive(true);
     }
 }

@@ -13,7 +13,7 @@
       },
       "doors": {
         "houseExitLocked": false,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": true, "initialDelay": 2.0, "interval": 5.0 },
         "doorBell": true
       },
@@ -21,7 +21,6 @@
         "cradleActive": true,
         "fireActive": false,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -45,7 +44,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -53,7 +52,6 @@
         "cradleActive": false,
         "fireActive": false,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -77,7 +75,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -85,7 +83,6 @@
         "cradleActive": false,
         "fireActive": false,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -109,7 +106,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -117,7 +114,6 @@
         "cradleActive": false,
         "fireActive": false,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -141,7 +137,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -149,7 +145,6 @@
         "cradleActive": false,
         "fireActive": false,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -162,9 +157,9 @@
     },
     {
       "level": 6,
-      "missionName": "Vanishing Baby",
+      "missionName": "The Empty Cradle",
       "baby": {
-        "active": false,
+        "active": true,
         "requireItem": "None",
         "canPickBaby": true,
         "initialAnimation": "CrySit",
@@ -173,7 +168,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -181,15 +176,14 @@
         "cradleActive": false,
         "fireActive": false,
         "flyingFurniture": false,
-        "babyCryingCradle": true,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
         "showRateUsButton": false
       },
       "tasks": [
-        { "taskType": "CheckBabyRoom", "description": "-The baby is crying\u2014check the baby\u2019s Bedroom.", "completePreviousTasks": false },
-        { "taskType": "DropBabyCradle", "description": "-The baby is hiding\u2014find it and put it back to bed.", "completePreviousTasks": false }
+        { "taskType": "PickBaby", "description": "-The cradle is empty... Find the baby hiding in the house.", "completePreviousTasks": false },
+        { "taskType": "DropBabyCradle", "description": "-Bring the baby back to the cradle.", "completePreviousTasks": false }
       ]
     },
     {
@@ -205,7 +199,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": true,
+        "upperRoomLocked": true,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -213,7 +207,6 @@
         "cradleActive": false,
         "fireActive": true,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -221,7 +214,7 @@
       },
       "tasks": [
         { "taskType": "BedroomDoorBreak", "description": "-The baby trapped you! Find the axe and break the door.", "completePreviousTasks": false },
-        { "taskType": "GoOutside", "description": "-Pick up the baby and leave the room.", "completePreviousTasks": true }
+        { "taskType": "DropOnRockingChair", "description": "-Pick up the baby and drop it on the rocking chair.", "completePreviousTasks": true }
       ]
     },
     {
@@ -237,7 +230,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -245,7 +238,6 @@
         "cradleActive": false,
         "fireActive": true,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -269,7 +261,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -277,7 +269,6 @@
         "cradleActive": false,
         "fireActive": false,
         "flyingFurniture": false,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "None",
         "showNextButton": true,
@@ -300,7 +291,7 @@
       },
       "doors": {
         "houseExitLocked": true,
-        "babyRoomLocked": false,
+        "upperRoomLocked": false,
         "doorKnocking": { "enabled": false, "initialDelay": 0, "interval": 0 },
         "doorBell": false
       },
@@ -308,7 +299,6 @@
         "cradleActive": false,
         "fireActive": true,
         "flyingFurniture": true,
-        "babyCryingCradle": false,
 
         "playerStartAnimation": "GettingUp",
         "showNextButton": false,

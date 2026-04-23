@@ -32,7 +32,7 @@ public class BabySetup
 public class DoorSetup
 {
     public bool houseExitLocked = true;
-    public bool babyRoomLocked;
+    public bool upperRoomLocked;
     public DoorKnockSetup doorKnocking;
     public bool doorBell;
 }
@@ -51,7 +51,6 @@ public class FeatureFlags
     public bool cradleActive;
     public bool fireActive;
     public bool flyingFurniture;
-    public bool babyCryingCradle;
     public string playerStartAnimation = "None";
     public bool showNextButton = true;
     public bool showRateUsButton;

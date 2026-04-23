@@ -31,7 +31,7 @@ public enum TaskType
     DropClothOnBaby = 12,
     DropFireExtinguisher = 13,
     // Location tasks
-    GoOutside = 14,
+    DropOnRockingChair = 14,
     ReachRoom = 15,
     FindBaby = 16,
 
@@ -59,7 +59,7 @@ public enum ItemType
     FireExtinguisher = 6,
     Facewash = 7,
     Toy = 8,
-    BabyRoomDoor = 9,
+    UpperRoomDoor = 9,
     HouseExitDoor = 10,
 }
 public enum PlayerAnimation

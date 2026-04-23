@@ -6,6 +6,7 @@ using Ommy.Audio;
 using Ommy.Prefs;
 using Ommy.Singleton;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GamePlayManager : Singleton<GamePlayManager>
 {
@@ -28,13 +29,11 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     [Header("Environment")]
     public MyAudioSource RainBG;
-    public MyAudioSource babyCryingCradle;
-    public DoorController babyRoomDoor;
+    [FormerlySerializedAs("babyRoomDoor")]
+    public DoorController upperRoomDoor;
     public DoorController houseExitDoor;
     public DropPoint cradleDropPoint;
-    public ParticleSystem axeBlueGlow;
     public GameObject[] flyingFurniture;
-    public GameObject[] Cracker;
 
     [Header("Scene References")]
     public FireArea bedroomFireArea;
@@ -93,7 +92,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
             var spawnPoint = CurrentConfig.babySpawnPoint;
             if (CurrentConfig.initDropPoint != null)
             {
-                CurrentConfig.initDropPoint.DropOnPoint(baby);
+                CurrentConfig.initDropPoint.DropOnPoint(baby, jumpDuration: 0f, rotationDuration: 0f);
             }
             else
             {
@@ -115,7 +114,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     public void OnInteractableInteract(ItemType itemType)
     {
-        if (itemType == ItemType.BabyRoomDoor || Level == 6)
+        if (itemType == ItemType.UpperRoomDoor)
             ObjectiveUIController.OnTaskEventReceived(TaskType.CheckBabyRoom);
     }
 
@@ -129,7 +128,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
     void ApplyDoorSetup(DoorSetup doors)
     {
         houseExitDoor.SetLocked(doors.houseExitLocked);
-        babyRoomDoor.SetLocked(doors.babyRoomLocked);
+        upperRoomDoor.SetLocked(doors.upperRoomLocked);
 
         if (doors.doorKnocking != null && doors.doorKnocking.enabled)
             houseExitDoor.PlayDoorKnocking(doors.doorKnocking.initialDelay, doors.doorKnocking.interval);
@@ -163,9 +162,6 @@ public class GamePlayManager : Singleton<GamePlayManager>
         if (features.cradleActive)
             cradleDropPoint.gameObject.SetActive(true);
 
-        if (features.babyCryingCradle)
-            babyCryingCradle.Play();
-
         if (features.fireActive && bedroomFireArea != null)
             bedroomFireArea.ActivateFire();
 
@@ -183,14 +179,14 @@ public class GamePlayManager : Singleton<GamePlayManager>
             UIManager.Instance.rateusButton.SetActive(true);
     }
 
-    void SetupFlyingFurniture()
+    public void SetupFlyingFurniture(bool isFly = true)
     {
         foreach (var furniture in flyingFurniture)
         {
             var rb = furniture.GetComponent<Rigidbody>();
             rb.isKinematic = false;
-            rb.useGravity = false;
-            rb.AddForce(10, 10, 10);
+            rb.useGravity = !isFly;
+            if (isFly) rb.AddForce(10, 10, 10);
         }
     }
 
@@ -212,21 +208,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     void OnTaskReceived(TaskType taskType)
     {
-        if (taskType == TaskType.CheckBabyRoom)
-            SpawnBabyInKitchen();
         if (taskType == TaskType.FollowBabyVoice)
             player.SetAnimation(PlayerAnimation.Unconscious);
     }
-
-    void SpawnBabyInKitchen()
-    {
-        babyCryingCradle.Stop();
-        baby.gameObject.SetActive(true);
-        baby.SetAnimation(BabyAnimationType.CrySit);
-        DOVirtual.DelayedCall(2f, () => baby.PlayAudio(BabyAnimationType.CrySit));
-        baby.OnPick -= OnBabyPickedInKitchen;
-        baby.OnPick += OnBabyPickedInKitchen;
-    }
-
-    void OnBabyPickedInKitchen() => cradleDropPoint.gameObject.SetActive(true);
 }

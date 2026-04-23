@@ -20,14 +20,21 @@ public class DropPoint : Interactable
     // Check if this drop point can accept the given item
     public bool CanAcceptItem(PickableItem item) 
         => acceptableItemType == ItemType.Any || acceptableItemType == item.itemType;
-    public void DropOnPoint(PickableItem item)
+    public void DropOnPoint(PickableItem item, float jumpPower = 0.5f, float jumpDuration = 0.5f, float rotationDuration = 0.5f)
     {
         dropAreaVFX.Stop();
         item.rb.isKinematic = true;
         item.ReleaseObject();
         DOTween.Kill(item.transform);
-        item.transform.DOLocalJump(transform.position, 0.5f, 1, 0.5f);
-        item.transform.DORotate(transform.eulerAngles, 0.5f);
+        if (jumpDuration <= 0f && rotationDuration <= 0f)
+        {
+            item.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        }
+        else
+        {
+            item.transform.DOLocalJump(transform.position, jumpPower, 1, jumpDuration);
+            item.transform.DORotate(transform.eulerAngles, rotationDuration);
+        }
         ObjectiveUIController.OnTaskEventReceived(onDropTaskType);
         if(item is BabyController)
         {
