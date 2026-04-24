@@ -85,25 +85,21 @@ public class GamePlayManager : Singleton<GamePlayManager>
         CurrentConfig.levelObject.SetActive(true);
 
         var levelData = LevelConfigLoader.GetLevelData(Level);
-        if (levelData != null)
-            ApplyLevelData(levelData);
+        ApplyLevelData(levelData);
 
         if (baby.gameObject.activeSelf)
         {
             var spawnPoint = CurrentConfig.babySpawnPoint;
             if (CurrentConfig.initDropPoint != null)
-            {
                 CurrentConfig.initDropPoint.DropOnPoint(baby, jumpDuration: 0f, rotationDuration: 0f);
-            }
             else
-            {
                 baby.SetActiveAndPositionAndRotation(spawnPoint != null, spawnPoint);
-            }
 
-            var babyAnim = levelData != null
-                ? LevelConfigLoader.ParseBabyAnimation(levelData.baby.initialAnimation)
-                : BabyAnimationType.CrySit;
-            baby.SetAnimation(babyAnim);
+            var babyAnim = LevelConfigLoader.ParseBabyAnimation(levelData.baby.initialAnimation);
+            var overrideSound = !string.IsNullOrEmpty(levelData.baby.overrideSound)
+                ? LevelConfigLoader.ParseBabyAnimation(levelData.baby.overrideSound)
+                : BabyAnimationType.None;
+            baby.SetAnimation(babyAnim, overrideSound: overrideSound);
         }
 
         ArcadiaSdkManager.CurrentAdPlacement = "gameplay_banner";

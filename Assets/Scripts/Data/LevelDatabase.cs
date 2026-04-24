@@ -26,6 +26,7 @@ public class BabySetup
     public string initialAnimation = "CrySit";
     public bool possessed;
     public bool dirtyFace;
+    public string overrideSound;
 }
 
 [Serializable]

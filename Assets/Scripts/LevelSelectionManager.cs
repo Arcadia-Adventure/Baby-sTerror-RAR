@@ -66,13 +66,13 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
         // Start from left (0) and animate to target position
         scrollView.horizontalNormalizedPosition = 0f;
         
-        // Animate scroll with DOTween
         DOTween.To(
             () => scrollView.horizontalNormalizedPosition,
-            x => scrollView.horizontalNormalizedPosition = x,
+            x => { if (scrollView != null) scrollView.horizontalNormalizedPosition = x; },
             targetPosition,
             scrollDuration
         )
+        .SetTarget(scrollView)
         .SetDelay(startDelay)
         .SetEase(scrollEase);
     }

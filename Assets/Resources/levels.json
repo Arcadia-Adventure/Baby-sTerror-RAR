@@ -278,7 +278,8 @@
         "canPickBaby": false,
         "initialAnimation": "Fly",
         "possessed": true,
-        "dirtyFace": false
+        "dirtyFace": false,
+        "overrideSound": "AngrySit"
       },
       "doors": {
         "houseExitLocked": true,

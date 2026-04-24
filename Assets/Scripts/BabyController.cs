@@ -114,9 +114,11 @@ public class BabyController : PickableItem
 
     public void StopAudio() => babyAudioController.Stop();
 
-    public void SetAnimation(BabyAnimationType animationType, bool withAudio = true, Action onComplete = null)
+    public void SetAnimation(BabyAnimationType animationType, bool withAudio = true,
+        BabyAnimationType overrideSound = BabyAnimationType.None, Action onComplete = null)
     {
-        if (withAudio) PlayAudio(animationType);
+        if (withAudio)
+            PlayAudio(overrideSound != BabyAnimationType.None ? overrideSound : animationType);
         babyAnimationController.SetAnimation(animationType, onComplete);
         UpdateColliderForAnimation(animationType);
     }

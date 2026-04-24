@@ -2858,7 +2858,7 @@ Light:
   m_Type: 2
   m_Color: {r: 1, g: 0.82058823, b: 0.5514706, a: 1}
   m_Intensity: 2
-  m_Range: 15
+  m_Range: 4.211152
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -42264,7 +42264,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.4
   m_Height: 2.96
   m_Direction: 1
   m_Center: {x: 0, y: -1.5, z: 0.89}
@@ -64252,7 +64252,12 @@ MonoBehaviour:
   OnDropForBabyTaskType: 13
   useSprite: {fileID: 21300000, guid: 1d3cb6aa3d219b9498d53e526c5efa7f, type: 3}
   extinguishTime: 2
+  sprayRange: 3
+  sprayRadius: 0.5
   sprayVFX: {fileID: 429617421}
+  fireLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &1496979452
 GameObject:
   m_ObjectHideFlags: 0
@@ -106375,7 +106380,7 @@ LODGroup:
   m_AnimateCrossFading: 0
   m_LastLODIsBillboard: 0
   m_LODs:
-  - screenRelativeHeight: 0.37371197
+  - screenRelativeHeight: 0.14127454
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 8635911225362985659}
@@ -106979,25 +106984,6 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 8637652272929905810}
-  m_Enabled: 1
---- !u!205 &8453522466924002636
-LODGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8614867610780358318}
-  serializedVersion: 2
-  m_LocalReferencePoint: {x: -0.000000074505806, y: 0, z: 0.0033695602}
-  m_Size: 0.13243313
-  m_FadeMode: 0
-  m_AnimateCrossFading: 0
-  m_LastLODIsBillboard: 0
-  m_LODs:
-  - screenRelativeHeight: 0.026631385
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 8637652272621701554}
   m_Enabled: 1
 --- !u!205 &8453522467753202675
 LODGroup:
@@ -149985,7 +149971,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8618646763560404764}
-  - component: {fileID: 8453522466924002636}
   m_Layer: 0
   m_Name: Electr_outlet1 (4)
   m_TagString: Untagged
@@ -167600,7 +167585,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
