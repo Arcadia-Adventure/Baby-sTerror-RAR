@@ -201,7 +201,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
     {
         DOVirtual.DelayedCall(2f, () =>
         {
-            UIManager.Instance.LvlCompleteON();
+            UIManager.Instance.LevelComplete();
             AudioManager.Instance.PlaySFX(SFX.LevelComplete);
 
             int currentOpen = GamePreference.openLevels;
@@ -209,7 +209,8 @@ public class GamePlayManager : Singleton<GamePlayManager>
                 GamePreference.openLevels = currentOpen + 1;
 
             AA_AnalyticsManager.Agent.GameCompleteAnalytics(Level);
-            ArcadiaSdkManager.Agent.ShowRateUs();
+            if (Level == 1)
+                ArcadiaSdkManager.Agent.ShowRateUs();
         });
     }
 

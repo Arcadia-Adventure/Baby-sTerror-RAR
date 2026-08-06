@@ -11,18 +11,19 @@ public class UpdateManager : MonoBehaviour
     private AppUpdateManager appUpdateManager;
 #endif
 
+    private static bool _checkedThisSession;
+
     public void ShowAvailbleUpdate()
     {
-        if (PlayerPrefs.GetInt("ShowAvailableUpdate") == 1)
+        if (_checkedThisSession)
             return;
+
+        _checkedThisSession = true;
+
 #if UNITY_ANDROID
-        this.appUpdateManager = new AppUpdateManager();
+        appUpdateManager = new AppUpdateManager();
         StartCoroutine(CheckForUpdate());
 #endif
-#if UNITY_IOS || UNITY_IPHONE
-        //UnityEngine.iOS.Device.RequestStoreReview();        
-#endif
-        PlayerPrefs.SetInt("ShowAvailableUpdate", 1);
     }
 #if UNITY_ANDROID
 
@@ -33,26 +34,21 @@ public class UpdateManager : MonoBehaviour
 
         yield return appUpdateInfoOperation;
 
-
-        if (appUpdateInfoOperation.Error == AppUpdateErrorCode.ErrorUnknown)
+        if (!appUpdateInfoOperation.IsSuccessful)
         {
-            print("there is some errors");
+            Debug.LogError($"[UpdateManager] GetAppUpdateInfo failed: {appUpdateInfoOperation.Error}");
+            _checkedThisSession = false;
+            yield break;
         }
 
+        var appUpdateInfoResult = appUpdateInfoOperation.GetResult();
+        Debug.Log($"[UpdateManager] UpdateAvailability: {appUpdateInfoResult.UpdateAvailability}");
 
-        if (appUpdateInfoOperation.IsSuccessful)
+        if (appUpdateInfoResult.UpdateAvailability == UpdateAvailability.UpdateAvailable &&
+            appUpdateInfoResult.IsUpdateTypeAllowed(AppUpdateOptions.ImmediateAppUpdateOptions()))
         {
-            var appUpdateInfoResult = appUpdateInfoOperation.GetResult();
-
-            if (appUpdateInfoResult.UpdateAvailability == UpdateAvailability.UpdateAvailable && appUpdateInfoResult.IsUpdateTypeAllowed(AppUpdateOptions.ImmediateAppUpdateOptions()))
-            {
-                var appUpdateOptions = AppUpdateOptions.ImmediateAppUpdateOptions();
-                StartCoroutine(StartImmediateUpdate(appUpdateInfoResult, appUpdateOptions));
-            }
-        }
-        else
-        {
-            print("there is no update for now");
+            var appUpdateOptions = AppUpdateOptions.ImmediateAppUpdateOptions();
+            StartCoroutine(StartImmediateUpdate(appUpdateInfoResult, appUpdateOptions));
         }
     }
 
@@ -60,6 +56,7 @@ public class UpdateManager : MonoBehaviour
     {
         var startUpdateRequest = appUpdateManager.StartUpdate(appUpdateInfo_i, appUpdateOptions_i);
         yield return startUpdateRequest;
+        Debug.Log("[UpdateManager] Update flow completed");
     }
 #endif
 
