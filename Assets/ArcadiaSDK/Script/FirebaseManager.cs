@@ -40,26 +40,32 @@ public class FirebaseManager : MonoBehaviour
     }
     public static void LogLevelStartEvent(int levelName)
     {
-       FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelStart,
-           new Parameter(FirebaseAnalytics.ParameterLevelName, levelName));
+        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelStart,
+            new Parameter(FirebaseAnalytics.ParameterLevelName, levelName.ToString()));
     }
 
-
-
-//
-
-     public static void LogLevelFailEvent(int levelName, int score=-1)
+    public static void LogLevelFailEvent(int levelName, int score = -1)
     {
-       FirebaseAnalytics.LogEvent("level_fail",
-           new Parameter(FirebaseAnalytics.ParameterLevelName, levelName),
-           new Parameter(FirebaseAnalytics.ParameterScore, score));
+        FirebaseAnalytics.LogEvent("level_fail",
+            new Parameter(FirebaseAnalytics.ParameterLevelName, levelName.ToString()),
+            new Parameter(FirebaseAnalytics.ParameterScore, score));
+
+        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
+            new Parameter(FirebaseAnalytics.ParameterLevelName, levelName.ToString()),
+            new Parameter(FirebaseAnalytics.ParameterSuccess, 0),
+            new Parameter(FirebaseAnalytics.ParameterScore, score));
     }
 
-    public static void LogLevelCompleteEvent(int levelName, int score=-1)
+    public static void LogLevelCompleteEvent(int levelName, int score = -1)
     {
-       FirebaseAnalytics.LogEvent("level_complete",
-           new Parameter(FirebaseAnalytics.ParameterLevelName, levelName),
-           new Parameter(FirebaseAnalytics.ParameterScore, score));
+        FirebaseAnalytics.LogEvent("level_complete",
+            new Parameter(FirebaseAnalytics.ParameterLevelName, levelName.ToString()),
+            new Parameter(FirebaseAnalytics.ParameterScore, score));
+
+        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
+            new Parameter(FirebaseAnalytics.ParameterLevelName, levelName.ToString()),
+            new Parameter(FirebaseAnalytics.ParameterSuccess, 1),
+            new Parameter(FirebaseAnalytics.ParameterScore, score));
     }
 
     public static void LogScreenView(string screenName)
