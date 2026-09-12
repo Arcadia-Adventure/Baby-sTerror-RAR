@@ -228,7 +228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   removeAds: 0
   useTestIDs: 0
-  preCache: 1
+  preCache: 0
   showAvaiableUpdateInStart: 1
   InternetRequired: 1
   showBannerInStart: 1

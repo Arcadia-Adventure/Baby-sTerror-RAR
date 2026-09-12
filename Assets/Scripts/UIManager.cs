@@ -111,12 +111,15 @@ public class UIManager : Singleton<UIManager>
 
     #region Game UI Actions
 
+    bool _sceneChangeInProgress;
+
     public void LevelComplete()
     {
         levelCompletePanel.SetActive(true);
         bool isLastLevel = GamePreference.selectedLevel >= LevelConfigLoader.LevelCount;
         nextButton.SetActive(!isLastLevel);
         rateusButton.SetActive(isLastLevel);
+        ArcadiaSdkManager.Agent.PrepareRewarded();
     }
 
     public void RateUsClick()
@@ -169,22 +172,42 @@ public class UIManager : Singleton<UIManager>
 
     public void ReplayBtn()
     {
+        if (_sceneChangeInProgress) return;
+        _sceneChangeInProgress = true;
         Time.timeScale = 1;
         AudioManager.Instance.PlaySFX(SFX.Click);
         AA_AnalyticsManager.Agent.TrackLevelRetry(GamePreference.selectedLevel);
         ArcadiaSdkManager.CurrentAdPlacement = "replay_rewarded";
-        if (!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        ShowRewardedThenLoadScene();
     }
 
     public void NextBtn()
     {
+        if (_sceneChangeInProgress) return;
+        _sceneChangeInProgress = true;
         Time.timeScale = 1;
         GamePreference.selectedLevel++;
         AudioManager.Instance.PlaySFX(SFX.Click);
         AA_AnalyticsManager.Agent.TrackButtonClick("next_level");
         ArcadiaSdkManager.CurrentAdPlacement = "next_rewarded";
-        if (!ArcadiaSdkManager.Agent.removeAds) ArcadiaSdkManager.Agent.ShowRewardedAd();
+        ShowRewardedThenLoadScene();
+    }
+
+    void ShowRewardedThenLoadScene()
+    {
+        if (ArcadiaSdkManager.Agent != null && !ArcadiaSdkManager.Agent.removeAds)
+        {
+            ArcadiaSdkManager.Agent.ShowRewardedAd(
+                _ => LoadCurrentScene(),
+                LoadCurrentScene);
+            return;
+        }
+
+        LoadCurrentScene();
+    }
+
+    void LoadCurrentScene()
+    {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

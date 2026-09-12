@@ -6,18 +6,19 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    public int targetFrameRate = 30;
+    public int targetFrameRate = 60;
 
     protected override void Awake()
     {
         base.Awake();
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = targetFrameRate;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         SetDefaultPlayerPrefs();
     }
 
-    private void Start()
+    protected void Start()
     {
-        Application.targetFrameRate = targetFrameRate;
         OverrideDailyNotification();
         AnalyticsTracker.Initialize();
         AA_AnalyticsManager.Agent.TrackScreenView("session_start");

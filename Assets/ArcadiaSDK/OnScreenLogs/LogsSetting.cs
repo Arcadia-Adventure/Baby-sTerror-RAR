@@ -26,7 +26,6 @@ public static class LogsSetting
 			{
 				fpsLabelGO = new GameObject("FPS Label");
 				fpsLabelGO.AddComponent<FPSLabel>();
-				Application.targetFrameRate = 60;
 			}
 			if (InGameLogs == null)
 			{

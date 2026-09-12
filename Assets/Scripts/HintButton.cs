@@ -14,6 +14,8 @@ public class HintButton : BaseButton
     {
         hintCountText.text = HintCount > 0 ? HintCount.ToString() : "AD";
         hintCountText.color = HintCount > 0 ? Color.white : Color.yellow;
+        if (HintCount <= 0 && ArcadiaSdkManager.Agent != null)
+            ArcadiaSdkManager.Agent.PrepareRewarded();
     }
     public override void OnClick()
     {

@@ -34,7 +34,8 @@ public class ArcadiaSdkManager : MonoBehaviour
     public int initializationDelay = 2;
     public bool removeAds = false;
     public bool useTestIDs;
-    public bool preCache = true;
+    public bool preCache = false;
+    public int adLoadTimeout = 8;
     public bool showAvaiableUpdateInStart = true;
     [SerializeField]
     private bool InternetRequired = true;
@@ -71,6 +72,12 @@ public class ArcadiaSdkManager : MonoBehaviour
     private const int COOLDOWN_AFTER_FULLSCREEN_AD_SECONDS = 5; // Prevent back-to-back ads
     private bool _isBannerVisible = false; // Track banner visibility
     private bool _wasBannerVisibleBeforeAppOpen = false; // Restore banner after App Open Ad
+    private bool _interstitialLoading;
+    private bool _rewardedLoading;
+    private bool _rewardedRewardGranted;
+    private Action _pendingRewardedFail;
+    private Coroutine _showInterstitialCoroutine;
+    private Coroutine _showRewardedCoroutine;
     #endregion
 
     //============================== Singleton_Region ============================== 
@@ -100,7 +107,7 @@ public class ArcadiaSdkManager : MonoBehaviour
     void SeedRemoteConfigDefaults()
     {
         FirebaseManager.SetRemoteConfigDefaults(
-            new AdsRemoteSettings { precache = preCache },
+            new AdsRemoteSettings { precache = preCache, ad_load_timeout = adLoadTimeout },
             new GameRemoteSettings
             {
                 require_internet = InternetRequired,
@@ -253,23 +260,16 @@ public class ArcadiaSdkManager : MonoBehaviour
 
         AdsRemoteSettings ads = FirebaseManager.AdsSettings;
         
-        // Load rewarded ads
-        if (ads.precache && ads.rewarded && myGameIds.rewardedVideoAdId.Length > 1)
+        if (ads.precache)
         {
-            adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
+            PrepareRewarded();
+            PrepareInterstitial();
         }
         
-        // Load interstitial ads
-        if (ads.precache && ads.interstitial && !removeAds && myGameIds.interstitialAdId.Length > 1)
-        {
-            adsManager.LoadInterstitial(myGameIds.interstitialAdId);
-        }
-        
-        // Load app open ads
+        // App Open stays cached so resume can show without waiting
         if (ads.app_open && !removeAds && myGameIds.appOpenAdId.Length > 1)
         {
-            if (ads.precache)
-                adsManager.LoadAppOpen(myGameIds.appOpenAdId);
+            adsManager.LoadAppOpen(myGameIds.appOpenAdId);
             AppStateEventNotifier.AppStateChanged -= OnAppStateChanged;
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
         }
@@ -425,8 +425,21 @@ public class ArcadiaSdkManager : MonoBehaviour
     }
     
     // Interstitial Methods
+    public void PrepareInterstitial()
+    {
+        if (removeAds || adsManager == null || !adsManager.IsInitialized) return;
+        if (!FirebaseManager.AdsSettings.interstitial) return;
+        if (string.IsNullOrEmpty(myGameIds.interstitialAdId) || myGameIds.interstitialAdId.Length <= 1) return;
+        if (adsManager.IsInterstitialLoaded(myGameIds.interstitialAdId) || _interstitialLoading) return;
+
+        _interstitialLoading = true;
+        PrintStatus("Preparing interstitial ad");
+        adsManager.LoadInterstitial(myGameIds.interstitialAdId);
+    }
+
     public void ShowInterstitialAd(int timer, Action successCallBack = null, Action failCallBack = null)
     {
+        PrepareInterstitial();
         StartCoroutine(ShowAdWithDelay(ShowInterstitialAd, successCallBack, failCallBack, timer));
     }
     
@@ -434,24 +447,58 @@ public class ArcadiaSdkManager : MonoBehaviour
     {
         if (removeAds || adsManager == null || !FirebaseManager.AdsSettings.interstitial)
         {
+            ShowLoadingScreen(false);
             successCallBack?.Invoke();
             return;
         }
 
-        if (!adsManager.IsInterstitialLoaded(myGameIds.interstitialAdId) && myGameIds.interstitialAdId.Length > 1)
-            adsManager.LoadInterstitial(myGameIds.interstitialAdId);
-        
         if (CurrentAdPlacement == "unknown") CurrentAdPlacement = "interstitial_generic";
-        ShowLoadingScreen(true);
-        successCallBack += () => ShowLoadingScreen(false);
-        failCallBack += () => ShowLoadingScreen(false);
-        
-        adsManager.ShowInterstitial(myGameIds.interstitialAdId, successCallBack, failCallBack);
+        if (_showInterstitialCoroutine != null)
+            StopCoroutine(_showInterstitialCoroutine);
+        _showInterstitialCoroutine = StartCoroutine(ShowInterstitialWhenReady(successCallBack, failCallBack));
+    }
+
+    IEnumerator ShowInterstitialWhenReady(Action successCallBack, Action failCallBack)
+    {
+        string adUnitId = myGameIds.interstitialAdId;
+        if (!adsManager.IsInterstitialLoaded(adUnitId))
+        {
+            PrepareInterstitial();
+            ShowLoadingScreen(true);
+            yield return WaitForAdReady(() => adsManager.IsInterstitialLoaded(adUnitId), () => _interstitialLoading);
+        }
+
+        if (adsManager != null && adsManager.IsInterstitialLoaded(adUnitId))
+        {
+            adsManager.ShowInterstitial(adUnitId, successCallBack, () =>
+            {
+                ShowLoadingScreen(false);
+                failCallBack?.Invoke();
+            });
+        }
+        else
+        {
+            ShowLoadingScreen(false);
+            failCallBack?.Invoke();
+        }
     }
     
     // Rewarded Methods
+    public void PrepareRewarded()
+    {
+        if (adsManager == null || !adsManager.IsInitialized) return;
+        if (!FirebaseManager.AdsSettings.rewarded) return;
+        if (string.IsNullOrEmpty(myGameIds.rewardedVideoAdId) || myGameIds.rewardedVideoAdId.Length <= 1) return;
+        if (adsManager.IsRewardedLoaded(myGameIds.rewardedVideoAdId) || _rewardedLoading) return;
+
+        _rewardedLoading = true;
+        PrintStatus("Preparing rewarded ad");
+        adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
+    }
+
     public void ShowRewardedAd(int timer, Action<int> successCallBack = null, Action failCallBack = null)
     {
+        PrepareRewarded();
         StartCoroutine(ShowAdWithDelay(ShowRewardedAd, successCallBack, failCallBack, timer));
     }
     
@@ -459,19 +506,71 @@ public class ArcadiaSdkManager : MonoBehaviour
     {
         if (adsManager == null || !FirebaseManager.AdsSettings.rewarded)
         {
+            ShowLoadingScreen(false);
             failCallBack?.Invoke();
             return;
         }
 
-        if (!adsManager.IsRewardedLoaded(myGameIds.rewardedVideoAdId) && myGameIds.rewardedVideoAdId.Length > 1)
-            adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
-        
         if (CurrentAdPlacement == "unknown") CurrentAdPlacement = "rewarded_generic";
-        ShowLoadingScreen(true);
-        successCallBack += (int reward) => ShowLoadingScreen(false);
-        failCallBack += () => ShowLoadingScreen(false);
-        
-        adsManager.ShowRewarded(myGameIds.rewardedVideoAdId, successCallBack, failCallBack);
+        if (_showRewardedCoroutine != null)
+            StopCoroutine(_showRewardedCoroutine);
+        _showRewardedCoroutine = StartCoroutine(ShowRewardedWhenReady(successCallBack, failCallBack));
+    }
+
+    IEnumerator ShowRewardedWhenReady(Action<int> successCallBack, Action failCallBack)
+    {
+        string adUnitId = myGameIds.rewardedVideoAdId;
+        if (!adsManager.IsRewardedLoaded(adUnitId))
+        {
+            PrepareRewarded();
+            ShowLoadingScreen(true);
+            yield return WaitForAdReady(() => adsManager.IsRewardedLoaded(adUnitId), () => _rewardedLoading);
+        }
+
+        if (adsManager != null && adsManager.IsRewardedLoaded(adUnitId))
+        {
+            _rewardedRewardGranted = false;
+            _pendingRewardedFail = failCallBack;
+            adsManager.ShowRewarded(adUnitId, reward =>
+            {
+                _rewardedRewardGranted = true;
+                _pendingRewardedFail = null;
+                successCallBack?.Invoke(reward);
+            }, () =>
+            {
+                _pendingRewardedFail = null;
+                ShowLoadingScreen(false);
+                failCallBack?.Invoke();
+            });
+        }
+        else
+        {
+            ShowLoadingScreen(false);
+            failCallBack?.Invoke();
+        }
+    }
+
+    IEnumerator WaitForAdReady(Func<bool> isLoaded, Func<bool> isLoading)
+    {
+        float timeout = GetAdLoadTimeout();
+        float elapsed = 0f;
+        while (elapsed < timeout)
+        {
+            if (isLoaded())
+                yield break;
+            if (!isLoading())
+                yield break;
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+    }
+
+    float GetAdLoadTimeout()
+    {
+        int remoteTimeout = FirebaseManager.AdsSettings.ad_load_timeout;
+        if (remoteTimeout > 0)
+            return remoteTimeout;
+        return Mathf.Max(1, adLoadTimeout);
     }
     
     private IEnumerator ShowAdWithDelay(Action<Action, Action> AD, Action successCallBack = null, Action failCallBack = null, int timer = 0)
@@ -480,7 +579,7 @@ public class ArcadiaSdkManager : MonoBehaviour
         while (timer > 0)
         {
             UpdateLoadingText($"Loading ad... \n{timer}s left.");
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSecondsRealtime(1);
             timer--;
         }
         AD.Invoke(successCallBack, failCallBack);
@@ -509,34 +608,17 @@ public class ArcadiaSdkManager : MonoBehaviour
     public void ShowLoadingScreen(bool active)
     {
         if (loadingScreen == null) return;
-        
-        if (active)
-        {
-            if (loadingCoroutine != null)
-                StopCoroutine(loadingCoroutine);
-            loadingCoroutine = StartCoroutine(ShowLoadingCoroutine());
-        }
-        else
-        {
-            loadingScreen.gameObject.SetActive(false);
-        }
-    }
-    
-    Coroutine loadingCoroutine;
-    IEnumerator ShowLoadingCoroutine()
-    {
-        if (loadingScreen != null)
-        {
-            loadingScreen.SetActive(true);
-            yield return new WaitForSecondsRealtime(5);
-            loadingScreen.SetActive(false);
-        }
+        loadingScreen.SetActive(active);
     }
     
     // Ad Event Handlers
     private void OnAdLoaded(string adUnitId)
     {
         PrintStatus($"Ad loaded: {adUnitId}");
+        if (adUnitId == myGameIds.interstitialAdId)
+            _interstitialLoading = false;
+        else if (adUnitId == myGameIds.rewardedVideoAdId)
+            _rewardedLoading = false;
         
         // Track when app open ad was loaded for 4-hour expiration check
         if (adUnitId == myGameIds.appOpenAdId)
@@ -549,6 +631,10 @@ public class ArcadiaSdkManager : MonoBehaviour
     private void OnAdFailedToLoad(string adUnitId, string error)
     {
         PrintStatus($"Ad failed to load: {adUnitId}, Error: {error}");
+        if (adUnitId == myGameIds.interstitialAdId)
+            _interstitialLoading = false;
+        else if (adUnitId == myGameIds.rewardedVideoAdId)
+            _rewardedLoading = false;
         string adType = ResolveAdType(adUnitId);
         AA_AnalyticsManager.Agent.TrackAdEvent("failed", adType, CurrentAdPlacement);
     }
@@ -556,6 +642,7 @@ public class ArcadiaSdkManager : MonoBehaviour
     private void OnAdShown(string adUnitId)
     {
         PrintStatus($"Ad shown: {adUnitId}");
+        ShowLoadingScreen(false);
         string adType = ResolveAdType(adUnitId);
         AA_AnalyticsManager.Agent.TrackAdEvent("shown", adType, CurrentAdPlacement);
         AnalyticsTracker.OnAdShown(adType, CurrentAdPlacement);
@@ -564,6 +651,7 @@ public class ArcadiaSdkManager : MonoBehaviour
     private void OnAdClosed(string adUnitId)
     {
         PrintStatus($"Ad closed: {adUnitId}");
+        ShowLoadingScreen(false);
         string adType = ResolveAdType(adUnitId);
         AA_AnalyticsManager.Agent.TrackAdEvent("closed", adType, CurrentAdPlacement);
         
@@ -579,16 +667,21 @@ public class ArcadiaSdkManager : MonoBehaviour
         
         AdsRemoteSettings ads = FirebaseManager.AdsSettings;
 
-        // Reload ads after they're closed
         if (adUnitId == myGameIds.interstitialAdId)
         {
-            if (ads.interstitial)
-                adsManager.LoadInterstitial(myGameIds.interstitialAdId);
+            if (ads.precache)
+                PrepareInterstitial();
         }
         else if (adUnitId == myGameIds.rewardedVideoAdId)
         {
-            if (ads.rewarded)
-                adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
+            if (!_rewardedRewardGranted)
+            {
+                Action fail = _pendingRewardedFail;
+                _pendingRewardedFail = null;
+                fail?.Invoke();
+            }
+            if (ads.precache)
+                PrepareRewarded();
         }
         else if (adUnitId == myGameIds.appOpenAdId)
         {
@@ -759,6 +852,11 @@ public class ArcadiaSdkManager : MonoBehaviour
     void OnDestroy()
     {
         // Unsubscribe from events
+        if (_showInterstitialCoroutine != null)
+            StopCoroutine(_showInterstitialCoroutine);
+        if (_showRewardedCoroutine != null)
+            StopCoroutine(_showRewardedCoroutine);
+
         if (adsManager != null)
         {
             adsManager.OnAdLoaded -= OnAdLoaded;

@@ -3,11 +3,12 @@ using System;
 [Serializable]
 public class AdsRemoteSettings
 {
-    public bool precache = true;
-    public bool app_open = true;
+    public bool precache = false;
+    public bool app_open = false;
     public bool interstitial = true;
     public bool rewarded = true;
     public bool banner = true;
+    public int ad_load_timeout = 8;
 }
 
 [Serializable]
