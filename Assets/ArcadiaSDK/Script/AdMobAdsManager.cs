@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GoogleMobileAds.Api;
+#if gameanalytics_admob_enabled
+using GameAnalyticsSDK;
+#endif
 
 public class AdMobAdsManager : MonoBehaviour, IAdsManager
 {
@@ -140,6 +143,9 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
         };
         _bannerAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
         _bannerAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+#if gameanalytics_admob_enabled
+        GameAnalyticsILRD.SubscribeAdMobImpressions(adUnitId, _bannerAd);
+#endif
         
         _bannerAd.LoadAd(new AdRequest());
     }
@@ -248,6 +254,9 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
             };
             _interstitialAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
             _interstitialAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+#if gameanalytics_admob_enabled
+            GameAnalyticsILRD.SubscribeAdMobImpressions(adUnitId, _interstitialAd);
+#endif
         });
     }
     
@@ -335,6 +344,9 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
             };
             _rewardedAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
             _rewardedAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+#if gameanalytics_admob_enabled
+            GameAnalyticsILRD.SubscribeAdMobImpressions(adUnitId, _rewardedAd);
+#endif
         });
     }
     
@@ -398,6 +410,9 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
         };
         _mrecAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
         _mrecAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+#if gameanalytics_admob_enabled
+        GameAnalyticsILRD.SubscribeAdMobImpressions(adUnitId, _mrecAd);
+#endif
         
         _mrecAd.LoadAd(new AdRequest());
     }
@@ -505,6 +520,9 @@ public class AdMobAdsManager : MonoBehaviour, IAdsManager
             };
             _appOpenAd.OnAdClicked += () => OnAdClicked?.Invoke(adUnitId);
             _appOpenAd.OnAdPaid += (AdValue adValue) => OnAdRevenuePaid?.Invoke(adUnitId, (double)adValue.Value / 1000000.0);
+#if gameanalytics_admob_enabled
+            GameAnalyticsILRD.SubscribeAdMobImpressions(adUnitId, _appOpenAd);
+#endif
         });
     }
     

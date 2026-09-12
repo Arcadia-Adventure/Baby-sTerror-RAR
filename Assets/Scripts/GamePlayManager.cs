@@ -209,7 +209,8 @@ public class GamePlayManager : Singleton<GamePlayManager>
                 GamePreference.openLevels = currentOpen + 1;
 
             AA_AnalyticsManager.Agent.GameCompleteAnalytics(Level);
-            if (Level == 1)
+            int rateUsLevel = FirebaseManager.GameSettings.rate_us_level;
+            if (rateUsLevel > 0 && Level == rateUsLevel)
                 ArcadiaSdkManager.Agent.ShowRateUs();
         });
     }

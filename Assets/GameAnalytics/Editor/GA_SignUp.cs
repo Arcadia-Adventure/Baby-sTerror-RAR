@@ -34,9 +34,6 @@ namespace GameAnalyticsSDK.Editor
         private const int INPUT_WIDTH = 230;
 
         private static GA_SignUp _instance;
-        private RuntimePlatform _selectedPlatform;
-        private int _selectedOrganization;
-        private int _selectedStudio;
 
         private enum StringType
         {
@@ -277,7 +274,7 @@ namespace GameAnalyticsSDK.Editor
                         new StringWithType {
                             Text = "Click here to learn more about the full list of core metrics and dimensions.",
                             Type = StringType.Link,
-                            Link = "https://docs.gameanalytics.com/metrics-dimensions"
+                            Link = "https://docs.gameanalytics.com/events-metrics-and-filtering/metrics"
                         }
                     };
                 case TourSteps.StartTracking:
@@ -303,7 +300,7 @@ namespace GameAnalyticsSDK.Editor
                         new StringWithType {
                             Text = "Click here to learn more about the Business event and purchase validation.",
                             Type = StringType.Link,
-                            Link = "https://docs.gameanalytics.com/integrations/sdk/unity/event-tracking#business-events"
+                            Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity/event-tracking#business-events"
                         }
                     };
                 case TourSteps.TrackResources:
@@ -319,7 +316,7 @@ namespace GameAnalyticsSDK.Editor
                         new StringWithType {
                             Text = "Click here to learn more about the Resource event.",
                             Type = StringType.Link,
-                            Link = "https://docs.gameanalytics.com/integrations/sdk/unity/event-tracking#resource-events"
+                            Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity/event-tracking#resource-events"
                         }
                     };
                 case TourSteps.TrackProgression:
@@ -334,7 +331,7 @@ namespace GameAnalyticsSDK.Editor
                         new StringWithType {
                             Text = "Click here to learn more about the Progression event.",
                             Type = StringType.Link,
-                            Link = "https://docs.gameanalytics.com/integrations/sdk/unity/event-tracking#progression-events"
+                            Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity/event-tracking#progression-events"
                         }
                     };
                 case TourSteps.TrackDesign:
@@ -349,7 +346,7 @@ namespace GameAnalyticsSDK.Editor
                         new StringWithType {
                             Text = "Click here to learn more about the Design event.",
                             Type = StringType.Link,
-                            Link = "https://docs.gameanalytics.com/integrations/sdk/unity/event-tracking#design-events"
+                            Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity/event-tracking#design-events"
                         }
                     };
                 case TourSteps.LogErrors:
@@ -364,7 +361,7 @@ namespace GameAnalyticsSDK.Editor
                         new StringWithType {
                             Text = "Click here to learn more about the Error event.",
                             Type = StringType.Link,
-                            Link = "https://docs.gameanalytics.com/integrations/sdk/unity/event-tracking#error-events"
+                            Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity/event-tracking#error-events"
                         }
                     };
                 case TourSteps.CustomDimensions:
@@ -379,7 +376,7 @@ namespace GameAnalyticsSDK.Editor
                         new StringWithType {
                             Text = "Click here to learn more about Custom Dimensions.",
                             Type = StringType.Link,
-                            Link = "https://docs.gameanalytics.com/integrations/sdk/unity/advanced-setup#custom-dimensions"
+                            Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity/configuration#set-custom-dimensions"
                         }
                     };
                 case TourSteps.FinishGuide:
@@ -390,18 +387,18 @@ namespace GameAnalyticsSDK.Editor
                     #endif
                         new StringWithType { Text = "" },
 
-                    #if UNITY_IOS || UNITY_TVOS || UNITY_STANDALONE || UNITY_TIZEN || UNITY_WEBGL || UNITY_WINRT
+                    #if UNITY_IOS || UNITY_TVOS || UNITY_STANDALONE || UNITY_WEBGL || UNITY_WINRT
 
                     new StringWithType {
                     Text = "Click here to check online documentation!",
                     Type = StringType.Link,
-                    Link = "https://docs.gameanalytics.com/integrations/sdk/unity/"
+                    Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity"
                     }
 
                     #else
 
                     new StringWithType { Text = "Your selected build platform is not currently supported by GameAnalytics." },
-                    new StringWithType { Text = "The Unity SDK includes support for Windows, Mac, Linux, WebGL, iOS, tvOS, UWP, Tizen, Universal Windows 8 and Android.", Type = StringType.Link, Link = "https://docs.gameanalytics.com/integrations/sdk/unity" },
+                    new StringWithType { Text = "The Unity SDK includes support for Windows, Mac, Linux, WebGL, iOS, tvOS and Android.", Type = StringType.Link, Link = "https://docs.gameanalytics.com/event-tracking-and-integrations/sdks-and-collection-api/game-engine-sdks/unity" },
 
                     #endif
                     };
@@ -521,50 +518,24 @@ namespace GameAnalyticsSDK.Editor
 
             try
             {
-#if UNITY_2020_1_OR_NEWER
                 if (!(www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError))
-#elif UNITY_2017_1_OR_NEWER
-                if (!(www.isNetworkError || www.isHttpError))
-#else
-                if (string.IsNullOrEmpty(www.error))
-#endif
                 {
                     switch (storeName)
                     {
                         case "amazon_appstore":
-#if UNITY_2017_1_OR_NEWER
                             GameAnalytics.SettingsGA.AmazonIcon = ((DownloadHandlerTexture)www.downloadHandler).texture;
-#else
-                            GameAnalytics.SettingsGA.AmazonIcon = www.texture;
-#endif
                             break;
                         case "google_play":
-#if UNITY_2017_1_OR_NEWER
                             GameAnalytics.SettingsGA.GooglePlayIcon = ((DownloadHandlerTexture)www.downloadHandler).texture;
-#else
-                            GameAnalytics.SettingsGA.GooglePlayIcon = www.texture;
-#endif
                             break;
                         case "apple:ios":
-#if UNITY_2017_1_OR_NEWER
                             GameAnalytics.SettingsGA.iosIcon = ((DownloadHandlerTexture)www.downloadHandler).texture;
-#else
-                            GameAnalytics.SettingsGA.iosIcon = www.texture;
-#endif
                             break;
                         case "apple:mac":
-#if UNITY_2017_1_OR_NEWER
                             GameAnalytics.SettingsGA.macIcon = ((DownloadHandlerTexture)www.downloadHandler).texture;
-#else
-                            GameAnalytics.SettingsGA.macIcon = www.texture;
-#endif
                             break;
                         case "windows_phone":
-#if UNITY_2017_1_OR_NEWER
                             GameAnalytics.SettingsGA.windowsPhoneIcon = ((DownloadHandlerTexture)www.downloadHandler).texture;
-#else
-                            GameAnalytics.SettingsGA.windowsPhoneIcon = www.texture;
-#endif
                             break;
                     }
                     signup.Repaint();

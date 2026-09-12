@@ -7,20 +7,22 @@ public class GameAnalyticsManager : MonoBehaviour
     public static void Initialize()
     {
         GameAnalytics.Initialize();
+#if UNITY_APPLOVIN
         GameAnalyticsILRD.SubscribeMaxImpressions();
+#endif
     }
 
     public static void GameStartAnalytics(int levelNo)
     {
-        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start,"Level_Start",levelNo.ToString(),levelNo);
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "Level", levelNo.ToString());
     }
     public static void GameFailAnalytics(int levelNo)
     {
-        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail,"Level_Fail",levelNo.ToString(),levelNo);
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "Level", levelNo.ToString());
     }
     public static void GameCompleteAnalytics(int levelNo)
     {
-        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete,"Level_Complete",levelNo.ToString(),levelNo);
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "Level", levelNo.ToString());
     }
     public static void CustomEvent(string param, string value)
     {

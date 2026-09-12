@@ -88,12 +88,24 @@ public class ArcadiaSdkManager : MonoBehaviour
         {
             _instance = this;
             DontDestroyOnLoad(this);
+            SeedRemoteConfigDefaults();
         }
         else
         {
             if (this != _instance)
                 Destroy(this.gameObject);
         }
+    }
+
+    void SeedRemoteConfigDefaults()
+    {
+        FirebaseManager.SetRemoteConfigDefaults(
+            new AdsRemoteSettings { precache = preCache },
+            new GameRemoteSettings
+            {
+                require_internet = InternetRequired,
+                show_update_on_start = showAvaiableUpdateInStart
+            });
     }
     #endregion
     
@@ -114,10 +126,17 @@ public class ArcadiaSdkManager : MonoBehaviour
     void Start()
     {
         removeAds = PlayerPrefs.GetInt(nameof(removeAds), 0) == 1;
-        StartCoroutine(InitializeAdsManager());
-        InternetCheckerInit();
         if (loadingText == null) loadingText = GetComponentInChildren<Text>(true);
-        if (showAvaiableUpdateInStart) ShowAvailbleUpdate();
+        StartCoroutine(ApplyGameSettingsAfterRemoteConfig());
+        StartCoroutine(InitializeAdsManager());
+    }
+
+    IEnumerator ApplyGameSettingsAfterRemoteConfig()
+    {
+        yield return FirebaseManager.WaitForRemoteConfig();
+        InternetCheckerInit();
+        if (FirebaseManager.GameSettings.show_update_on_start)
+            ShowAvailbleUpdate();
     }
     
     private IEnumerator InitializeAdsManager()
@@ -137,6 +156,8 @@ public class ArcadiaSdkManager : MonoBehaviour
             Debug.LogError("No ads manager found! Please ensure either AppLovinAdsManager or AdMobAdsManager is active in the scene.");
             yield break;
         }
+
+        yield return FirebaseManager.WaitForRemoteConfig();
         
         // Initialize the ads manager
         string sdkKey = GetSdkKey();
@@ -229,39 +250,41 @@ public class ArcadiaSdkManager : MonoBehaviour
             Debug.LogWarning("Ads manager not initialized. Cannot load ads.");
             return;
         }
+
+        AdsRemoteSettings ads = FirebaseManager.AdsSettings;
         
         // Load rewarded ads
-        if (myGameIds.rewardedVideoAdId.Length > 1)
+        if (ads.precache && ads.rewarded && myGameIds.rewardedVideoAdId.Length > 1)
         {
             adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
         }
         
         // Load interstitial ads
-        if (!removeAds && myGameIds.interstitialAdId.Length > 1)
+        if (ads.precache && ads.interstitial && !removeAds && myGameIds.interstitialAdId.Length > 1)
         {
             adsManager.LoadInterstitial(myGameIds.interstitialAdId);
         }
         
         // Load app open ads
-        if (!removeAds && myGameIds.appOpenAdId.Length > 1)
+        if (ads.app_open && !removeAds && myGameIds.appOpenAdId.Length > 1)
         {
-            adsManager.LoadAppOpen(myGameIds.appOpenAdId);
+            if (ads.precache)
+                adsManager.LoadAppOpen(myGameIds.appOpenAdId);
+            AppStateEventNotifier.AppStateChanged -= OnAppStateChanged;
             AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
         }
         
         // Load and show banner ads
-        if (!removeAds && myGameIds.bannerAdId.Length > 1)
+        if (ads.banner && !removeAds && myGameIds.bannerAdId.Length > 1)
         {
-            adsManager.LoadBanner(myGameIds.bannerAdId, ConvertAdPosition(bannerAdPosition));
+            if (ads.precache)
+                adsManager.LoadBanner(myGameIds.bannerAdId, ConvertAdPosition(bannerAdPosition));
             if (showBannerInStart)
-            {
-                adsManager.ShowBanner(myGameIds.bannerAdId);
-                _isBannerVisible = true;
-            }
+                ShowBanner();
         }
         
         // Load MRec ads
-        if (!removeAds && myGameIds.mrecAdId.Length > 1)
+        if (ads.precache && !removeAds && myGameIds.mrecAdId.Length > 1)
         {
             adsManager.LoadMRec(myGameIds.mrecAdId, ConvertAdPosition(mRecBannerAdPosition));
         }
@@ -294,7 +317,7 @@ public class ArcadiaSdkManager : MonoBehaviour
     {
         ArcadiaSdkManager.PrintStatus("App State is " + state);
         
-        if (removeAds || adsManager == null)
+        if (removeAds || adsManager == null || !FirebaseManager.AdsSettings.app_open)
         {
             return;
         }
@@ -361,7 +384,9 @@ public class ArcadiaSdkManager : MonoBehaviour
     // Banner Methods
     public void ShowBanner()
     {
-        if (removeAds || adsManager == null) return;
+        if (removeAds || adsManager == null || !FirebaseManager.AdsSettings.banner) return;
+        if (!adsManager.IsBannerLoaded(myGameIds.bannerAdId) && myGameIds.bannerAdId.Length > 1)
+            adsManager.LoadBanner(myGameIds.bannerAdId, ConvertAdPosition(bannerAdPosition));
         adsManager.ShowBanner(myGameIds.bannerAdId);
         _isBannerVisible = true;
     }
@@ -407,11 +432,14 @@ public class ArcadiaSdkManager : MonoBehaviour
     
     public void ShowInterstitialAd(Action successCallBack = null, Action failCallBack = null)
     {
-        if (removeAds || adsManager == null)
+        if (removeAds || adsManager == null || !FirebaseManager.AdsSettings.interstitial)
         {
             successCallBack?.Invoke();
             return;
         }
+
+        if (!adsManager.IsInterstitialLoaded(myGameIds.interstitialAdId) && myGameIds.interstitialAdId.Length > 1)
+            adsManager.LoadInterstitial(myGameIds.interstitialAdId);
         
         if (CurrentAdPlacement == "unknown") CurrentAdPlacement = "interstitial_generic";
         ShowLoadingScreen(true);
@@ -429,11 +457,14 @@ public class ArcadiaSdkManager : MonoBehaviour
     
     public void ShowRewardedAd(Action<int> successCallBack = null, Action failCallBack = null)
     {
-        if (adsManager == null)
+        if (adsManager == null || !FirebaseManager.AdsSettings.rewarded)
         {
             failCallBack?.Invoke();
             return;
         }
+
+        if (!adsManager.IsRewardedLoaded(myGameIds.rewardedVideoAdId) && myGameIds.rewardedVideoAdId.Length > 1)
+            adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
         
         if (CurrentAdPlacement == "unknown") CurrentAdPlacement = "rewarded_generic";
         ShowLoadingScreen(true);
@@ -546,21 +577,26 @@ public class ArcadiaSdkManager : MonoBehaviour
             PrintStatus($"Fullscreen ad close time recorded: {_lastFullScreenAdShownTime}");
         }
         
+        AdsRemoteSettings ads = FirebaseManager.AdsSettings;
+
         // Reload ads after they're closed
         if (adUnitId == myGameIds.interstitialAdId)
         {
-            adsManager.LoadInterstitial(myGameIds.interstitialAdId);
+            if (ads.interstitial)
+                adsManager.LoadInterstitial(myGameIds.interstitialAdId);
         }
         else if (adUnitId == myGameIds.rewardedVideoAdId)
         {
-            adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
+            if (ads.rewarded)
+                adsManager.LoadRewarded(myGameIds.rewardedVideoAdId);
         }
         else if (adUnitId == myGameIds.appOpenAdId)
         {
-            adsManager.LoadAppOpen(myGameIds.appOpenAdId);
+            if (ads.app_open)
+                adsManager.LoadAppOpen(myGameIds.appOpenAdId);
             
             // Restore banner if it was visible before App Open Ad
-            if (_wasBannerVisibleBeforeAppOpen && !removeAds)
+            if (_wasBannerVisibleBeforeAppOpen && !removeAds && ads.banner)
             {
                 adsManager.ShowBanner(myGameIds.bannerAdId);
                 PrintStatus("Banner restored after App Open Ad");
@@ -708,7 +744,7 @@ public class ArcadiaSdkManager : MonoBehaviour
 //         // Skip internet check in editor
 //         return;
 // #endif
-        if (InternetRequired && !removeAds)
+        if (FirebaseManager.GameSettings.require_internet && !removeAds)
         {
             InternetManager obj = FindFirstObjectByType<InternetManager>();
             if (obj == null)

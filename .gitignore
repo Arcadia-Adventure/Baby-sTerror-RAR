@@ -90,3 +90,5 @@ Assets/Resources/PerformanceTestRunInfo.json.meta
 Assets/Resources/PerformanceTestRunSettings.json
 Assets/Resources/PerformanceTestRunSettings.json.meta
 /34_BackUpThisFolder_ButDontShipItWithYourGame
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-13_14_0.so
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-13_14_0.bundle

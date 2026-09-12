@@ -5,7 +5,13 @@
 //  Copyright (c) GameAnalytics. All rights reserved.
 //
 
-#import "GameAnalytics.h"
+#if __has_include(<GameAnalytics/GameAnalytics.h>)
+#import <GameAnalytics/GameAnalytics.h>
+#import <GameAnalytics/GameAnalyticsWrapper.h>
+#else
+#import <GameAnalyticsTVOS/GameAnalytics.h>
+#import <GameAnalyticsTVOS/GameAnalyticsWrapper.h>
+#endif
 
 @interface GARemoteConfigsUnityDelegate : NSObject<GARemoteConfigsDelegate>
 {
@@ -352,9 +358,8 @@ void setEventSubmission(BOOL flag) {
     [GameAnalytics setEnabledEventSubmission:flag];
 }
 
-
 void setEventSubmissionWithCaching(BOOL flag, BOOL doCache) {
-    [GameAnalytics setEnabledEventSubmission:flag doLocalEventCaching:doCache];
+    [GameAnalytics setEnabledEventSubmission:flag doCacheLocally:doCache];
 }
 
 void gameAnalyticsStartSession() {
@@ -437,10 +442,6 @@ char* getExternalUserId() {
     return cStringCopy([result UTF8String]);
 }
 
-void useRandomizedId(BOOL flag) {
-    [GameAnalytics useRandomizedId:flag];
-}
-
 char* getABTestingVariantId() {
     NSString *result = [GameAnalytics getABTestingVariantId];
     return cStringCopy([result UTF8String]);
@@ -463,7 +464,7 @@ void resumeTimer(const char *key) {
 
 long stopTimer(const char *key) {
     NSString *keyString = key != NULL ? [NSString stringWithUTF8String:key] : nil;
-    [GameAnalytics stopTimer:keyString];
+    return [GameAnalytics stopTimer:keyString];
 }
 
 void enableSDKInitEvent(BOOL flag) {
