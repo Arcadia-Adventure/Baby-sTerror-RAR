@@ -41,8 +41,8 @@ public class MainMenuManager : Singleton<MainMenuManager>
     public void PlayBtn()
     {
         AudioManager.Instance.PlaySFX(SFX.Click);
-        AA_AnalyticsManager.Agent.TrackButtonClick("play");
         SceneManager.LoadScene("LevelSelection");
+        AA_AnalyticsManager.Agent.TrackButtonClick("play");
     }
 
     public void SettingBtn()

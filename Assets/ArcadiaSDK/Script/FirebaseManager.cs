@@ -20,10 +20,13 @@ public class FirebaseManager : MonoBehaviour
 
     static FirebaseApp app;
     static bool _firebaseInitStarted;
+    static readonly Queue<Action> _pendingLogs = new Queue<Action>();
+    const int MaxPendingLogs = 50;
 
     public static AdsRemoteSettings AdsSettings { get; private set; } = new AdsRemoteSettings();
     public static GameRemoteSettings GameSettings { get; private set; } = new GameRemoteSettings();
     public static bool IsRemoteConfigReady { get; private set; }
+    public static bool IsInitialized { get; private set; }
 
     public static void SetRemoteConfigDefaults(AdsRemoteSettings adsDefaults, GameRemoteSettings gameDefaults)
     {
@@ -60,16 +63,28 @@ public class FirebaseManager : MonoBehaviour
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(
         previousTask =>
         {
+          if (previousTask.IsFaulted || previousTask.IsCanceled)
+          {
+            _pendingLogs.Clear();
+            onInitialize?.Invoke(false);
+            MarkRemoteConfigReady();
+            Debug.LogError($"[FirebaseManager] CheckDependencies failed: {previousTask.Exception}");
+            return;
+          }
+
           var dependencyStatus = previousTask.Result;
           if (dependencyStatus == Firebase.DependencyStatus.Available)
           {
             app = Firebase.FirebaseApp.DefaultInstance;
             Crashlytics.ReportUncaughtExceptionsAsFatal = true;
+            IsInitialized = true;
             onInitialize?.Invoke(true);
+            FlushPendingLogs();
             FetchRemoteConfig();
           }
           else
           {
+            _pendingLogs.Clear();
             onInitialize?.Invoke(false);
             MarkRemoteConfigReady();
             UnityEngine.Debug.LogError(
@@ -158,70 +173,122 @@ public class FirebaseManager : MonoBehaviour
         }
     }
 
-    // Log a custom event to Firebase Analytics
+    static void LogWhenReady(Action logAction)
+    {
+        if (logAction == null) return;
+
+        if (IsInitialized)
+        {
+            SafeLog(logAction);
+            return;
+        }
+
+        if (_pendingLogs.Count >= MaxPendingLogs)
+            _pendingLogs.Dequeue();
+
+        _pendingLogs.Enqueue(logAction);
+    }
+
+    static void FlushPendingLogs()
+    {
+        while (_pendingLogs.Count > 0)
+            SafeLog(_pendingLogs.Dequeue());
+    }
+
+    static void SafeLog(Action logAction)
+    {
+        try
+        {
+            logAction();
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[FirebaseManager] Analytics log skipped: {e.Message}");
+        }
+    }
+
     public static void LogEvent(string eventName, string parameterName, string parameterValue)
     {
-        FirebaseAnalytics.LogEvent(eventName, parameterName, parameterValue);
+        LogWhenReady(() => FirebaseAnalytics.LogEvent(eventName, parameterName, parameterValue));
     }
+
     public static void LogLevelStartEvent(int level)
     {
-        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelStart,
-            new Parameter(FirebaseAnalytics.ParameterLevel, level),
-            new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level));
+        LogWhenReady(() =>
+        {
+            FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelStart,
+                new Parameter(FirebaseAnalytics.ParameterLevel, level),
+                new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level));
+        });
     }
 
     public static void LogLevelFailEvent(int level, int score = -1)
     {
-        FirebaseAnalytics.LogEvent("level_fail",
-            new Parameter(FirebaseAnalytics.ParameterLevel, level),
-            new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
-            new Parameter(FirebaseAnalytics.ParameterScore, score));
+        LogWhenReady(() =>
+        {
+            FirebaseAnalytics.LogEvent("level_fail",
+                new Parameter(FirebaseAnalytics.ParameterLevel, level),
+                new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
+                new Parameter(FirebaseAnalytics.ParameterScore, score));
 
-        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
-            new Parameter(FirebaseAnalytics.ParameterLevel, level),
-            new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
-            new Parameter(FirebaseAnalytics.ParameterSuccess, 0),
-            new Parameter(FirebaseAnalytics.ParameterScore, score));
+            FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
+                new Parameter(FirebaseAnalytics.ParameterLevel, level),
+                new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
+                new Parameter(FirebaseAnalytics.ParameterSuccess, 0),
+                new Parameter(FirebaseAnalytics.ParameterScore, score));
+        });
     }
 
     public static void LogLevelCompleteEvent(int level, int score = -1)
     {
-        FirebaseAnalytics.LogEvent("level_complete",
-            new Parameter(FirebaseAnalytics.ParameterLevel, level),
-            new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
-            new Parameter(FirebaseAnalytics.ParameterScore, score));
+        LogWhenReady(() =>
+        {
+            FirebaseAnalytics.LogEvent("level_complete",
+                new Parameter(FirebaseAnalytics.ParameterLevel, level),
+                new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
+                new Parameter(FirebaseAnalytics.ParameterScore, score));
 
-        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
-            new Parameter(FirebaseAnalytics.ParameterLevel, level),
-            new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
-            new Parameter(FirebaseAnalytics.ParameterSuccess, 1),
-            new Parameter(FirebaseAnalytics.ParameterScore, score));
+            FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
+                new Parameter(FirebaseAnalytics.ParameterLevel, level),
+                new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
+                new Parameter(FirebaseAnalytics.ParameterSuccess, 1),
+                new Parameter(FirebaseAnalytics.ParameterScore, score));
+        });
     }
 
     public static void LogScreenView(string screenName)
     {
-        FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventScreenView,
-            new Parameter(FirebaseAnalytics.ParameterScreenName, screenName));
+        LogWhenReady(() =>
+        {
+            FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventScreenView,
+                new Parameter(FirebaseAnalytics.ParameterScreenName, screenName));
+        });
     }
 
     public static void LogDesignEvent(string eventName, params Parameter[] parameters)
     {
-        FirebaseAnalytics.LogEvent(eventName, parameters);
+        LogWhenReady(() => FirebaseAnalytics.LogEvent(eventName, parameters));
     }
 
     public static void LogAdEvent(string eventType, string adType, string placement)
     {
-        FirebaseAnalytics.LogEvent("ad_event",
-            new Parameter("event_type", eventType),
-            new Parameter("ad_type", adType),
-            new Parameter("placement", placement));
+        LogWhenReady(() =>
+        {
+            FirebaseAnalytics.LogEvent("ad_event",
+                new Parameter("event_type", eventType),
+                new Parameter("ad_type", adType),
+                new Parameter("placement", placement));
+        });
     }
 
     public static void LogSessionEnd(string reason, string scene, float duration)
     {
-        FirebaseAnalytics.LogEvent("session_end",
-            new Parameter("reason", reason),
-            new Parameter("scene", scene),
-            new Parameter("duration_seconds", (int)duration));
+        LogWhenReady(() =>
+        {
+            FirebaseAnalytics.LogEvent("session_end",
+                new Parameter("reason", reason),
+                new Parameter("scene", scene),
+                new Parameter("duration_seconds", (int)duration));
+        });
     }
 }
