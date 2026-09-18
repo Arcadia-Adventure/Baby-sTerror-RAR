@@ -38,6 +38,7 @@ namespace Ommy.Audio
         [SerializeField] List<SFXClip> _sfxClips = new();
 
         Dictionary<SFX, AudioClip> _sfxLookup;
+        AudioSource _loopSfxSource;
 
         // --- Registry ---
         readonly Dictionary<AudioCategory, HashSet<MyAudioSource>> _registry = new()
@@ -170,7 +171,12 @@ namespace Ommy.Audio
 
         public void SetBGSetting(bool enabled) => _bgSource.mute = !enabled;
 
-        public void SetSFXSetting(bool enabled) => _sfxSource.mute = !enabled;
+        public void SetSFXSetting(bool enabled)
+        {
+            _sfxSource.mute = !enabled;
+            if (_loopSfxSource != null)
+                _loopSfxSource.mute = !enabled;
+        }
 
         public void StartGame()
         {
@@ -198,5 +204,40 @@ namespace Ommy.Audio
 
         public void PlaySFX(AudioClip clip, float volume = 1f) =>
             _sfxSource.PlayOneShot(clip, volume);
+
+        public void PlayLoopingSFX(AudioClip clip, float volume = 1f)
+        {
+            if (clip == null) return;
+            EnsureLoopSfxSource();
+            _loopSfxSource.Stop();
+            _loopSfxSource.clip = clip;
+            _loopSfxSource.loop = true;
+            _loopSfxSource.volume = (_sfxSource != null ? _sfxSource.volume : 1f) * volume;
+            _loopSfxSource.Play();
+        }
+
+        public void StopLoopingSFX(AudioClip clip = null)
+        {
+            if (_loopSfxSource == null) return;
+            if (clip != null && _loopSfxSource.clip != clip) return;
+            _loopSfxSource.Stop();
+            _loopSfxSource.loop = false;
+            _loopSfxSource.clip = null;
+        }
+
+        void EnsureLoopSfxSource()
+        {
+            if (_loopSfxSource != null) return;
+
+            _loopSfxSource = gameObject.AddComponent<AudioSource>();
+            _loopSfxSource.playOnAwake = false;
+            _loopSfxSource.spatialBlend = 0f;
+            if (_sfxSource != null)
+            {
+                _loopSfxSource.mute = _sfxSource.mute;
+                _loopSfxSource.volume = _sfxSource.volume;
+                _loopSfxSource.outputAudioMixerGroup = _sfxSource.outputAudioMixerGroup;
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using DG.Tweening;
 using Ommy.Attributes;
 using Ommy.Audio;
 using SickscoreGames.HUDNavigationSystem;
@@ -88,11 +87,11 @@ public class PickableItem : Interactable
 
     protected virtual void OnDisable()
     {
-        DOTween.Kill(transform);
+        TweenUtilities.Kill(transform);
     }
 
     protected virtual void OnDestroy()
     {
-        DOTween.Kill(transform);
+        TweenUtilities.Kill(transform);
     }
 }

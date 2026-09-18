@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 
 [Serializable]
 public class ItemSpriteEntry
@@ -36,7 +35,7 @@ public class RequireItemIndicator : MonoBehaviour
     {
         if (itemImage == null) return;
 
-        DOTween.Kill(_canvasGroup);
+        TweenUtilities.Kill(_canvasGroup);
         _isVisible = false;
         _hasValidSprite = false;
         _canvasGroup.alpha = 0f;
@@ -56,9 +55,8 @@ public class RequireItemIndicator : MonoBehaviour
         if (!_hasValidSprite || _isVisible) return;
         _isVisible = true;
 
-        DOTween.Kill(_canvasGroup);
         backgroundImage.gameObject.SetActive(true);
-        _canvasGroup.DOFade(1f, fadeDuration);
+        TweenUtilities.Fade(_canvasGroup, 1f, fadeDuration);
     }
 
     public void Hide()
@@ -66,14 +64,21 @@ public class RequireItemIndicator : MonoBehaviour
         if (!_isVisible) return;
         _isVisible = false;
 
-        DOTween.Kill(_canvasGroup);
-        _canvasGroup.DOFade(0f, fadeDuration)
-            .OnComplete(() => backgroundImage.gameObject.SetActive(false));
+        TweenUtilities.Fade(_canvasGroup, 0f, fadeDuration, () =>
+        {
+            if (backgroundImage != null)
+                backgroundImage.gameObject.SetActive(false);
+        });
     }
 
     void OnDisable()
     {
-        DOTween.Kill(_canvasGroup);
+        TweenUtilities.Kill(_canvasGroup);
         _isVisible = false;
+    }
+
+    void OnDestroy()
+    {
+        TweenUtilities.Kill(_canvasGroup);
     }
 }

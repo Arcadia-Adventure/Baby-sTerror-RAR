@@ -41,7 +41,7 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
     }
     void OnDisable()
     {
-        DOTween.Kill(scrollView);
+        TweenUtilities.Kill(scrollView);
     }
     [InspectorButton("MoveContentView")]
     public void MoveContentView()
@@ -66,13 +66,13 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
         // Start from left (0) and animate to target position
         scrollView.horizontalNormalizedPosition = 0f;
         
-        DOTween.To(
+        TweenUtilities.To(
+            scrollView,
             () => scrollView.horizontalNormalizedPosition,
             x => { if (scrollView != null) scrollView.horizontalNormalizedPosition = x; },
             targetPosition,
             scrollDuration
         )
-        .SetTarget(scrollView)
         .SetDelay(startDelay)
         .SetEase(scrollEase);
     }

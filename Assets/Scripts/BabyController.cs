@@ -63,7 +63,7 @@ public class BabyController : PickableItem
     {
         base.PickObject(parent);
         StopAudio();
-        babyAnimationController.SetAnimation(BabyAnimationType.Fly);
+        SetAnimation(BabyAnimationType.Fly);
     }
     public override void ReleaseObject()
     {
@@ -73,7 +73,7 @@ public class BabyController : PickableItem
         collider.enabled = true;
         transform.parent = null;
         Vector3 targetRotation = new Vector3(0f, transform.eulerAngles.y, 0f);
-        transform.DORotate(targetRotation, 0.3f).SetEase(Ease.OutSine);
+        TweenUtilities.Rotate(transform, targetRotation, 0.3f).SetEase(Ease.OutSine);
         gameObject.layer = LayerMask.NameToLayer("Interactable");
     }
     public override void DropObject()

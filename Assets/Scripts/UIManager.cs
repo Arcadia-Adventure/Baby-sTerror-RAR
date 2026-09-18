@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using TMPro;
 using ControlFreak2;
 using ControlFreak2.UI;
-using DG.Tweening;
 using Ommy.Prefs;
 using Ommy.Audio;
 using Ommy.Singleton;
@@ -56,7 +55,7 @@ public class UIManager : Singleton<UIManager>
         detectionTxt.text = detectionText;
         if (currentCrosshairState == state) return;
         currentCrosshairState = state;
-        crossHairDetection.DOKill();
+        TweenUtilities.Kill(crossHairDetection);
 
         switch (state)
         {
@@ -84,7 +83,7 @@ public class UIManager : Singleton<UIManager>
     {
         rt.sizeDelta = new Vector2(50, 50);
         crossHairDetection.sprite = sprite;
-        crossHairDetection.DOFade(1, 1);
+        TweenUtilities.Fade(crossHairDetection, 1f, 1f);
     }
 
     #endregion
@@ -103,8 +102,7 @@ public class UIManager : Singleton<UIManager>
 
         if (Mathf.Approximately(img.color.a, targetAlpha)) return;
 
-        img.DOKill();
-        img.DOFade(targetAlpha, 0.3f);
+        TweenUtilities.Fade(img, targetAlpha, 0.3f);
     }
 
     #endregion
@@ -164,7 +162,10 @@ public class UIManager : Singleton<UIManager>
 
     public void HomeBtn()
     {
+        if (_sceneChangeInProgress) return;
+        _sceneChangeInProgress = true;
         Time.timeScale = 1;
+        KillUiTweens();
         AudioManager.Instance.PlaySFX(SFX.Click);
         AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "home_button");
         SceneManager.LoadScene("MainMenu");
@@ -175,6 +176,7 @@ public class UIManager : Singleton<UIManager>
         if (_sceneChangeInProgress) return;
         _sceneChangeInProgress = true;
         Time.timeScale = 1;
+        KillUiTweens();
         AudioManager.Instance.PlaySFX(SFX.Click);
         AA_AnalyticsManager.Agent.TrackLevelRetry(GamePreference.selectedLevel);
         ArcadiaSdkManager.CurrentAdPlacement = "replay_rewarded";
@@ -186,6 +188,7 @@ public class UIManager : Singleton<UIManager>
         if (_sceneChangeInProgress) return;
         _sceneChangeInProgress = true;
         Time.timeScale = 1;
+        KillUiTweens();
         GamePreference.selectedLevel++;
         AudioManager.Instance.PlaySFX(SFX.Click);
         AA_AnalyticsManager.Agent.TrackButtonClick("next_level");
@@ -208,6 +211,7 @@ public class UIManager : Singleton<UIManager>
 
     void LoadCurrentScene()
     {
+        KillUiTweens();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -221,12 +225,22 @@ public class UIManager : Singleton<UIManager>
 
     #region Lifecycle
 
+    void KillUiTweens()
+    {
+        TweenUtilities.Kill(crossHairDetection);
+        if (door != null) TweenUtilities.Kill(door.image);
+        if (pick != null) TweenUtilities.Kill(pick.image);
+        if (useDevice != null) TweenUtilities.Kill(useDevice.image);
+    }
+
     private void OnDisable()
     {
-        DOTween.Kill(crossHairDetection);
-        if (door != null) DOTween.Kill(door.image);
-        if (pick != null) DOTween.Kill(pick.image);
-        if (useDevice != null) DOTween.Kill(useDevice.image);
+        KillUiTweens();
+    }
+
+    private void OnDestroy()
+    {
+        KillUiTweens();
     }
 
     private void OnApplicationQuit()

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 
 [Serializable]
@@ -20,22 +19,22 @@ public class BabyItemHandler : MonoBehaviour
         var baby = BabyController.Instance;
         Debug.Log("item: " + item.itemType + " given to baby");
 
-        DOTween.Kill(item.transform);
+        TweenUtilities.Kill(item.transform);
         item.ReleaseObject();
         item.rb.isKinematic = true;
         item.collider.enabled = false;
-        item.transform.DOLocalJump(baby.transform.position, 0.5f, 1, 0.5f);
-        item.transform.DORotate(baby.transform.eulerAngles, 0.5f);
+        TweenUtilities.LocalJump(item.transform, baby.transform.position, 0.5f, 1, 0.5f);
+        TweenUtilities.Rotate(item.transform, baby.transform.eulerAngles, 0.5f);
         ObjectiveUIController.OnTaskEventReceived(item.OnDropForBabyTaskType);
         baby.SetAnimation(BabyAnimationType.Happy);
 
-        DOVirtual.DelayedCall(0.5f, () =>
+        TweenUtilities.DelayedCall(0.5f, () =>
         {
             ApplyItemEffect(item.itemType);
             baby.requireItem = ItemType.None;
-            DOTween.Kill(item.transform);
+            TweenUtilities.Kill(item.transform);
             Destroy(item.gameObject);
-        });
+        }, this);
     }
 
     void ApplyItemEffect(ItemType itemType)

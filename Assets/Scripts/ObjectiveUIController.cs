@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 using Ommy.Singleton;
 using Ommy.Prefs;
+using Ommy.Audio;
 
 public class ObjectiveUIController : Singleton<ObjectiveUIController>
 {
@@ -13,6 +15,8 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     [SerializeField] private TextMeshProUGUI missionNameTxt;
     [SerializeField] private TextMeshProUGUI[] taskTxt;
     [SerializeField] private Color completeTaskColor;
+    [SerializeField] private float typewriterCharsPerSecond = 28f;
+    [SerializeField] private AudioClip typewriterClip;
 
     public int TotalTasks { get; private set; }
     public int CurrentTaskIndex => TotalTasks - PendingTasks;
@@ -69,8 +73,10 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
         {
             if (i < TotalTasks)
             {
-                taskTxt[i].text = _taskInfos[i].description;
-                taskTxt[i].gameObject.SetActive(i == 0);
+                if (i == 0)
+                    RevealTask(i);
+                else
+                    HideTask(i);
             }
             else
             {
@@ -126,21 +132,63 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     {
         if (taskIndex < 0 || taskIndex >= _displayableCount) return;
 
-        taskTxt[taskIndex].text = $"{_taskInfos[taskIndex].description} (complete)";
-        taskTxt[taskIndex].color = completeTaskColor;
-        taskTxt[taskIndex].gameObject.SetActive(true);
+        ShowTaskComplete(taskIndex);
 
         for (int i = 0; i < _displayableCount; i++)
         {
             if (!_taskInfos[i].isCompleted && !taskTxt[i].gameObject.activeSelf)
             {
-                taskTxt[i].gameObject.SetActive(true);
+                RevealTask(i);
                 break;
             }
         }
     }
 
+    void RevealTask(int index)
+    {
+        var txt = taskTxt[index];
+        txt.gameObject.SetActive(true);
+        var tween = TweenUtilities.Typewriter(txt, _taskInfos[index].description, typewriterCharsPerSecond);
+        if (tween == null) return;
+
+        PlayTypewriterSound();
+        tween.OnKill(StopTypewriterSound);
+    }
+
+    void HideTask(int index)
+    {
+        var txt = taskTxt[index];
+        TweenUtilities.Kill(txt);
+        txt.text = _taskInfos[index].description;
+        txt.maxVisibleCharacters = 0;
+        txt.gameObject.SetActive(false);
+    }
+
+    void ShowTaskComplete(int index)
+    {
+        var txt = taskTxt[index];
+        TweenUtilities.Kill(txt);
+        txt.maxVisibleCharacters = int.MaxValue;
+        txt.text = $"{_taskInfos[index].description} (complete)";
+        txt.color = completeTaskColor;
+        txt.gameObject.SetActive(true);
+    }
+
     #endregion
+
+    void PlayTypewriterSound()
+    {
+        if (typewriterClip == null || AudioManager.Instance == null) return;
+        AudioManager.Instance.PlayLoopingSFX(typewriterClip);
+    }
+
+    void StopTypewriterSound()
+    {
+        if (AudioManager.Instance == null) return;
+        AudioManager.Instance.StopLoopingSFX(typewriterClip);
+    }
+
+    void OnDisable() => StopTypewriterSound();
 
     #region Queries
 

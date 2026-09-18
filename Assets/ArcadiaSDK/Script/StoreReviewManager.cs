@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_ANDROID
 using Google.Play.Review;
@@ -13,9 +13,16 @@ public class StoreReviewManager : MonoBehaviour
 #endif
     public void RateUs()
     {
-#if UNITY_ANDROID
-        _reviewManager = new ReviewManager();
-        StartCoroutine(Review());
+#if UNITY_ANDROID && !UNITY_EDITOR
+        try
+        {
+            _reviewManager = new ReviewManager();
+            StartCoroutine(Review());
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[StoreReviewManager] In-app review unavailable: {e.Message}");
+        }
 #endif
 #if UNITY_IOS || UNITY_IPHONE
         UnityEngine.iOS.Device.RequestStoreReview();

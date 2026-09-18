@@ -65,12 +65,13 @@ public class PlayerAnimationController : MonoBehaviour
         Vector3 fallenPos = animatedCam.transform.localPosition + positionOffset;
         float dur = unconsciousDuration;
 
-        var seq = DOTween.Sequence().SetTarget(animatedCam.transform);
+        var seq = TweenUtilities.Sequence(animatedCam.transform);
 
         // Phase 1 - dizzy sway before collapsing
         float swayDur = dur * 0.25f;
         seq.Append(
-            animatedCam.transform.DOLocalRotate(
+            TweenUtilities.LocalRotate(
+                animatedCam.transform,
                 animatedCam.transform.localEulerAngles + new Vector3(2f, 0f, stumbleSway * 0.4f),
                 swayDur)
             .SetEase(Ease.InOutSine));
@@ -78,28 +79,29 @@ public class PlayerAnimationController : MonoBehaviour
         // Phase 2 - main fall: camera drops and tilts to the side
         float fallDur = dur * 0.5f;
         seq.Append(
-            animatedCam.transform.DOLocalRotate(unconsciousRotation, fallDur)
+            TweenUtilities.LocalRotate(animatedCam.transform, unconsciousRotation, fallDur)
             .SetEase(Ease.InBack, 1.2f));
         seq.Join(
-            animatedCam.transform.DOLocalMove(fallenPos, fallDur)
+            TweenUtilities.LocalMove(animatedCam.transform, fallenPos, fallDur)
             .SetEase(Ease.InQuad));
 
         // Phase 3 - impact bounce + shake
         float bounceDur = dur * 0.25f;
         Vector3 bounceUp = fallenPos + new Vector3(0f, 0.06f, 0f);
         seq.Append(
-            animatedCam.transform.DOLocalMove(bounceUp, bounceDur * 0.4f)
+            TweenUtilities.LocalMove(animatedCam.transform, bounceUp, bounceDur * 0.4f)
             .SetEase(Ease.OutQuad));
         seq.Append(
-            animatedCam.transform.DOLocalMove(fallenPos, bounceDur * 0.6f)
+            TweenUtilities.LocalMove(animatedCam.transform, fallenPos, bounceDur * 0.6f)
             .SetEase(Ease.InQuad));
         seq.Join(
-            animatedCam.transform.DOShakeRotation(bounceDur, impactShakeStrength * 40f, impactShakeVibrato)
+            TweenUtilities.ShakeRotation(animatedCam.transform, bounceDur, impactShakeStrength * 40f, impactShakeVibrato)
             .SetEase(Ease.OutExpo));
 
         // Phase 4 - gentle breathing while on ground
         seq.Append(
-            animatedCam.transform.DOLocalRotate(
+            TweenUtilities.LocalRotate(
+                animatedCam.transform,
                 unconsciousRotation + new Vector3(1.5f, 0f, -1f),
                 0.6f)
             .SetEase(Ease.InOutSine)
@@ -120,26 +122,27 @@ public class PlayerAnimationController : MonoBehaviour
         Vector3 standRot = playerCam.transform.localEulerAngles;
         float dur = gettingUpDuration;
 
-        var seq = DOTween.Sequence().SetTarget(animatedCam.transform);
+        var seq = TweenUtilities.Sequence(animatedCam.transform);
 
         // Phase 1 - eyes flutter: tiny shake as if regaining consciousness
         seq.Append(
-            animatedCam.transform.DOShakeRotation(dur * 0.15f, 3f, 6)
+            TweenUtilities.ShakeRotation(animatedCam.transform, dur * 0.15f, 3f, 6)
             .SetEase(Ease.OutSine));
 
         // Phase 2 - lift head off the ground
         Vector3 halfwayRot = new Vector3(standRot.x + 15f, standRot.y, stumbleSway * 0.3f);
         Vector3 halfwayPos = Vector3.Lerp(animatedCam.transform.localPosition, standPos, 0.5f);
         seq.Append(
-            animatedCam.transform.DOLocalRotate(halfwayRot, dur * 0.35f)
+            TweenUtilities.LocalRotate(animatedCam.transform, halfwayRot, dur * 0.35f)
             .SetEase(Ease.OutSine));
         seq.Join(
-            animatedCam.transform.DOLocalMove(halfwayPos, dur * 0.35f)
+            TweenUtilities.LocalMove(animatedCam.transform, halfwayPos, dur * 0.35f)
             .SetEase(Ease.OutSine));
 
         // Phase 3 - pause and wobble mid-way (disoriented)
         seq.Append(
-            animatedCam.transform.DOLocalRotate(
+            TweenUtilities.LocalRotate(
+                animatedCam.transform,
                 halfwayRot + new Vector3(-2f, 0f, -stumbleSway * 0.2f),
                 dur * 0.12f)
             .SetEase(Ease.InOutSine)
@@ -147,15 +150,15 @@ public class PlayerAnimationController : MonoBehaviour
 
         // Phase 4 - stand fully upright
         seq.Append(
-            animatedCam.transform.DOLocalRotate(standRot, dur * 0.3f)
+            TweenUtilities.LocalRotate(animatedCam.transform, standRot, dur * 0.3f)
             .SetEase(Ease.InOutQuad));
         seq.Join(
-            animatedCam.transform.DOLocalMove(standPos, dur * 0.3f)
+            TweenUtilities.LocalMove(animatedCam.transform, standPos, dur * 0.3f)
             .SetEase(Ease.InOutQuad));
 
         // Phase 5 - final stabilize shake
         seq.Append(
-            animatedCam.transform.DOShakeRotation(dur * 0.08f, 1.5f, 4)
+            TweenUtilities.ShakeRotation(animatedCam.transform, dur * 0.08f, 1.5f, 4)
             .SetEase(Ease.OutSine));
 
         seq.OnComplete(() =>
@@ -173,7 +176,7 @@ public class PlayerAnimationController : MonoBehaviour
             activeSequence.Kill();
 
         if (animatedCam != null)
-            DOTween.Kill(animatedCam.transform);
+            TweenUtilities.Kill(animatedCam.transform);
 
         activeSequence = null;
     }

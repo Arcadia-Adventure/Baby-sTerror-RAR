@@ -50,14 +50,14 @@ public class DoorController : Interactable
         {
             ObjectiveUIController.OnTaskEventReceived(onLockedCheckTask);
             AA_AnalyticsManager.Agent.TrackButtonClick("locked_door_hit");
-            transform.DOPunchRotation(Vector3.up * 2f, 0.5f, 8, 0.5f)
-                .OnComplete(() => transform.DORotate(doorClose, 0.1f));
+            TweenUtilities.PunchRotation(transform, Vector3.up * 2f, 0.5f, 8, 0.5f)
+                .OnComplete(() => TweenUtilities.Rotate(transform, doorClose, 0.1f));
             AudioManager.Instance.PlaySFX(lockedDoorSFX);
         }
         else if (!isDoorOpen)
         {
             onDoorOpen.Invoke(true);
-            transform.DORotate(doorOpen, 0.5f);
+            TweenUtilities.Rotate(transform, doorOpen, 0.5f);
             isDoorOpen = true;
             AudioManager.Instance.PlaySFX(doorOpenSFX);
             PlayDoorBell(false);
@@ -66,7 +66,7 @@ public class DoorController : Interactable
         else
         {
             onDoorOpen.Invoke(false);
-            transform.DORotate(doorClose, 0.5f);
+            TweenUtilities.Rotate(transform, doorClose, 0.5f);
             isDoorOpen = false;
             AudioManager.Instance.PlaySFX(doorCloseSFX);
         }

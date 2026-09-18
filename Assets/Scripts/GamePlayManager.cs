@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DG.Tweening;
 using Ommy.Attributes;
 using Ommy.Audio;
 using Ommy.Prefs;
@@ -200,7 +199,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     public void LevelComplete()
     {
-        DOVirtual.DelayedCall(2f, () =>
+        TweenUtilities.DelayedCall(2f, () =>
         {
             UIManager.Instance.LevelComplete();
             AudioManager.Instance.PlaySFX(SFX.LevelComplete);
@@ -213,7 +212,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
             int rateUsLevel = FirebaseManager.GameSettings.rate_us_level;
             if (rateUsLevel > 0 && Level == rateUsLevel)
                 ArcadiaSdkManager.Agent.ShowRateUs();
-        });
+        }, this);
     }
 
     void OnTaskReceived(TaskType taskType)

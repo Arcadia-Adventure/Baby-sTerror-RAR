@@ -1,5 +1,4 @@
 using UnityEngine;
-using DG.Tweening;
 using UnityEngine.Events;
 using Ommy.Audio;
 using UnityEngine.VFX;
@@ -26,15 +25,15 @@ public class DropPoint : Interactable
         dropAreaVFX.Stop();
         item.rb.isKinematic = true;
         item.ReleaseObject();
-        DOTween.Kill(item.transform);
+        TweenUtilities.Kill(item.transform);
         if (jumpDuration <= 0f && rotationDuration <= 0f)
         {
             item.transform.SetPositionAndRotation(transform.position, transform.rotation);
         }
         else
         {
-            item.transform.DOLocalJump(transform.position, jumpPower, 1, jumpDuration);
-            item.transform.DORotate(transform.eulerAngles, rotationDuration);
+            TweenUtilities.LocalJump(item.transform, transform.position, jumpPower, 1, jumpDuration);
+            TweenUtilities.Rotate(item.transform, transform.eulerAngles, rotationDuration);
         }
         ObjectiveUIController.OnTaskEventReceived(onDropTaskType);
         if(item is BabyController)

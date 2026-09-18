@@ -33,17 +33,15 @@ public class AxeController : UseableItem
         isSwinging = true;
         
         // Wind up - pull back
-        rb.DORotate(originalRotation + windUpRotation, windUpDuration)
+        TweenUtilities.Rotate(rb, originalRotation + windUpRotation, windUpDuration)
             .SetEase(Ease.OutQuad)
             .OnComplete(() =>
             {
-                // Swing forward fast
-                transform.DOLocalRotate(originalRotation + swingRotation, swingDuration)
+                TweenUtilities.LocalRotate(transform, originalRotation + swingRotation, swingDuration)
                     .SetEase(Ease.InQuad)
                     .OnComplete(() =>
                     {
-                        // Return to original position
-                        transform.DOLocalRotate(originalRotation, returnDuration)
+                        TweenUtilities.LocalRotate(transform, originalRotation, returnDuration)
                             .SetEase(Ease.OutQuad)
                             .OnComplete(() => isSwinging = false);
                     });

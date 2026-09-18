@@ -2,6 +2,7 @@
 using Google.Play.AppUpdate;
 using Google.Play.Common;
 #endif
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -20,24 +21,38 @@ public class UpdateManager : MonoBehaviour
 
         _checkedThisSession = true;
 
-#if UNITY_ANDROID
-        appUpdateManager = new AppUpdateManager();
-        StartCoroutine(CheckForUpdate());
+#if UNITY_ANDROID && !UNITY_EDITOR
+        try
+        {
+            appUpdateManager = new AppUpdateManager();
+            StartCoroutine(CheckForUpdate());
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[UpdateManager] In-app update unavailable: {e.Message}");
+        }
 #endif
     }
 #if UNITY_ANDROID
 
     IEnumerator CheckForUpdate()
     {
-        PlayAsyncOperation<AppUpdateInfo, AppUpdateErrorCode> appUpdateInfoOperation =
-          appUpdateManager.GetAppUpdateInfo();
+        PlayAsyncOperation<AppUpdateInfo, AppUpdateErrorCode> appUpdateInfoOperation;
+        try
+        {
+            appUpdateInfoOperation = appUpdateManager.GetAppUpdateInfo();
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[UpdateManager] GetAppUpdateInfo failed: {e.Message}");
+            yield break;
+        }
 
         yield return appUpdateInfoOperation;
 
         if (!appUpdateInfoOperation.IsSuccessful)
         {
             Debug.LogError($"[UpdateManager] GetAppUpdateInfo failed: {appUpdateInfoOperation.Error}");
-            _checkedThisSession = false;
             yield break;
         }
 
