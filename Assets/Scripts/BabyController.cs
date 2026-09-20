@@ -15,6 +15,10 @@ public class BabyController : PickableItem
     }
     public float cryThreshold = 10f;
     public bool canPickBaby = true;
+    public bool playHorrorOnPick;
+
+    [SerializeField] AudioClip firstPickHorrorSFX;
+    bool _playedFirstPickHorror;
 
     [SerializeField] private ItemType _requireItem = ItemType.None;
     [SerializeField] private RequireItemIndicator requireItemIndicator;
@@ -64,6 +68,16 @@ public class BabyController : PickableItem
         base.PickObject(parent);
         StopAudio();
         SetAnimation(BabyAnimationType.Fly);
+        TryPlayFirstPickHorror();
+    }
+
+    void TryPlayFirstPickHorror()
+    {
+        if (!playHorrorOnPick || _playedFirstPickHorror || firstPickHorrorSFX == null)
+            return;
+
+        _playedFirstPickHorror = true;
+        AudioManager.Instance.PlaySFX(firstPickHorrorSFX);
     }
     public override void ReleaseObject()
     {

@@ -7,6 +7,7 @@
         "active": true,
         "requireItem": "None",
         "canPickBaby": true,
+        "playHorrorOnPick": true,
         "initialAnimation": "CryLay",
         "possessed": false,
         "dirtyFace": false
@@ -206,8 +207,10 @@
         "activeDropPoints": ["RockingChair"]
       },
       "tasks": [
-        { "taskType": "BedroomDoorBreak", "description": "-The baby trapped you! Find the axe and break the door.", "completePreviousTasks": false },
-        { "taskType": "DropOnRockingChair", "description": "-Pick up the baby and drop it on the rocking chair.", "completePreviousTasks": true }
+        { "taskType": "PickAxe", "description": "-The baby trapped you! Find the axe.", "completePreviousTasks": false },
+        { "taskType": "BedroomDoorBreak", "description": "-Break the door.", "completePreviousTasks": false },
+        { "taskType": "PickBaby", "description": "-Pick up the baby.", "completePreviousTasks": false },
+        { "taskType": "DropOnRockingChair", "description": "-drop the baby on the rocking chair.", "completePreviousTasks": true }
       ]
     },
     {

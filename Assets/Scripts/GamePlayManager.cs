@@ -127,7 +127,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
         houseExitDoor.SetLocked(doors.houseExitLocked);
         upperRoomDoor.SetLocked(doors.upperRoomLocked);
 
-        if (doors.doorKnocking != null && doors.doorKnocking.enabled)
+        if (doors.doorKnocking.enabled)
             houseExitDoor.PlayDoorKnocking(doors.doorKnocking.initialDelay, doors.doorKnocking.interval);
 
         if (doors.doorBell)
@@ -139,6 +139,7 @@ public class GamePlayManager : Singleton<GamePlayManager>
         baby.babyEyesRed.color = Color.white;
         baby.requireItem = LevelConfigLoader.ParseItemType(setup.requireItem);
         baby.canPickBaby = setup.canPickBaby;
+        baby.playHorrorOnPick = setup.playHorrorOnPick;
 
         if (setup.dirtyFace)
             baby.babyDirtyFace.SetActive(true);

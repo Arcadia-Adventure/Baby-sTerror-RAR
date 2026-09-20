@@ -148,7 +148,6 @@ public class ArcadiaSdkManager : MonoBehaviour
     
     private IEnumerator InitializeAdsManager()
     {
-        yield return new WaitForSeconds(initializationDelay);
         // Initialize AppStateEventNotifier
         if (AppStateEventNotifier.Instance != null)
         {
@@ -163,9 +162,8 @@ public class ArcadiaSdkManager : MonoBehaviour
             Debug.LogError("No ads manager found! Please ensure either AppLovinAdsManager or AdMobAdsManager is active in the scene.");
             yield break;
         }
-
-        yield return FirebaseManager.WaitForRemoteConfig();
         
+        yield return FirebaseManager.WaitForRemoteConfig();
         // Initialize the ads manager
         string sdkKey = GetSdkKey();
         adsManager.OnAdsInitialized+=LoadAds;
@@ -174,7 +172,8 @@ public class ArcadiaSdkManager : MonoBehaviour
         adsManager.OnAdClosed += OnAdClosed;
         adsManager.OnAdLoaded += OnAdLoaded;
         adsManager.Initialize(sdkKey, enableLogs);
-        
+
+        yield return new WaitForSeconds(initializationDelay);
         // Subscribe to events
         LoadNextScene();
     }

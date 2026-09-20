@@ -114,20 +114,20 @@ namespace Ommy.Audio
         }
 
         /// <summary>Play repeatedly with an interval. Optional intervalGrowth adds to the interval each cycle.</summary>
-        public void PlayRepeating(float interval, float intervalGrowth = 0f)
+        public void PlayRepeating(float interval, float intervalGrowth = 0f, Action onPlay = null)
         {
             KillRoutine();
-            _activeRoutine = StartCoroutine(RepeatingRoutine(interval, intervalGrowth));
+            _activeRoutine = StartCoroutine(RepeatingRoutine(interval, intervalGrowth, onPlay));
         }
 
-        /// <summary>Play repeatedly starting after an initial delay.</summary>
-        public void PlayRepeating(float initialDelay, float interval, float intervalGrowth)
+        /// <summary>Play repeatedly starting after an initial delay. onPlay fires with each play.</summary>
+        public void PlayRepeating(float initialDelay, float interval, float intervalGrowth, Action onPlay = null)
         {
             KillRoutine();
             _activeRoutine = StartCoroutine(DelayedRoutine(initialDelay, () =>
             {
-                _source.Play();
-                _activeRoutine = StartCoroutine(RepeatingRoutine(interval, intervalGrowth));
+                PlayAndNotify(onPlay);
+                _activeRoutine = StartCoroutine(RepeatingRoutine(interval, intervalGrowth, onPlay));
             }));
         }
 
@@ -158,15 +158,21 @@ namespace Ommy.Audio
             action?.Invoke();
         }
 
-        IEnumerator RepeatingRoutine(float interval, float intervalGrowth)
+        IEnumerator RepeatingRoutine(float interval, float intervalGrowth, Action onPlay)
         {
             float currentInterval = interval;
             while (true)
             {
                 yield return new WaitForSeconds(currentInterval);
-                _source.Play();
+                PlayAndNotify(onPlay);
                 currentInterval += intervalGrowth;
             }
+        }
+
+        void PlayAndNotify(Action onPlay)
+        {
+            _source.Play();
+            onPlay?.Invoke();
         }
 
         IEnumerator FadeRoutine(float targetVolume, float duration, Action onComplete)

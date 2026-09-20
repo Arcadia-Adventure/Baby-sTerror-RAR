@@ -965,6 +965,7 @@ GameObject:
   - component: {fileID: 177819024}
   - component: {fileID: 177819023}
   - component: {fileID: 177819022}
+  - component: {fileID: 177819025}
   m_Layer: 5
   m_Name: Setting Button
   m_TagString: Untagged
@@ -1085,6 +1086,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 177819020}
   m_CullTransparentMesh: 1
+--- !u!114 &177819025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177819020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859654d50286d45b985cc65f1887eac9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  holdDuration: 5
+  OnHoldComplete:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &223441589
 GameObject:
   m_ObjectHideFlags: 0

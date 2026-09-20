@@ -22,6 +22,12 @@ public class DoorController : Interactable
     public bool isDoorOpen;
     public bool isDoorLock;
 
+    [Header("Knock Punch")]
+    public Vector3 knockPunch = new Vector3(0f, 6f, 0f);
+    public float knockInDuration = 0.05f;
+    public float knockOutDuration = 0.08f;
+    public float[] knockHitTimes = { 0.07f, 0.25f, 0.39f, 0.55f, 0.7f };
+
     public override void Start()
     {
         base.Start();
@@ -43,6 +49,43 @@ public class DoorController : Interactable
 
         crosshairState = isDoorOpen ? CrosshairState.DoorClose : CrosshairState.DoorOpen;
     }
+    public void DoorPunchRotation()
+    {
+        PlayKnockHits(0f, 0.16f);
+    }
+
+    void PlayKnockAnimation()
+    {
+        PlayKnockHits(knockHitTimes);
+    }
+
+    void PlayKnockHits(params float[] times)
+    {
+        if (isDoorOpen || times == null || times.Length == 0) return;
+
+        TweenUtilities.Kill(this);
+        transform.rotation = Quaternion.Euler(doorClose);
+
+        var seq = TweenUtilities.Sequence(this);
+        for (int i = 0; i < times.Length; i++)
+        {
+            float t = times[i];
+            Vector3 hitAngle = doorClose + knockPunch * (i == times.Length - 1 ? 1.2f : 1f);
+
+            seq.Insert(t, TweenUtilities.Rotate(transform, hitAngle, knockInDuration)
+                .SetEase(Ease.OutCubic)
+                .Pause());
+            seq.Insert(t + knockInDuration, TweenUtilities.Rotate(transform, doorClose, knockOutDuration)
+                .SetEase(Ease.InCubic)
+                .Pause());
+        }
+
+        seq.OnComplete(() =>
+        {
+            if (!isDoorOpen)
+                transform.rotation = Quaternion.Euler(doorClose);
+        });
+    }
 
     public void DoorOpenClose()
     {
@@ -50,18 +93,17 @@ public class DoorController : Interactable
         {
             ObjectiveUIController.OnTaskEventReceived(onLockedCheckTask);
             AA_AnalyticsManager.Agent.TrackButtonClick("locked_door_hit");
-            TweenUtilities.PunchRotation(transform, Vector3.up * 2f, 0.5f, 8, 0.5f)
-                .OnComplete(() => TweenUtilities.Rotate(transform, doorClose, 0.1f));
+            DoorPunchRotation();
             AudioManager.Instance.PlaySFX(lockedDoorSFX);
         }
         else if (!isDoorOpen)
         {
             onDoorOpen.Invoke(true);
+            StopDoorKnocking();
             TweenUtilities.Rotate(transform, doorOpen, 0.5f);
             isDoorOpen = true;
             AudioManager.Instance.PlaySFX(doorOpenSFX);
             PlayDoorBell(false);
-            StopDoorKnocking();
         }
         else
         {
@@ -97,14 +139,20 @@ public class DoorController : Interactable
 
     public void PlayDoorKnocking(float initialDelay, float interval = 1f)
     {
-        if (doorKnockingSource != null)
-            doorKnockingSource.PlayRepeating(initialDelay, interval);
+        StopDoorKnocking();
+        if (doorKnockingSource == null) return;
+
+        doorKnockingSource.PlayRepeating(initialDelay, interval, 0f, PlayKnockAnimation);
     }
 
     public void StopDoorKnocking()
     {
         if (doorKnockingSource != null)
             doorKnockingSource.Stop();
+
+        TweenUtilities.Kill(this);
+        if (!isDoorOpen)
+            transform.rotation = Quaternion.Euler(doorClose);
     }
 
     public void PlayDoorBell(bool play)

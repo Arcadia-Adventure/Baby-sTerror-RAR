@@ -11,14 +11,18 @@ public class RingbufferFootSteps : MonoBehaviour
     [Header("Movement")]
     public float agentSpeed = 3.5f;
     public float arriveDistance = 0.75f;
-    public float navMeshSampleDistance = 6f;
+    public float navMeshSampleDistance = 2f;
+    [Tooltip("Max height difference to count as the same floor. Rejects the story above or below.")]
+    public float sameFloorMaxY = 1.25f;
 
     [Header("Loop")]
     public bool loop = true;
     [Min(0f)] public float loopDelay = 1.5f;
 
     [Header("Fade")]
-    [Min(0f)] public float fadeInDuration = 0.35f;
+    [Tooltip("Each footprint fades in over this time after it spawns.")]
+    [Min(0f)] public float fadeInDuration = 0.2f;
+    [Tooltip("Each footprint starts fading out as soon as it spawns, over this time.")]
     [Min(0f)] public float fadeOutDuration = 0.6f;
 
     [Header("Footsteps")]
@@ -30,11 +34,7 @@ public class RingbufferFootSteps : MonoBehaviour
     Vector3 lastDestinationSample;
     int dir = 1;
     bool isTrailing;
-    float trailAlpha = 1f;
     Coroutine trailRoutine;
-    ParticleSystemRenderer particleRenderer;
-    MaterialPropertyBlock particleBlock;
-    Color baseTint = Color.white;
 
     public bool IsTrailing => isTrailing;
 
@@ -44,8 +44,6 @@ public class RingbufferFootSteps : MonoBehaviour
             agent = GetComponent<NavMeshAgent>();
         if (system == null)
             system = GetComponentInChildren<ParticleSystem>(true);
-        if (system != null)
-            particleRenderer = system.GetComponent<ParticleSystemRenderer>();
 
         var mesh = GetComponent<MeshRenderer>();
         if (mesh != null)
@@ -87,8 +85,8 @@ public class RingbufferFootSteps : MonoBehaviour
 
         isTrailing = false;
 
-        if (fade && fadeOutDuration > 0f && system != null && system.particleCount > 0)
-            trailRoutine = StartCoroutine(FadeOutAndDisable());
+        if (fade && system != null && system.particleCount > 0)
+            trailRoutine = StartCoroutine(LetFootstepsFinishThenDisable());
         else
             DisableTrailImmediate();
     }
@@ -97,16 +95,12 @@ public class RingbufferFootSteps : MonoBehaviour
     {
         isTrailing = true;
         ConfigureParticleSystem();
+        bool firstPass = true;
 
         while (isTrailing && destination != null)
         {
-            if (!TrySampleNavMesh(GetPlayerPosition(), out var startNav))
-            {
-                yield return null;
-                continue;
-            }
-
-            if (!TrySampleNavMesh(destination.position, out var destNav))
+            if (!TrySampleNavMesh(GetPlayerFeetPosition(), out var startNav) ||
+                !TrySampleNavMesh(destination.position, out var destNav))
             {
                 yield return null;
                 continue;
@@ -124,17 +118,21 @@ public class RingbufferFootSteps : MonoBehaviour
             lastDestinationSample = destNav;
             agent.SetDestination(destNav);
             lastEmit = startNav;
-            StopParticles(true);
-            SetTrailAlpha(fadeInDuration > 0f ? 0f : 1f);
+
+            if (firstPass)
+            {
+                StopParticles(true);
+                firstPass = false;
+            }
+            else if (system != null && !system.isPlaying)
+            {
+                system.Play();
+            }
 
             yield return null;
 
-            float fadeInStart = Time.time;
             while (isTrailing && destination != null && !HasArrived())
             {
-                if (fadeInDuration > 0f)
-                    SetTrailAlpha(Mathf.Clamp01((Time.time - fadeInStart) / fadeInDuration));
-
                 FollowDestination(destination.position);
                 EmitFootsteps();
                 yield return null;
@@ -149,55 +147,45 @@ public class RingbufferFootSteps : MonoBehaviour
 
             if (loopDelay > 0f)
                 yield return new WaitForSeconds(loopDelay);
-
-            if (!isTrailing || destination == null)
-                break;
-
-            if (fadeOutDuration > 0f)
-                yield return FadeTrail(trailAlpha, 0f, fadeOutDuration);
-
-            StopParticles(false);
         }
-
-        if (isTrailing && fadeOutDuration > 0f && system != null && system.particleCount > 0)
-            yield return FadeTrail(trailAlpha, 0f, fadeOutDuration);
 
         DisableTrailImmediate();
     }
 
-    IEnumerator FadeOutAndDisable()
+    IEnumerator LetFootstepsFinishThenDisable()
     {
         PauseAgent();
-        yield return FadeTrail(trailAlpha, 0f, fadeOutDuration);
+        if (system != null)
+            system.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+        yield return new WaitForSeconds(GetFootstepLifetime());
         DisableTrailImmediate();
     }
 
-    IEnumerator FadeTrail(float from, float to, float duration)
+    Vector3 GetPlayerFeetPosition()
     {
-        if (duration <= 0f)
-        {
-            SetTrailAlpha(to);
-            yield break;
-        }
+        var player = GetPlayerTransform();
+        if (player == null)
+            return transform.position;
 
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            SetTrailAlpha(Mathf.Lerp(from, to, elapsed / duration));
-            yield return null;
-        }
+        float feetOffset = 0.9f;
+        if (player.TryGetComponent(out CharacterController character))
+            feetOffset = character.height * 0.5f - character.center.y + character.skinWidth;
+        else if (player.TryGetComponent(out CapsuleCollider capsule))
+            feetOffset = capsule.height * 0.5f - capsule.center.y;
 
-        SetTrailAlpha(to);
+        var feet = player.position;
+        feet.y -= Mathf.Max(0.1f, feetOffset);
+        return feet;
     }
 
-    Vector3 GetPlayerPosition()
+    Transform GetPlayerTransform()
     {
         if (GamePlayManager.Instance != null && GamePlayManager.Instance.player != null)
-            return GamePlayManager.Instance.player.transform.position;
+            return GamePlayManager.Instance.player.transform;
 
         var player = GameObject.FindGameObjectWithTag("Player");
-        return player != null ? player.transform.position : transform.position;
+        return player != null ? player.transform : null;
     }
 
     bool HasArrived()
@@ -231,14 +219,44 @@ public class RingbufferFootSteps : MonoBehaviour
 
     bool TrySampleNavMesh(Vector3 worldPosition, out Vector3 sampled)
     {
-        if (NavMesh.SamplePosition(worldPosition, out var hit, navMeshSampleDistance, NavMesh.AllAreas))
+        sampled = worldPosition;
+        float maxY = Mathf.Max(0.25f, sameFloorMaxY);
+        float radius = Mathf.Min(Mathf.Max(0.25f, navMeshSampleDistance), maxY);
+
+        Vector3[] probes =
         {
-            sampled = hit.position;
-            return true;
+            worldPosition,
+            worldPosition + Vector3.down * 0.4f,
+            worldPosition + Vector3.up * 0.2f
+        };
+
+        bool found = false;
+        float bestYDelta = float.MaxValue;
+        float bestHoriz = float.MaxValue;
+
+        for (int i = 0; i < probes.Length; i++)
+        {
+            if (!NavMesh.SamplePosition(probes[i], out var hit, radius, NavMesh.AllAreas))
+                continue;
+
+            float yDelta = Mathf.Abs(hit.position.y - worldPosition.y);
+            if (yDelta > maxY)
+                continue;
+
+            float horiz = Vector2.Distance(
+                new Vector2(hit.position.x, hit.position.z),
+                new Vector2(worldPosition.x, worldPosition.z));
+
+            if (yDelta < bestYDelta - 0.05f || (Mathf.Abs(yDelta - bestYDelta) <= 0.05f && horiz < bestHoriz))
+            {
+                bestYDelta = yDelta;
+                bestHoriz = horiz;
+                sampled = hit.position;
+                found = true;
+            }
         }
 
-        sampled = worldPosition;
-        return false;
+        return found;
     }
 
     void EmitFootsteps()
@@ -255,10 +273,17 @@ public class RingbufferFootSteps : MonoBehaviour
         var ep = new ParticleSystem.EmitParams
         {
             position = pos,
-            rotation = transform.eulerAngles.y
+            rotation = transform.eulerAngles.y,
+            startLifetime = GetFootstepLifetime()
         };
         system.Emit(ep, 1);
         lastEmit = transform.position;
+    }
+
+    float GetFootstepLifetime()
+    {
+        float lifetime = fadeInDuration + fadeOutDuration;
+        return lifetime > 0.05f ? lifetime : 0.05f;
     }
 
     void ConfigureParticleSystem()
@@ -270,13 +295,40 @@ public class RingbufferFootSteps : MonoBehaviour
         main.simulationSpace = ParticleSystemSimulationSpace.World;
         main.loop = true;
         main.playOnAwake = false;
-        main.startLifetime = 999f;
+        main.startLifetime = GetFootstepLifetime();
         main.maxParticles = Mathf.Max(main.maxParticles, maxFootsteps);
         main.ringBufferMode = ParticleSystemRingBufferMode.Disabled;
 
         var colorOverLifetime = system.colorOverLifetime;
-        colorOverLifetime.enabled = false;
-        baseTint = Color.white;
+        colorOverLifetime.enabled = true;
+        colorOverLifetime.color = new ParticleSystem.MinMaxGradient(BuildFootstepGradient());
+    }
+
+    Gradient BuildFootstepGradient()
+    {
+        float lifetime = GetFootstepLifetime();
+        float fadeInEnd = fadeInDuration > 0f ? Mathf.Clamp01(fadeInDuration / lifetime) : 0f;
+
+        var gradient = new Gradient();
+        gradient.SetKeys(
+            new[]
+            {
+                new GradientColorKey(Color.white, 0f),
+                new GradientColorKey(Color.white, 1f)
+            },
+            fadeInEnd > 0f
+                ? new[]
+                {
+                    new GradientAlphaKey(0f, 0f),
+                    new GradientAlphaKey(1f, fadeInEnd),
+                    new GradientAlphaKey(0f, 1f)
+                }
+                : new[]
+                {
+                    new GradientAlphaKey(1f, 0f),
+                    new GradientAlphaKey(0f, 1f)
+                });
+        return gradient;
     }
 
     void PauseAgent()
@@ -294,7 +346,6 @@ public class RingbufferFootSteps : MonoBehaviour
         trailRoutine = null;
         PauseAgent();
         StopParticles(false);
-        SetTrailAlpha(1f);
     }
 
     void StopParticles(bool playAfter)
@@ -305,25 +356,5 @@ public class RingbufferFootSteps : MonoBehaviour
         system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         if (playAfter)
             system.Play();
-    }
-
-    void SetTrailAlpha(float alpha)
-    {
-        trailAlpha = Mathf.Clamp01(alpha);
-        if (particleRenderer == null)
-            return;
-
-        if (particleBlock == null)
-            particleBlock = new MaterialPropertyBlock();
-
-        particleRenderer.GetPropertyBlock(particleBlock);
-        var tint = baseTint;
-        tint.a = baseTint.a * trailAlpha;
-        tint.r *= trailAlpha;
-        tint.g *= trailAlpha;
-        tint.b *= trailAlpha;
-        particleBlock.SetColor("_TintColor", tint);
-        particleBlock.SetColor("_Color", new Color(1f, 1f, 1f, trailAlpha));
-        particleRenderer.SetPropertyBlock(particleBlock);
     }
 }

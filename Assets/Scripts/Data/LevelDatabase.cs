@@ -23,6 +23,7 @@ public class BabySetup
     public bool active = true;
     public string requireItem = "None";
     public bool canPickBaby = true;
+    public bool playHorrorOnPick;
     public string initialAnimation = "CrySit";
     public bool possessed;
     public bool dirtyFace;
