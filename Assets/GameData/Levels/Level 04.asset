@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2990ad124e9e4ba7b4d02af0567fdee9, type: 3}
+  m_Name: Level 04
+  m_EditorClassIdentifier: 
+  level: 4
+  missionName: "Cold Whispers"
+  thumbnail: {fileID: 21300000, guid: 3cabe9cc02b665c4687a360fa6d62232, type: 3}
+  tasks:
+  - taskType: 3
+    description: "-Find warm clothes for the baby."
+    completePreviousTasks: 0
+  - taskType: 12
+    description: "-Get back to the baby. Something is following you."
+    completePreviousTasks: 0
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
+        locked: 1
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1001
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: e2563500a571469cb274380d64d28b01, type: 2}
+        locked: 0
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1002
+      type: {class: BabyModule, ns: , asm: Assembly-CSharp}
+      data:
+        active: 1
+        requireItem: 3
+        canPickBaby: 1
+        playHorrorOnPick: 0
+        initialAnimation: 1
+        overrideSound: 0
+        possessed: 0
+        dirtyFace: 0
+        clothed: 0
+    - rid: 1003
+      type: {class: NannyModule, ns: , asm: Assembly-CSharp}
+      data:
+        mode: 2
+        activateOnTask: 3
+        spawnDelay: 0
+        jumpScareOnTask: 0
+        crawling: 0
+        patrolSpeed: 0.6
+        chaseSpeed: 2.5
+        viewDistance: 8
+        viewAngle: 110
+        hearingRadius: 3
+        babyNoiseBonus: 0
+        loseInterestTime: 5
+        attackDamage: 25
+        huntInterval: 15
+        doorBreakTime: 2.5

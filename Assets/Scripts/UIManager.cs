@@ -15,6 +15,10 @@ public class UIManager : Singleton<UIManager>
     public GameObject rateusButton;
     public GameObject levelCompletePanel;
 
+    [Header("Level Fail")]
+    [Tooltip("Optional until the fail screen is built. Reuse ReplayBtn and HomeBtn for its buttons.")]
+    public GameObject levelFailPanel;
+
     [Header("Pause")]
     public GameObject pausePanel;
 
@@ -117,6 +121,23 @@ public class UIManager : Singleton<UIManager>
         bool isLastLevel = GamePreference.selectedLevel >= LevelConfigLoader.LevelCount;
         nextButton.SetActive(!isLastLevel);
         rateusButton.SetActive(isLastLevel);
+        ArcadiaSdkManager.Agent.PrepareRewarded();
+    }
+
+    public void LevelFailed()
+    {
+        SetCrosshair(CrosshairState.None, null);
+        SetDoorButtonVisible(false);
+        SetPickButtonVisible(false);
+        SetUseDeviceButtonVisible(false);
+
+        if (levelFailPanel == null)
+        {
+            Debug.LogWarning("[UIManager] Level failed, but no levelFailPanel is assigned yet.");
+            return;
+        }
+
+        levelFailPanel.SetActive(true);
         ArcadiaSdkManager.Agent.PrepareRewarded();
     }
 

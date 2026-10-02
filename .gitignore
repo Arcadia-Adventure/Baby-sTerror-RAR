@@ -63,6 +63,9 @@ sysinfo.txt
 
 ProjectSettings/ProjectSettings.asset
 *.asset
+!Assets/GameData/Levels/*.asset
+!Assets/GameData/SceneKeys/*.asset
+!Assets/Resources/LevelDatabase.asset
 Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_6_0.bundle
 Assets/Firebase/Plugins/x86_64/FirebaseCppAnalytics.so
 Assets/Firebase/Plugins/x86_64/FirebaseCppAnalytics.so

@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2990ad124e9e4ba7b4d02af0567fdee9, type: 3}
+  m_Name: Level 07
+  m_EditorClassIdentifier: 
+  level: 7
+  missionName: "You Trapped."
+  thumbnail: {fileID: 21300000, guid: 1745df08ce9236e49ab850a63deef10f, type: 3}
+  tasks:
+  - taskType: 5
+    description: "-The baby trapped you! Find the axe."
+    completePreviousTasks: 0
+  - taskType: 25
+    description: "-Break the door."
+    completePreviousTasks: 0
+  - taskType: 1
+    description: "-Pick up the baby."
+    completePreviousTasks: 0
+  - taskType: 14
+    description: "-drop the baby on the rocking chair."
+    completePreviousTasks: 1
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1005
+  - rid: 1006
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
+        locked: 1
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1001
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: e2563500a571469cb274380d64d28b01, type: 2}
+        locked: 1
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1002
+      type: {class: BabyModule, ns: , asm: Assembly-CSharp}
+      data:
+        active: 1
+        requireItem: 0
+        canPickBaby: 1
+        playHorrorOnPick: 0
+        initialAnimation: 1
+        overrideSound: 0
+        possessed: 0
+        dirtyFace: 0
+        clothed: 1
+    - rid: 1003
+      type: {class: EnableDropPointsAction, ns: , asm: Assembly-CSharp}
+      data:
+        dropPoints:
+        - RockingChair
+    - rid: 1004
+      type: {class: StartFireAction, ns: , asm: Assembly-CSharp}
+      data:
+        fire: {fileID: 11400000, guid: 27474fc37b9d4f229da0cc255ff19710, type: 2}
+    - rid: 1005
+      type: {class: LevelStartEvent, ns: , asm: Assembly-CSharp}
+      data:
+        delay: 0
+        actions:
+        - rid: 1003
+        - rid: 1004
+    - rid: 1006
+      type: {class: NannyModule, ns: , asm: Assembly-CSharp}
+      data:
+        mode: 2
+        activateOnTask: 25
+        spawnDelay: 0
+        jumpScareOnTask: 0
+        crawling: 1
+        patrolSpeed: 0.8
+        chaseSpeed: 3
+        viewDistance: 9
+        viewAngle: 110
+        hearingRadius: 4
+        babyNoiseBonus: 4
+        loseInterestTime: 6
+        attackDamage: 34
+        huntInterval: 15
+        doorBreakTime: 2.5

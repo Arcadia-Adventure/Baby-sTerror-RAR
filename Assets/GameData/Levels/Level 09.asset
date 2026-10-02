@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2990ad124e9e4ba7b4d02af0567fdee9, type: 3}
+  m_Name: Level 09
+  m_EditorClassIdentifier: 
+  level: 9
+  missionName: "The Baby\u2019s Voice"
+  thumbnail: {fileID: 21300000, guid: f00c4975248da6d40aa3562317d1253c, type: 3}
+  tasks:
+  - taskType: 26
+    description: "-Follow the baby\u2019s voice."
+    completePreviousTasks: 0
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1005
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
+        locked: 1
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1001
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: e2563500a571469cb274380d64d28b01, type: 2}
+        locked: 0
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1002
+      type: {class: BabyModule, ns: , asm: Assembly-CSharp}
+      data:
+        active: 1
+        requireItem: 0
+        canPickBaby: 0
+        playHorrorOnPick: 0
+        initialAnimation: 5
+        overrideSound: 0
+        possessed: 1
+        dirtyFace: 0
+        clothed: 1
+    - rid: 1003
+      type: {class: NannyModule, ns: , asm: Assembly-CSharp}
+      data:
+        mode: 3
+        activateOnTask: 0
+        spawnDelay: 3
+        jumpScareOnTask: 26
+        crawling: 0
+        patrolSpeed: 1
+        chaseSpeed: 3.5
+        viewDistance: 10
+        viewAngle: 110
+        hearingRadius: 4
+        babyNoiseBonus: 3
+        loseInterestTime: 6
+        attackDamage: 50
+        huntInterval: 18
+        doorBreakTime: 2.5
+    - rid: 1004
+      type: {class: PlayPlayerAnimationAction, ns: , asm: Assembly-CSharp}
+      data:
+        animation: 1
+        waitForNannyJumpScare: 1
+    - rid: 1005
+      type: {class: TaskCompletedEvent, ns: , asm: Assembly-CSharp}
+      data:
+        delay: 0
+        actions:
+        - rid: 1004
+        task: 26

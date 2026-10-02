@@ -6,14 +6,18 @@ using UnityEngine;
 
 public class HintManager : Singleton<HintManager>
 {
-    public List<LevelObject> levelObjects;
+    // Legacy: read once by Baby's Terror > Migrate Scenes To Level System. Hints now live on each LevelSceneSetup.
+    [HideInInspector] public List<LevelObject> levelObjects;
     [SerializeField] RingbufferFootSteps footStepTrail;
+
+    LevelSceneSetup[] _setups;
 
     protected override void Awake()
     {
         base.Awake();
         if (footStepTrail == null)
             footStepTrail = FindFirstObjectByType<RingbufferFootSteps>(FindObjectsInactive.Include);
+        _setups = LevelSceneSetup.FindAll();
         DeactiveAllIndicators();
     }
 
@@ -29,6 +33,9 @@ public class HintManager : Singleton<HintManager>
         ActivateIndicator(level, task);
         StartTrailToHint(level, task);
     }
+
+    public bool HasCurrentHint() =>
+        GetIndicator(GamePreference.selectedLevel - 1, ObjectiveUIController.Instance.CurrentTaskIndex) != null;
 
     public bool IsCurrentHintActive()
     {
@@ -60,18 +67,18 @@ public class HintManager : Singleton<HintManager>
 
     public void DeactiveAllIndicators()
     {
-        if (levelObjects == null)
+        if (_setups == null)
             return;
 
-        foreach (var levelObject in levelObjects)
+        foreach (LevelSceneSetup setup in _setups)
         {
-            if (levelObject?.levelTasks == null)
+            if (setup == null || setup.taskHints == null)
                 continue;
 
-            foreach (var levelTask in levelObject.levelTasks)
+            foreach (GameObject indicator in setup.taskHints)
             {
-                if (levelTask.indicator != null)
-                    levelTask.indicator.SetActive(false);
+                if (indicator != null)
+                    indicator.SetActive(false);
             }
         }
     }
@@ -103,19 +110,23 @@ public class HintManager : Singleton<HintManager>
         return hud != null ? hud.transform : indicator.transform;
     }
 
+    /// <param name="level">Zero-based, so level 1 is 0.</param>
     GameObject GetIndicator(int level, int task)
     {
-        if (levelObjects == null || level < 0 || level >= levelObjects.Count)
+        if (_setups == null)
             return null;
 
-        var tasks = levelObjects[level].levelTasks;
-        if (tasks == null || task < 0 || task >= tasks.Count)
-            return null;
+        foreach (LevelSceneSetup setup in _setups)
+        {
+            if (setup != null && setup.LevelNumber == level + 1)
+                return setup.GetTaskHint(task);
+        }
 
-        return tasks[task].indicator;
+        return null;
     }
 }
 
+/// <summary>Legacy per-level hint list, kept only so the scene migration can read it.</summary>
 [System.Serializable]
 public class LevelObject
 {

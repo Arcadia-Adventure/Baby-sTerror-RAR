@@ -39,6 +39,10 @@ public class EventTests : MonoBehaviour, IGameAnalyticsATTListener
     private string bizItemType = "Weapons";
     private string bizItemId = "legendary_sword_01";
     private string bizCartType = "shop_main";
+    private GAStore bizStore = GAStore.AppStore;
+    private string bizTransactionId = "2000000123456789";
+    private string bizProductId = "com.example.legendary_sword_01";
+    private string bizPurchaseToken = "";
 
     // Progression Event Inputs
     private GAProgressionStatus progStatus = GAProgressionStatus.Start;
@@ -717,6 +721,48 @@ public class EventTests : MonoBehaviour, IGameAnalyticsATTListener
             var fields = BuildCustomFields();
             GameAnalytics.NewBusinessEvent(bizCurrency, bizAmount, bizItemType, bizItemId, bizCartType, fields);
             Debug.Log($"Business Event Sent: {bizCurrency} {bizAmount} Item: {bizItemId}");
+        }
+
+        GUILayout.Space(15);
+        GUILayout.Label("Receipt validation (iOS/tvOS: App Store transaction id, Android: Google Play product id + purchase token):");
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Store:", GUILayout.Width(120));
+        if (GUILayout.Button(bizStore.ToString(), GUILayout.Width(120)))
+        {
+            bizStore = (GAStore)(((int)bizStore + 1) % Enum.GetValues(typeof(GAStore)).Length);
+        }
+        GUILayout.EndHorizontal();
+
+        if (bizStore == GAStore.AppStore)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Transaction ID:", GUILayout.Width(120));
+            bizTransactionId = GUILayout.TextField(bizTransactionId, GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+        }
+        else
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Product ID:", GUILayout.Width(120));
+            bizProductId = GUILayout.TextField(bizProductId, GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Purchase Token:", GUILayout.Width(120));
+            bizPurchaseToken = GUILayout.TextField(bizPurchaseToken, GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+        }
+
+        GUILayout.Space(10);
+        if (GUILayout.Button("Send Validated Business Event", buttonStyle))
+        {
+            var fields = BuildCustomFields();
+            GAReceiptInfo receipt = bizStore == GAStore.GooglePlay
+                ? GAReceiptInfo.GooglePlay(bizProductId, bizPurchaseToken)
+                : GAReceiptInfo.AppStore(bizTransactionId);
+            GameAnalytics.NewBusinessEvent(bizCurrency, bizAmount, bizItemType, bizItemId, bizCartType, receipt, fields);
+            Debug.Log($"Validated Business Event Sent: {bizCurrency} {bizAmount} Item: {bizItemId} Store: {bizStore}");
         }
     }
 

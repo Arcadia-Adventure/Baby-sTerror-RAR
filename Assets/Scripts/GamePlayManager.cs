@@ -5,10 +5,26 @@ using Ommy.Audio;
 using Ommy.Prefs;
 using Ommy.Singleton;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Serialization;
 
 public class GamePlayManager : Singleton<GamePlayManager>
 {
+    [Header("House")]
+    public PlayerController player;
+    public BabyController baby;
+    public NannyStateManager nanny;
+    public MyAudioSource RainBG;
+
+    [Header("Shared Scene Objects")]
+    [Tooltip("Every drop point in the house. They all start off; levels switch on the ones they use.")]
+    public DropPoint[] allDropPoints;
+    public DropPoint cradleDropPoint;
+    public GameObject[] flyingFurniture;
+    public FireArea bedroomFireArea;
+
+    #region Legacy (read once by Baby's Terror > Migrate Scenes To Level System)
+
     [Serializable]
     public class LevelConfig
     {
@@ -16,54 +32,129 @@ public class GamePlayManager : Singleton<GamePlayManager>
         public Transform playerSpawnPoint, babySpawnPoint;
         public DropPoint initDropPoint;
         public CullingArea spawnCullingArea;
+        public Transform nannySpawnPoint;
+        public Transform nannyPatrolRoute;
     }
 
-    [Header("Level Setup")]
-    public List<LevelConfig> levelConfigs = new();
-    public GameObject levelsParent;
-    public Transform playerSpawnPointsParent;
-    public Transform babySpawnPointsParent;
-    public PlayerController player;
-    public BabyController baby;
+    [HideInInspector] public List<LevelConfig> levelConfigs = new();
+    [HideInInspector] public GameObject levelsParent;
+    [HideInInspector] public Transform playerSpawnPointsParent;
+    [HideInInspector] public Transform babySpawnPointsParent;
+    [HideInInspector, FormerlySerializedAs("babyRoomDoor")] public DoorController upperRoomDoor;
+    [HideInInspector] public DoorController houseExitDoor;
 
-    [Header("Environment")]
-    public MyAudioSource RainBG;
-    [FormerlySerializedAs("babyRoomDoor")]
-    public DoorController upperRoomDoor;
-    public DoorController houseExitDoor;
-    public DropPoint cradleDropPoint;
-    public DropPoint[] allDropPoints;
-    public GameObject[] flyingFurniture;
+    #endregion
 
-    [Header("Scene References")]
-    public FireArea bedroomFireArea;
+    public LevelDefinition CurrentLevel { get; private set; }
+    public LevelSceneSetup CurrentSetup { get; private set; }
 
     int Level => GamePreference.selectedLevel;
-    LevelConfig CurrentConfig => levelConfigs[Level - 1];
+
+    LevelRunner _runner;
+    bool _levelEnded;
 
     #region Editor Setup
 
-    [InspectorButton("SetupLevels")]
-    public void SetupLevelsConfig()
+    /// <summary>
+    /// First pass for level design: gives every level that lacks them a Nanny spawn point and a
+    /// four-waypoint route on the NavMesh around the baby, with the spawn kept far from the player.
+    /// Drag the generated points into place afterwards.
+    /// </summary>
+    [InspectorButton("Create Missing Nanny Points")]
+    public void SetupNannyPoints()
     {
-        int levelCount = levelsParent.transform.childCount;
-        for (int i = 0; i < levelCount; i++)
+        const string rootName = "NannyPoints";
+        GameObject rootObject = GameObject.Find(rootName);
+        if (rootObject == null)
+            rootObject = new GameObject(rootName);
+        Transform root = rootObject.transform;
+
+        foreach (LevelSceneSetup setup in LevelSceneSetup.FindAll())
         {
-            LevelConfig config = new()
+            if (setup.nannySpawnPoint != null && setup.nannyPatrolRoute != null)
+                continue;
+
+            Transform levelRoot = GetOrCreateChild(root, $"Level {setup.LevelNumber}");
+            Vector3 anchor = setup.babySpawnPoint != null ? setup.babySpawnPoint.position
+                : setup.playerSpawnPoint != null ? setup.playerSpawnPoint.position
+                : root.position;
+            Vector3 playerSpawn = setup.playerSpawnPoint != null ? setup.playerSpawnPoint.position : anchor;
+
+            if (setup.nannySpawnPoint == null)
             {
-                levelObject = levelsParent.transform.GetChild(i).gameObject,
-                playerSpawnPoint = playerSpawnPointsParent.GetChild(i),
-                babySpawnPoint = babySpawnPointsParent.GetChild(i)
-            };
-            levelConfigs.Add(config);
-            config.levelObject.SetActive(false);
+                Vector3 spawn = anchor;
+                float bestDistance = -1f;
+                for (int attempt = 0; attempt < 24; attempt++)
+                {
+                    if (!TrySampleNavMeshNear(anchor, 15f, out Vector3 candidate))
+                        continue;
+
+                    float distance = Vector3.Distance(candidate, playerSpawn);
+                    if (distance > bestDistance)
+                    {
+                        bestDistance = distance;
+                        spawn = candidate;
+                    }
+                }
+
+                setup.nannySpawnPoint = GetOrCreateChild(levelRoot, "Spawn");
+                setup.nannySpawnPoint.position = spawn;
+            }
+
+            if (setup.nannyPatrolRoute == null)
+            {
+                setup.nannyPatrolRoute = GetOrCreateChild(levelRoot, "Route");
+                for (int w = setup.nannyPatrolRoute.childCount; w < 4; w++)
+                {
+                    Transform waypoint = GetOrCreateChild(setup.nannyPatrolRoute, $"Waypoint {w + 1}");
+                    waypoint.position = TrySampleNavMeshNear(anchor, 10f, out Vector3 point) ? point : anchor;
+                }
+            }
+
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(setup);
+#endif
         }
+
+#if UNITY_EDITOR
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+#endif
+    }
+
+    static Transform GetOrCreateChild(Transform parent, string childName)
+    {
+        Transform child = parent.Find(childName);
+        if (child != null)
+            return child;
+
+        child = new GameObject(childName).transform;
+        child.SetParent(parent, false);
+        return child;
+    }
+
+    static bool TrySampleNavMeshNear(Vector3 center, float radius, out Vector3 point)
+    {
+        Vector2 offset = UnityEngine.Random.insideUnitCircle * radius;
+        if (NavMesh.SamplePosition(center + new Vector3(offset.x, 0f, offset.y), out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        {
+            point = hit.position;
+            return true;
+        }
+
+        point = center;
+        return false;
     }
 
     #endregion
 
     private void OnEnable() => ObjectiveUIController.OnTaskReceived += OnTaskReceived;
-    private void OnDisable() => ObjectiveUIController.OnTaskReceived -= OnTaskReceived;
+
+    private void OnDisable()
+    {
+        ObjectiveUIController.OnTaskReceived -= OnTaskReceived;
+        // Static event, so subscribers would otherwise leak into the next level load.
+        OnLevelFailed = null;
+    }
 
     private void Start()
     {
@@ -71,35 +162,22 @@ public class GamePlayManager : Singleton<GamePlayManager>
         AudioManager.Instance.GameEnd();
         AudioManager.Instance.SetBGSetting(false);
 
-        player.gameObject.transform.SetPositionAndRotation(
-            CurrentConfig.playerSpawnPoint.position,
-            CurrentConfig.playerSpawnPoint.rotation);
-
-        float spawnPitch = CurrentConfig.playerSpawnPoint.eulerAngles.x;
-        if (spawnPitch > 180f) spawnPitch -= 360f;
-        player.InitializeCameraPitch(spawnPitch);
-
-        CullingManager.Instance.SetActiveArea(CurrentConfig.spawnCullingArea);
-
-        CurrentConfig.levelObject.SetActive(true);
-
-        var levelData = LevelConfigLoader.GetLevelData(Level);
-        ApplyLevelData(levelData);
-
-        if (baby.gameObject.activeSelf)
+        CurrentLevel = LevelConfigLoader.GetLevelData(Level);
+        CurrentSetup = LevelSceneSetup.FindFor(CurrentLevel);
+        if (CurrentSetup == null)
         {
-            var spawnPoint = CurrentConfig.babySpawnPoint;
-            if (CurrentConfig.initDropPoint != null)
-                CurrentConfig.initDropPoint.DropOnPoint(baby, jumpDuration: 0f, rotationDuration: 0f);
-            else
-                baby.SetActiveAndPositionAndRotation(spawnPoint != null, spawnPoint);
-
-            var babyAnim = LevelConfigLoader.ParseBabyAnimation(levelData.baby.initialAnimation);
-            var overrideSound = !string.IsNullOrEmpty(levelData.baby.overrideSound)
-                ? LevelConfigLoader.ParseBabyAnimation(levelData.baby.overrideSound)
-                : BabyAnimationType.None;
-            baby.SetAnimation(babyAnim, overrideSound: overrideSound);
+            Debug.LogError($"[GamePlayManager] No LevelSceneSetup in the scene for level {Level}. " +
+                           "Run Baby's Terror > Migrate Scenes To Level System, or add one to the level's object.", this);
+            return;
         }
+
+        PlacePlayer(CurrentSetup.playerSpawnPoint);
+        CullingManager.Instance.SetActiveArea(CurrentSetup.spawnCullingArea);
+        CurrentSetup.gameObject.SetActive(true);
+
+        ResetHouse();
+        _runner = new LevelRunner(new LevelContext(CurrentLevel, CurrentSetup, this));
+        _runner.Start();
 
         ArcadiaSdkManager.CurrentAdPlacement = "gameplay_banner";
         ArcadiaSdkManager.Agent.ShowBanner();
@@ -109,82 +187,38 @@ public class GamePlayManager : Singleton<GamePlayManager>
         AA_AnalyticsManager.Agent.GameStartAnalytics(Level);
     }
 
+    void PlacePlayer(Transform spawnPoint)
+    {
+        player.gameObject.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
+
+        float spawnPitch = spawnPoint.eulerAngles.x;
+        if (spawnPitch > 180f) spawnPitch -= 360f;
+        player.InitializeCameraPitch(spawnPitch);
+    }
+
+    // The same starting point for every level; modules then change only what their level needs.
+    void ResetHouse()
+    {
+        foreach (DropPoint point in allDropPoints)
+        {
+            if (point != null)
+                point.gameObject.SetActive(false);
+        }
+
+        if (baby != null)
+            baby.babyEyesRed.color = Color.white;
+
+        if (nanny == null)
+            nanny = FindFirstObjectByType<NannyStateManager>(FindObjectsInactive.Include);
+        // She waits hidden until her module brings her in, so she can't be stumbled on early.
+        if (nanny != null)
+            nanny.gameObject.SetActive(false);
+    }
+
     public void OnInteractableInteract(ItemType itemType)
     {
         if (itemType == ItemType.UpperRoomDoor)
             ObjectiveUIController.OnTaskEventReceived(TaskType.CheckBabyRoom);
-    }
-
-    void ApplyLevelData(LevelData data)
-    {
-        ApplyDoorSetup(data.doors);
-        ApplyBabySetup(data.baby);
-        ApplyFeatures(data.features);
-    }
-
-    void ApplyDoorSetup(DoorSetup doors)
-    {
-        houseExitDoor.SetLocked(doors.houseExitLocked);
-        upperRoomDoor.SetLocked(doors.upperRoomLocked);
-
-        if (doors.doorKnocking.enabled)
-            houseExitDoor.PlayDoorKnocking(doors.doorKnocking.initialDelay, doors.doorKnocking.interval);
-
-        if (doors.doorBell)
-            houseExitDoor.PlayDoorBell(true);
-    }
-
-    void ApplyBabySetup(BabySetup setup)
-    {
-        baby.babyEyesRed.color = Color.white;
-        baby.requireItem = LevelConfigLoader.ParseItemType(setup.requireItem);
-        baby.canPickBaby = setup.canPickBaby;
-        baby.playHorrorOnPick = setup.playHorrorOnPick;
-
-        if (setup.dirtyFace)
-            baby.babyDirtyFace.SetActive(true);
-
-        if (!setup.active)
-            baby.SetActiveAndPositionAndRotation(false, null);
-
-        if (setup.possessed)
-        {
-            baby.babyEyesRed.color = Color.red;
-            baby.rb.isKinematic = true;
-            baby.rb.useGravity = false;
-        }
-    }
-
-    void ApplyFeatures(FeatureFlags features)
-    {
-        ApplyDropPoints(features.activeDropPoints);
-
-        if (features.fireActive && bedroomFireArea != null)
-            bedroomFireArea.ActivateFire();
-
-        if (features.flyingFurniture)
-            SetupFlyingFurniture();
-
-        var playerAnim = LevelConfigLoader.ParsePlayerAnimation(features.playerStartAnimation);
-        if (playerAnim != PlayerAnimation.None)
-            player.SetAnimation(playerAnim);
-    }
-
-    void ApplyDropPoints(string[] activeDropPointNames)
-    {
-        foreach (var dp in allDropPoints)
-            dp.gameObject.SetActive(false);
-
-        if (activeDropPointNames == null || activeDropPointNames.Length == 0)
-            return;
-
-        var activeSet = new HashSet<string>(activeDropPointNames);
-
-        foreach (var dp in allDropPoints)
-        {
-            if (activeSet.Contains(dp.referenceName))
-                dp.gameObject.SetActive(true);
-        }
     }
 
     public void SetupFlyingFurniture(bool isFly = true)
@@ -200,13 +234,19 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
     public void LevelComplete()
     {
+        if (_levelEnded) return;
+        _levelEnded = true;
+
+        _runner?.End(won: true);
+
         TweenUtilities.DelayedCall(2f, () =>
         {
             UIManager.Instance.LevelComplete();
             AudioManager.Instance.PlaySFX(SFX.LevelComplete);
 
+            // openLevels counts the levels unlocked after the first one.
             int currentOpen = GamePreference.openLevels;
-            if (currentOpen < 9 && Level == currentOpen + 1)
+            if (currentOpen < LevelConfigLoader.LevelCount - 1 && Level == currentOpen + 1)
                 GamePreference.openLevels = currentOpen + 1;
 
             AA_AnalyticsManager.Agent.GameCompleteAnalytics(Level);
@@ -216,9 +256,22 @@ public class GamePlayManager : Singleton<GamePlayManager>
         }, this);
     }
 
-    void OnTaskReceived(TaskType taskType)
+    /// <summary>Fired when the player is killed, so UI and audio can react without a hard reference.</summary>
+    public static event Action OnLevelFailed;
+
+    public void LevelFailed()
     {
-        if (taskType == TaskType.FollowBabyVoice)
-            player.SetAnimation(PlayerAnimation.Unconscious);
+        if (_levelEnded) return;
+        _levelEnded = true;
+
+        _runner?.End(won: false);
+
+        AA_AnalyticsManager.Agent.GameFailAnalytics(Level);
+        OnLevelFailed?.Invoke();
+
+        // Delayed so the unconscious collapse animation reads before the panel covers it.
+        TweenUtilities.DelayedCall(2.5f, () => UIManager.Instance.LevelFailed(), this);
     }
+
+    void OnTaskReceived(TaskType taskType) => _runner?.TaskCompleted(taskType);
 }

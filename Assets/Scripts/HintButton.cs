@@ -20,6 +20,8 @@ public class HintButton : BaseButton
     public override void OnClick()
     {
         AudioManager.Instance.PlaySFX(SFX.Click);
+        // Some tasks have no hint (e.g. facing the Nanny), so don't spend a hint or an ad on them.
+        if (!HintManager.Instance.HasCurrentHint()) return;
         if(HintCount <= 0) RechargeAndShowHint();
         else ShowHint();
     }

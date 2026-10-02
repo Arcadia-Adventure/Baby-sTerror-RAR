@@ -46,6 +46,7 @@ public enum TaskType
     FireEnded = 24,
     BedroomDoorBreak = 25,
     FollowBabyVoice = 26,
+    BanishNanny = 27,
 }
 public enum ItemType
 {
@@ -67,6 +68,41 @@ public enum PlayerAnimation
     None = 0,
     Unconscious = 1,
     GettingUp = 2,
+}
+
+public enum NannyState
+{
+    Idle = 0,
+    Patrol = 1,
+    Chase = 2,
+    Attack = 3,
+    Search = 4,
+    Dead = 5,
+    Glimpse = 6,
+    BangDoor = 7,
+    Banished = 8,
+}
+
+public enum NannyMode
+{
+    /// <summary>Not in the level.</summary>
+    None = 0,
+    /// <summary>Harmless: stands still, screams and vanishes once the player sees her.</summary>
+    Glimpse = 1,
+    /// <summary>Patrols, then chases and attacks on sight.</summary>
+    Patrol = 2,
+    /// <summary>Patrol, plus periodically drifting toward where the player is.</summary>
+    Hunter = 3,
+}
+
+public enum NannySound
+{
+    None = 0,
+    Breathing = 1,
+    Chasing = 2,
+    Scream = 3,
+    Attack = 4,
+    Death = 5,
 }
 
 public enum CrosshairState

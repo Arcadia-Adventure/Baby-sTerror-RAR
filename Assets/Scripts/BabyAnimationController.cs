@@ -15,13 +15,50 @@ public class BabyAnimationController : MonoBehaviour
             SetAnimation(initialAndCurrentAnim);
     }
 
-    public void SetAnimation(BabyAnimationType animationType, Action onComplete = null)
+    /// <summary>
+    /// Jumps straight to an animation's first frame and evaluates it immediately,
+    /// so the skeleton is already in that pose this frame (no transition blend).
+    /// </summary>
+    public void SnapToAnimation(BabyAnimationType animationType)
+    {
+        if (babyAnimator == null)
+            babyAnimator = GetComponent<Animator>();
+        if (babyAnimator == null || animationType == BabyAnimationType.None)
+            return;
+
+        bool wasEnabled = babyAnimator.enabled;
+        babyAnimator.enabled = true;
+
+        ResetAllTriggers();
+
+        string stateName = animationType.ToString();
+        if (babyAnimator.HasState(0, Animator.StringToHash(stateName)))
+            babyAnimator.Play(stateName, 0, 0f);
+        else
+            babyAnimator.SetTrigger(stateName);
+
+        babyAnimator.Update(0f);
+        initialAndCurrentAnim = animationType;
+        babyAnimator.enabled = wasEnabled;
+    }
+
+    void ResetAllTriggers()
     {
         foreach (BabyAnimationType type in Enum.GetValues(typeof(BabyAnimationType)))
         {
             if (type == BabyAnimationType.None) continue;
             babyAnimator.ResetTrigger(type.ToString());
         }
+    }
+
+    public void SetAnimation(BabyAnimationType animationType, Action onComplete = null)
+    {
+        if (babyAnimator == null)
+            babyAnimator = GetComponent<Animator>();
+        if (babyAnimator == null)
+            return;
+
+        ResetAllTriggers();
 
         if (animationType != BabyAnimationType.None)
             babyAnimator.SetTrigger(animationType.ToString());

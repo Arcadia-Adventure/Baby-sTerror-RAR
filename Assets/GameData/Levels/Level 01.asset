@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2990ad124e9e4ba7b4d02af0567fdee9, type: 3}
+  m_Name: Level 01
+  m_EditorClassIdentifier: 
+  level: 1
+  missionName: "Who\u2019s at the Door?"
+  thumbnail: {fileID: 21300000, guid: f771d5d869fa50c4b8434e66cb06151c, type: 3}
+  tasks:
+  - taskType: 1
+    description: "-Answer the ringing doorbell and find the baby."
+    completePreviousTasks: 0
+  - taskType: 8
+    description: "-Pick up the baby and settle it in Bedroom."
+    completePreviousTasks: 0
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1004
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
+        locked: 0
+        knocking:
+          enabled: 1
+          initialDelay: 2
+          interval: 5
+        doorBell: 1
+    - rid: 1001
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: e2563500a571469cb274380d64d28b01, type: 2}
+        locked: 0
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1002
+      type: {class: BabyModule, ns: , asm: Assembly-CSharp}
+      data:
+        active: 1
+        requireItem: 0
+        canPickBaby: 1
+        playHorrorOnPick: 1
+        initialAnimation: 6
+        overrideSound: 0
+        possessed: 0
+        dirtyFace: 0
+        clothed: 0
+    - rid: 1003
+      type: {class: EnableDropPointsAction, ns: , asm: Assembly-CSharp}
+      data:
+        dropPoints:
+        - Cradle
+    - rid: 1004
+      type: {class: LevelStartEvent, ns: , asm: Assembly-CSharp}
+      data:
+        delay: 0
+        actions:
+        - rid: 1003

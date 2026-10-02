@@ -47,14 +47,14 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
         StartCoroutine(StallDetectionLoop());
     }
 
-    void BuildTasks(LevelData levelData)
+    void BuildTasks(LevelDefinition levelData)
     {
         _taskInfos.Clear();
         foreach (var td in levelData.tasks)
         {
             _taskInfos.Add(new TaskInfo
             {
-                taskType = LevelConfigLoader.ParseTaskType(td.taskType),
+                taskType = td.taskType,
                 description = td.description,
                 completePreviousTasks = td.completePreviousTasks,
                 isCompleted = false
@@ -63,7 +63,7 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
         TotalTasks = _taskInfos.Count;
     }
 
-    void InitializeUI(LevelData levelData)
+    void InitializeUI(LevelDefinition levelData)
     {
         levelnoTxt.text = "Night " + levelData.level;
         missionNameTxt.text = levelData.missionName;

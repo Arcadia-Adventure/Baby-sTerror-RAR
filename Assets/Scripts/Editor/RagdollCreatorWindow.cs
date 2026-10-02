@@ -1065,6 +1065,9 @@ static class RagdollBuilder
             rb.angularDamping = settings.AngularDamping;
             rb.useGravity = false;
             rb.isKinematic = true;
+            rb.solverIterations = 20;
+            rb.solverVelocityIterations = 10;
+            rb.maxDepenetrationVelocity = 1f;
             bodies.Add(rb);
         }
     }
@@ -1082,10 +1085,11 @@ static class RagdollBuilder
             joint.anchor = Vector3.zero;
             joint.axis = CalculateDirectionAxis(bone.Anchor.InverseTransformDirection(bone.Axis));
             joint.swingAxis = CalculateDirectionAxis(bone.Anchor.InverseTransformDirection(bone.NormalAxis));
-            joint.enablePreprocessing = false;
+            joint.enablePreprocessing = true;
             joint.enableProjection = true;
-            joint.projectionDistance = 0.1f;
-            joint.projectionAngle = 20f;
+            // Must stay well under the shortest bone or limbs visibly stretch.
+            joint.projectionDistance = 0.01f;
+            joint.projectionAngle = 5f;
 
             var limit = new SoftJointLimit();
             limit.limit = bone.MinLimit;

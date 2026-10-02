@@ -1,66 +1,41 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-[Serializable]
-public class LevelDatabase
+/// <summary>
+/// The game's levels, in play order. LevelConfigLoader loads it by name from Resources,
+/// so it has to stay at Assets/Resources/LevelDatabase.asset.
+/// </summary>
+[CreateAssetMenu(fileName = "LevelDatabase", menuName = "Baby's Terror/Level Database")]
+public class LevelDatabase : ScriptableObject
 {
-    public LevelData[] levels;
-}
+    public const string ResourcePath = "LevelDatabase";
 
-[Serializable]
-public class LevelData
-{
-    public int level;
-    public string missionName;
-    public BabySetup baby;
-    public DoorSetup doors;
-    public FeatureFlags features;
-    public TaskData[] tasks;
-}
+    [SerializeField] private LevelDefinition[] levels = Array.Empty<LevelDefinition>();
 
-[Serializable]
-public class BabySetup
-{
-    public bool active = true;
-    public string requireItem = "None";
-    public bool canPickBaby = true;
-    public bool playHorrorOnPick;
-    public string initialAnimation = "CrySit";
-    public bool possessed;
-    public bool dirtyFace;
-    public string overrideSound;
-}
+    public IReadOnlyList<LevelDefinition> Levels => levels;
+    public int Count => levels.Length;
 
-[Serializable]
-public class DoorSetup
-{
-    public bool houseExitLocked = true;
-    public bool upperRoomLocked;
-    public DoorKnockSetup doorKnocking;
-    public bool doorBell;
-}
+    public LevelDefinition Get(int levelNumber)
+    {
+        foreach (LevelDefinition definition in levels)
+        {
+            if (definition != null && definition.level == levelNumber)
+                return definition;
+        }
 
-[Serializable]
-public class DoorKnockSetup
-{
-    public bool enabled;
-    public float initialDelay;
-    public float interval;
-}
+        return null;
+    }
 
-[Serializable]
-public class FeatureFlags
-{
-    public bool cradleActive;
-    public bool fireActive;
-    public bool flyingFurniture;
-    public string playerStartAnimation = "None";
-    public string[] activeDropPoints;
-}
-
-[Serializable]
-public class TaskData
-{
-    public string taskType;
-    public string description;
-    public bool completePreviousTasks;
+    private void OnValidate()
+    {
+        var seen = new HashSet<int>();
+        for (int i = 0; i < levels.Length; i++)
+        {
+            if (levels[i] == null)
+                Debug.LogWarning($"[LevelDatabase] Slot {i} is empty.", this);
+            else if (!seen.Add(levels[i].level))
+                Debug.LogWarning($"[LevelDatabase] Level {levels[i].level} is listed more than once.", this);
+        }
+    }
 }

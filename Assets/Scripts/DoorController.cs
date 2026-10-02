@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
 using Ommy.Audio;
+using UnityEngine.AI;
 using UnityEngine.Events;
 
 public class DoorController : Interactable
@@ -28,16 +29,51 @@ public class DoorController : Interactable
     public float knockOutDuration = 0.08f;
     public float[] knockHitTimes = { 0.07f, 0.25f, 0.39f, 0.55f, 0.7f };
 
+    [Header("Nanny")]
+    [Tooltip("Carves the NavMesh while the door is locked so the Nanny routes around it. " +
+             "Added and fitted to the BoxCollider automatically if left empty.")]
+    [SerializeField] NavMeshObstacle navBlocker;
+    [SerializeField] float forceOpenDuration = 0.2f;
+
     public override void Start()
     {
         base.Start();
         UpdateDetectionText();
+        UpdateNavBlocker();
     }
 
     public void SetLocked(bool locked)
     {
         isDoorLock = locked;
         UpdateDetectionText();
+        UpdateNavBlocker();
+    }
+
+    /// <summary>
+    /// The NavMesh is baked through every doorway, so only a locked door needs to cut it.
+    /// Closed but unlocked doors are handled by the Nanny banging on them and breaking through.
+    /// </summary>
+    void UpdateNavBlocker()
+    {
+        if (navBlocker == null && !TryCreateNavBlocker())
+            return;
+
+        navBlocker.enabled = isDoorLock && !isDoorOpen;
+    }
+
+    bool TryCreateNavBlocker()
+    {
+        if (!TryGetComponent(out BoxCollider box))
+            return false;
+
+        navBlocker = gameObject.AddComponent<NavMeshObstacle>();
+        navBlocker.shape = NavMeshObstacleShape.Box;
+        navBlocker.center = box.center;
+        // The leaf is only a few centimetres thick, which is too thin to carve reliably.
+        navBlocker.size = new Vector3(box.size.x, box.size.y, Mathf.Max(box.size.z, 0.2f));
+        navBlocker.carving = true;
+        navBlocker.carveOnlyStationary = true;
+        return true;
     }
 
     public void UpdateDetectionText()
@@ -114,6 +150,38 @@ public class DoorController : Interactable
         }
 
         UpdateDetectionText();
+        UpdateNavBlocker();
+    }
+
+    /// <summary>Someone pounding on the other side: the door jolts in its frame but stays shut.</summary>
+    public void BangOnDoor(AudioClip bangSFX = null)
+    {
+        DoorPunchRotation();
+
+        if (bangSFX == null)
+            AudioManager.Instance.PlaySFX(SFX.DoorBreak);
+        else if (audioSource != null)
+            audioSource.PlayOneShot(bangSFX);
+        else
+            AudioManager.Instance.PlaySFX(bangSFX);
+    }
+
+    /// <summary>
+    /// Bursts the door open from the Nanny's side. Unlike DoorOpenClose there is no lock check
+    /// and no task event, since the player didn't open it.
+    /// </summary>
+    public void ForceOpen()
+    {
+        if (isDoorOpen)
+            return;
+
+        StopDoorKnocking();
+        TweenUtilities.Rotate(transform, doorOpen, forceOpenDuration).SetEase(Ease.OutBack);
+        isDoorOpen = true;
+        AudioManager.Instance.PlaySFX(doorOpenSFX);
+        onDoorOpen.Invoke(true);
+        UpdateDetectionText();
+        UpdateNavBlocker();
     }
 
     void OnCollisionExit(Collision other)
