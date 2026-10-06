@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Level 03
   m_EditorClassIdentifier: 
   level: 3
-  missionName: "Something Feels Wrong"
+  missionName: Something Feels Wrong
   thumbnail: {fileID: 21300000, guid: 6c8958fe692a1584ba6dfc0002e3f972, type: 3}
   tasks:
   - taskType: 19
-    description: "-Pick up the baby and take it to the washroom."
+    description: -Pick up the baby and take it to the washroom.
     completePreviousTasks: 0
   - taskType: 20
-    description: "-Find the facewash and clean the baby\u2019s face."
+    description: "-Find the body wash and clean the baby\u2019s."
     completePreviousTasks: 0
   modules:
   - rid: 1000

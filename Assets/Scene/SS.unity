@@ -151,6 +151,7 @@ Transform:
   m_Children:
   - {fileID: 873620706}
   - {fileID: 782897990}
+  - {fileID: 1003155538}
   m_Father: {fileID: 8613705393757800154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!205 &2704331
@@ -368,7 +369,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -7494,6 +7495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21582bc0d791d6a43b5b8403f1966378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 0
   levelnoTxt: {fileID: 514899285}
   missionNameTxt: {fileID: 418047546}
   taskTxt:
@@ -7501,58 +7503,8 @@ MonoBehaviour:
   - {fileID: 680846924}
   - {fileID: 2125289059}
   completeTaskColor: {r: 0.20115271, g: 0.8113208, b: 0.056639347, a: 1}
-  currentTask: 0
-  Objtive:
-  - levelNO: Night 1
-    missionName: Settle Baby.
-    Tasks:
-    - -Pick Baby
-    - -Drop into Bed.
-  - levelNO: Night 2
-    missionName: Baby Hungry.
-    Tasks:
-    - -Find Feeder.
-    - -Feed Baby.
-  - levelNO: Night 3
-    missionName: Baby Dirty.
-    Tasks:
-    - -Pick Baby, Go to Washroom.
-    - -Pick Facewashj, wash Baby Face.
-  - levelNO: Night 4
-    missionName: Baby Cold.
-    Tasks:
-    - -Find Cloth.
-    - -Change Baby Cloth.
-  - levelNO: Night 5.
-    missionName: Baby Sad.
-    Tasks:
-    - -Find Toy.
-    - -Toy give to Baby.
-  - levelNO: Nighrt 6.
-    missionName: Baby Hide.
-    Tasks:
-    - -Baby Crying, Check Baby room.
-    - -Baby hide, Find baby and drop to bed.
-  - levelNO: Nighrt 7.
-    missionName: Baby Smoke.
-    Tasks:
-    - -Fire Extinguisher.
-    - -Shower on fire.
-  - levelNO: Nighrt 8.
-    missionName: Rescue Baby.
-    Tasks:
-    - -Check Baby Room.
-    - -Find Hammer. Break the door.
-    - -Pick Baby and go out of the room.
-  - levelNO: Nighrt 9.
-    missionName: Baby Voice
-    Tasks:
-    - -Follow Baby Voice.
-  - levelNO: Nighrt 10.
-    missionName: Baby Talisman.
-    Tasks:
-    - -Find Talisman.
-    - -Drop Talisman to baby.
+  typewriterCharsPerSecond: 28
+  typewriterClip: {fileID: 0}
 --- !u!1 &132122974
 GameObject:
   m_ObjectHideFlags: 0
@@ -8737,7 +8689,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -9538,7 +9490,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -15011,17 +14963,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BabyAnim: {fileID: 237220876}
-  babyCry: {fileID: 237220873}
-  facewashPoint: {fileID: 0}
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  itemType: 0
+  holdPositionOffset: {x: 0.3, y: 0, z: 0.8}
+  SetRotationOffset: 0
+  holdRotationOffset: {x: 0, y: 0, z: 0}
+  itemTag: 
+  glowParticle: {fileID: 0}
   rb: {fileID: 237220875}
+  currentDropPoint: {fileID: 0}
+  hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  OnPickTaskType: 0
+  OnDropForBabyTaskType: 0
+  cryThreshold: 10
+  canPickBaby: 1
+  playHorrorOnPick: 0
+  firstPickHorrorSFX: {fileID: 0}
+  _requireItem: 0
+  requireItemIndicator: {fileID: 0}
+  babyAnimationController: {fileID: 0}
+  babyAudioController: {fileID: 0}
+  babyItemHandler: {fileID: 0}
+  ragdoll: {fileID: 0}
+  carryPose: 2
+  fullRagdollOnDrop: 1
   diaper: {fileID: 1353777757}
   clothBody: {fileID: 479766028}
   body: {fileID: 43532792}
   babyEyesRed: {fileID: 2100000, guid: ee271c968079741489f9877a898494a4, type: 2}
-  babyNeck: {fileID: 1369944813}
-  babyAngryVoice: {fileID: 179892314}
-  babyBlueGlow: {fileID: 1076097836}
   babyDirtyFace: {fileID: 2050683862}
 --- !u!82 &237220873
 AudioSource:
@@ -15033,7 +15006,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -15743,7 +15716,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -16757,11 +16730,6 @@ Transform:
   - {fileID: 1580561462}
   m_Father: {fileID: 1617653030}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &304396176 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 304396176, guid: 2c2eaf429c963e641bf632f9a536e3a6, type: 3}
-  m_PrefabInstance: {fileID: 54471721415885038}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &305083196
 GameObject:
   m_ObjectHideFlags: 0
@@ -29486,7 +29454,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -40519,17 +40487,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BabyAnim: {fileID: 542672646}
-  babyCry: {fileID: 542672643}
-  facewashPoint: {fileID: 0}
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  itemType: 0
+  holdPositionOffset: {x: 0.3, y: 0, z: 0.8}
+  SetRotationOffset: 0
+  holdRotationOffset: {x: 0, y: 0, z: 0}
+  itemTag: 
+  glowParticle: {fileID: 0}
   rb: {fileID: 542672645}
+  currentDropPoint: {fileID: 0}
+  hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  OnPickTaskType: 0
+  OnDropForBabyTaskType: 0
+  cryThreshold: 10
+  canPickBaby: 1
+  playHorrorOnPick: 0
+  firstPickHorrorSFX: {fileID: 0}
+  _requireItem: 0
+  requireItemIndicator: {fileID: 0}
+  babyAnimationController: {fileID: 0}
+  babyAudioController: {fileID: 0}
+  babyItemHandler: {fileID: 0}
+  ragdoll: {fileID: 0}
+  carryPose: 2
+  fullRagdollOnDrop: 1
   diaper: {fileID: 93504297}
   clothBody: {fileID: 1475213181}
   body: {fileID: 1328568123}
   babyEyesRed: {fileID: 2100000, guid: ee271c968079741489f9877a898494a4, type: 2}
-  babyNeck: {fileID: 1661759114}
-  babyAngryVoice: {fileID: 850935653}
-  babyBlueGlow: {fileID: 1841894315}
   babyDirtyFace: {fileID: 1042695436}
 --- !u!82 &542672643
 AudioSource:
@@ -40541,7 +40530,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -43651,7 +43640,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -44862,10 +44851,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6206fe6c0cdc5da418d963b0ba5fa017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  crackEffects: []
   doorOpen: {x: 0, y: -90, z: 0}
   doorClose: {x: 0, y: 0, z: 0}
-  isDoor: 0
+  onLockedCheckTask: 0
+  onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  doorKnockingSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
+  onDoorOpen:
+    m_PersistentCalls:
+      m_Calls: []
+  isDoorOpen: 0
   isDoorLock: 0
+  knockPunch: {x: 0, y: 6, z: 0}
+  knockInDuration: 0.05
+  knockOutDuration: 0.08
+  knockHitTimes:
+  - 0.07
+  - 0.25
+  - 0.39
+  - 0.55
+  - 0.7
+  navBlocker: {fileID: 0}
+  forceOpenDuration: 0.2
 --- !u!65 &731708946
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -59698,7 +59713,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -60546,7 +60561,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -66266,7 +66281,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -66481,7 +66496,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -66696,6 +66711,7 @@ GameObject:
   m_Component:
   - component: {fileID: 871521610}
   - component: {fileID: 871521609}
+  - component: {fileID: 871521611}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -66783,6 +66799,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 72.49, y: 0, z: 0}
+--- !u!114 &871521611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 871521608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &873620705
 GameObject:
   m_ObjectHideFlags: 0
@@ -66926,17 +66965,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BabyAnim: {fileID: 874466416}
-  babyCry: {fileID: 874466413}
-  facewashPoint: {fileID: 0}
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  itemType: 0
+  holdPositionOffset: {x: 0.3, y: 0, z: 0.8}
+  SetRotationOffset: 0
+  holdRotationOffset: {x: 0, y: 0, z: 0}
+  itemTag: 
+  glowParticle: {fileID: 0}
   rb: {fileID: 874466415}
+  currentDropPoint: {fileID: 0}
+  hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  OnPickTaskType: 0
+  OnDropForBabyTaskType: 0
+  cryThreshold: 10
+  canPickBaby: 1
+  playHorrorOnPick: 0
+  firstPickHorrorSFX: {fileID: 0}
+  _requireItem: 0
+  requireItemIndicator: {fileID: 0}
+  babyAnimationController: {fileID: 0}
+  babyAudioController: {fileID: 0}
+  babyItemHandler: {fileID: 0}
+  ragdoll: {fileID: 0}
+  carryPose: 2
+  fullRagdollOnDrop: 1
   diaper: {fileID: 1200795621}
   clothBody: {fileID: 2001729927}
   body: {fileID: 353626866}
   babyEyesRed: {fileID: 2100000, guid: ee271c968079741489f9877a898494a4, type: 2}
-  babyNeck: {fileID: 484074287}
-  babyAngryVoice: {fileID: 947303243}
-  babyBlueGlow: {fileID: 2135905426}
   babyDirtyFace: {fileID: 632404080}
 --- !u!82 &874466413
 AudioSource:
@@ -66948,7 +67008,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -72161,6 +72221,7 @@ GameObject:
   m_Component:
   - component: {fileID: 892307301}
   - component: {fileID: 892307302}
+  - component: {fileID: 892307303}
   m_Layer: 0
   m_Name: Point light (1)
   m_TagString: Untagged
@@ -72248,6 +72309,29 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &892307303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 892307300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &893123591
 GameObject:
   m_ObjectHideFlags: 0
@@ -73457,7 +73541,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -74708,13 +74792,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1003155537}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 1.375023, y: 4.401, z: -3.2775922}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.00059223204, y: 0.53699994, z: -0.001976967}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 892307301}
-  m_Father: {fileID: 8613705393757800154}
+  m_Father: {fileID: 2704330}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!199 &1003155539
 ParticleSystemRenderer:
@@ -80231,6 +80315,7 @@ Transform:
   m_Children:
   - {fileID: 1847561107}
   - {fileID: 89077598}
+  - {fileID: 1172039435}
   m_Father: {fileID: 8613705393757800154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!205 &1048085324
@@ -80583,17 +80668,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BabyAnim: {fileID: 1070036788}
-  babyCry: {fileID: 1070036785}
-  facewashPoint: {fileID: 0}
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  itemType: 0
+  holdPositionOffset: {x: 0.3, y: 0, z: 0.8}
+  SetRotationOffset: 0
+  holdRotationOffset: {x: 0, y: 0, z: 0}
+  itemTag: 
+  glowParticle: {fileID: 0}
   rb: {fileID: 1070036787}
+  currentDropPoint: {fileID: 0}
+  hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  OnPickTaskType: 0
+  OnDropForBabyTaskType: 0
+  cryThreshold: 10
+  canPickBaby: 1
+  playHorrorOnPick: 0
+  firstPickHorrorSFX: {fileID: 0}
+  _requireItem: 0
+  requireItemIndicator: {fileID: 0}
+  babyAnimationController: {fileID: 0}
+  babyAudioController: {fileID: 0}
+  babyItemHandler: {fileID: 0}
+  ragdoll: {fileID: 0}
+  carryPose: 2
+  fullRagdollOnDrop: 1
   diaper: {fileID: 2122787418}
   clothBody: {fileID: 555776683}
   body: {fileID: 1653848833}
   babyEyesRed: {fileID: 2100000, guid: ee271c968079741489f9877a898494a4, type: 2}
-  babyNeck: {fileID: 447353554}
-  babyAngryVoice: {fileID: 1126865169}
-  babyBlueGlow: {fileID: 390375178}
   babyDirtyFace: {fileID: 1954493341}
 --- !u!82 &1070036785
 AudioSource:
@@ -80605,7 +80711,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -87012,7 +87118,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cdc5c61845db689458f10aa274ef1407, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -87652,7 +87758,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -87950,13 +88056,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172039434}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 4.374023, y: 4.401, z: -3.3345923}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.00059223204, y: 0.53699994, z: -0.001976967}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1886495731}
-  m_Father: {fileID: 8613705393757800154}
+  m_Father: {fileID: 1048085323}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!199 &1172039436
 ParticleSystemRenderer:
@@ -92995,7 +93101,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -100984,45 +101090,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77081107307b9644a469f76f8bdf4db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpawnPoint:
-  - {fileID: 1578880540}
-  - {fileID: 1668983227}
-  - {fileID: 612689954}
-  - {fileID: 1859416484}
-  - {fileID: 581173242}
-  - {fileID: 362435688}
-  - {fileID: 795651783}
-  - {fileID: 1525860672}
-  - {fileID: 548599691}
-  - {fileID: 77056896}
+  dontDestroyOnLoad: 0
   player: {fileID: 54471721415885039}
-  levelObjects:
-  - {fileID: 1735217382}
-  - {fileID: 714765639}
-  - {fileID: 1538947700}
-  - {fileID: 502246499}
-  - {fileID: 132729464}
-  - {fileID: 457006481}
-  - {fileID: 1663350524}
-  - {fileID: 1581816476}
-  - {fileID: 1319783506}
-  - {fileID: 2006052383}
-  doorBell: {fileID: 8645931840377426454}
-  BabySpawnPoint:
-  - {fileID: 713404738}
-  - {fileID: 1643758625}
-  - {fileID: 585127257}
-  - {fileID: 1636765441}
-  - {fileID: 1371754129}
-  - {fileID: 1877317612}
-  - {fileID: 70840964}
-  - {fileID: 847273872}
-  - {fileID: 1312691404}
-  - {fileID: 305083197}
   baby: {fileID: 36707557}
-  babyCryingCradle: {fileID: 5322578965511811716}
-  doorTrigger: {fileID: 1059196434}
-  hoshBanda: {fileID: 304396176}
+  nanny: {fileID: 0}
+  RainBG: {fileID: 1393178949}
+  allDropPoints: []
+  cradleDropPoint: {fileID: 0}
   flyingFurniture:
   - {fileID: 2056733447}
   - {fileID: 8613568558319753004}
@@ -101034,25 +101108,13 @@ MonoBehaviour:
   - {fileID: 1865542334}
   - {fileID: 8615249045338271437}
   - {fileID: 8613680449137435155}
-  cradleGreenGlow: {fileID: 741742574}
-  washPointGreenGlow: {fileID: 1953015193}
-  feederBlueGlow: {fileID: 1519134701}
-  shirtBlueGlow: {fileID: 747080445}
-  axeBlueGlow: {fileID: 1696528216}
-  toyBlueGlow: {fileID: 1390829365}
-  cylinderBlueGlow: {fileID: 2081762097}
-  talismanBlueGlow: {fileID: 1496979455}
-  facewashGlow: {fileID: 824253284}
-  RainBG: {fileID: 1393178949}
-  cradleSoundTrigger: {fileID: 523809713}
-  babyRoomDoor: {fileID: 8614458270723852696}
+  bedroomFireArea: {fileID: 0}
+  levelConfigs: []
+  levelsParent: {fileID: 0}
+  playerSpawnPointsParent: {fileID: 0}
+  babySpawnPointsParent: {fileID: 0}
+  upperRoomDoor: {fileID: 8614458270723852696}
   houseExitDoor: {fileID: 0}
-  doorLock: {fileID: 8614458270723852697}
-  babyDropSpwanPoint:
-  - {fileID: 1186207914}
-  - {fileID: 375702487}
-  - {fileID: 294601834}
-  Cracker: []
 --- !u!1 &1379145723
 GameObject:
   m_ObjectHideFlags: 0
@@ -106238,7 +106300,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: d3e3080d11b496e479cb61546027fae1, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: d3e3080d11b496e479cb61546027fae1, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -106571,17 +106633,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BabyAnim: {fileID: 1421846007}
-  babyCry: {fileID: 1421846004}
-  facewashPoint: {fileID: 0}
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  itemType: 0
+  holdPositionOffset: {x: 0.3, y: 0, z: 0.8}
+  SetRotationOffset: 0
+  holdRotationOffset: {x: 0, y: 0, z: 0}
+  itemTag: 
+  glowParticle: {fileID: 0}
   rb: {fileID: 1421846006}
+  currentDropPoint: {fileID: 0}
+  hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  OnPickTaskType: 0
+  OnDropForBabyTaskType: 0
+  cryThreshold: 10
+  canPickBaby: 1
+  playHorrorOnPick: 0
+  firstPickHorrorSFX: {fileID: 0}
+  _requireItem: 0
+  requireItemIndicator: {fileID: 0}
+  babyAnimationController: {fileID: 0}
+  babyAudioController: {fileID: 0}
+  babyItemHandler: {fileID: 0}
+  ragdoll: {fileID: 0}
+  carryPose: 2
+  fullRagdollOnDrop: 1
   diaper: {fileID: 209721594}
   clothBody: {fileID: 1246661098}
   body: {fileID: 1288768608}
   babyEyesRed: {fileID: 2100000, guid: ee271c968079741489f9877a898494a4, type: 2}
-  babyNeck: {fileID: 56701206}
-  babyAngryVoice: {fileID: 467163707}
-  babyBlueGlow: {fileID: 1337803014}
   babyDirtyFace: {fileID: 982658433}
 --- !u!82 &1421846004
 AudioSource:
@@ -106593,7 +106676,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -113554,7 +113637,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -119371,19 +119454,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99048c78d5ccb2e49a97d7738cad47c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 0
+  nextButton: {fileID: 0}
+  rateusButton: {fileID: 0}
   levelCompletePanel: {fileID: 179826594}
+  levelFailPanel: {fileID: 0}
   pausePanel: {fileID: 743695112}
   knobImage: {fileID: 21300000, guid: 2995e1445c2cb4a44ab174f32f30d70d, type: 3}
   doorOpenImage: {fileID: 21300000, guid: 8c4446eb81424524fa51fa6951484517, type: 3}
   doorCloseImage: {fileID: 21300000, guid: 4c241dbf384fe2347ab256da622e9bb9, type: 3}
   pickImage: {fileID: 21300000, guid: e6e636324ce0eb94ab3d9569cc4ac346, type: 3}
   dropImage: {fileID: 21300000, guid: 0d72680e627963b4f851fa4ae089af48, type: 3}
-  door: {fileID: 1103988898}
-  pick: {fileID: 1994399089}
   crossHairDetection: {fileID: 432294272}
   detectionTxt: {fileID: 1504116546}
   rt: {fileID: 432294271}
-  nextBtn: {fileID: 0}
+  door: {fileID: 1103988898}
+  pick: {fileID: 1994399089}
+  useDevice: {fileID: 0}
   fps: {fileID: 54471721415885040}
   sl: {fileID: 1445670738}
 --- !u!1 &1530590395
@@ -120612,7 +120699,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -121955,17 +122042,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BabyAnim: {fileID: 1605311857}
-  babyCry: {fileID: 1605311854}
-  facewashPoint: {fileID: 0}
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  itemType: 0
+  holdPositionOffset: {x: 0.3, y: 0, z: 0.8}
+  SetRotationOffset: 0
+  holdRotationOffset: {x: 0, y: 0, z: 0}
+  itemTag: 
+  glowParticle: {fileID: 0}
   rb: {fileID: 1605311856}
+  currentDropPoint: {fileID: 0}
+  hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  OnPickTaskType: 0
+  OnDropForBabyTaskType: 0
+  cryThreshold: 10
+  canPickBaby: 1
+  playHorrorOnPick: 0
+  firstPickHorrorSFX: {fileID: 0}
+  _requireItem: 0
+  requireItemIndicator: {fileID: 0}
+  babyAnimationController: {fileID: 0}
+  babyAudioController: {fileID: 0}
+  babyItemHandler: {fileID: 0}
+  ragdoll: {fileID: 0}
+  carryPose: 2
+  fullRagdollOnDrop: 1
   diaper: {fileID: 1971208939}
   clothBody: {fileID: 2099023462}
   body: {fileID: 1526149187}
   babyEyesRed: {fileID: 2100000, guid: ee271c968079741489f9877a898494a4, type: 2}
-  babyNeck: {fileID: 35481625}
-  babyAngryVoice: {fileID: 855046822}
-  babyBlueGlow: {fileID: 412428667}
   babyDirtyFace: {fileID: 1563151604}
 --- !u!82 &1605311854
 AudioSource:
@@ -121977,7 +122085,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -123540,11 +123648,6 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!198 &1696528216 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 1564337611641129423, guid: 61db09ec3fab6684c9a64352dc0ba414, type: 3}
-  m_PrefabInstance: {fileID: 1564337613336870551}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1699009821
 GameObject:
   m_ObjectHideFlags: 0
@@ -148178,7 +148281,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -149835,7 +149938,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -150000,17 +150103,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614e1496ea61836468ce41e610a0e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BabyAnim: {fileID: 2047986360}
-  babyCry: {fileID: 2047986357}
-  facewashPoint: {fileID: 0}
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  itemType: 0
+  holdPositionOffset: {x: 0.3, y: 0, z: 0.8}
+  SetRotationOffset: 0
+  holdRotationOffset: {x: 0, y: 0, z: 0}
+  itemTag: 
+  glowParticle: {fileID: 0}
   rb: {fileID: 2047986359}
+  currentDropPoint: {fileID: 0}
+  hUDNavigationElement: {fileID: 0}
+  pickSFX: {fileID: 0}
+  dropSFX: {fileID: 0}
+  OnPickTaskType: 0
+  OnDropForBabyTaskType: 0
+  cryThreshold: 10
+  canPickBaby: 1
+  playHorrorOnPick: 0
+  firstPickHorrorSFX: {fileID: 0}
+  _requireItem: 0
+  requireItemIndicator: {fileID: 0}
+  babyAnimationController: {fileID: 0}
+  babyAudioController: {fileID: 0}
+  babyItemHandler: {fileID: 0}
+  ragdoll: {fileID: 0}
+  carryPose: 2
+  fullRagdollOnDrop: 1
   diaper: {fileID: 337583068}
   clothBody: {fileID: 1756554791}
   body: {fileID: 157453118}
   babyEyesRed: {fileID: 2100000, guid: ee271c968079741489f9877a898494a4, type: 2}
-  babyNeck: {fileID: 1459140448}
-  babyAngryVoice: {fileID: 756646649}
-  babyBlueGlow: {fileID: 508174651}
   babyDirtyFace: {fileID: 2038782100}
 --- !u!82 &2047986357
 AudioSource:
@@ -150022,7 +150146,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -155995,7 +156119,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 447e97f44e7d0fd4eb6ddec82c319992, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -171716,7 +171840,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 4de87d1fa10f9514c979ddad68710843, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -190610,29 +190734,6 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 8635731238682730077}
-  m_Enabled: 1
---- !u!205 &8454101454587434896
-LODGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8615347255921937564}
-  serializedVersion: 2
-  m_LocalReferencePoint: {x: 0, y: 0.249699, z: 0.00000011920929}
-  m_Size: 0.5133753
-  m_FadeMode: 0
-  m_AnimateCrossFading: 0
-  m_LastLODIsBillboard: 0
-  m_LODs:
-  - screenRelativeHeight: 0.49920803
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 0}
-  - screenRelativeHeight: 0.04863892
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 0}
   m_Enabled: 1
 --- !u!205 &8454108210255056074
 LODGroup:
@@ -211105,28 +211206,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 7e5bdc9bfbef2f540951c706f9e1ffbd, type: 3}
---- !u!64 &8606159312966841756
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8615347255921937564}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 2874aa6bc57075b4492ee9c76e07a64e, type: 3}
 --- !u!64 &8606201185078025348
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -221088,10 +221167,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6206fe6c0cdc5da418d963b0ba5fa017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  crackEffects: []
   doorOpen: {x: 0, y: 90, z: 0}
   doorClose: {x: 0, y: 0, z: 0}
-  isDoor: 0
+  onLockedCheckTask: 0
+  onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  doorKnockingSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
+  onDoorOpen:
+    m_PersistentCalls:
+      m_Calls: []
+  isDoorOpen: 0
   isDoorLock: 0
+  knockPunch: {x: 0, y: 6, z: 0}
+  knockInDuration: 0.05
+  knockOutDuration: 0.08
+  knockHitTimes:
+  - 0.07
+  - 0.25
+  - 0.39
+  - 0.55
+  - 0.7
+  navBlocker: {fileID: 0}
+  forceOpenDuration: 0.2
 --- !u!1 &8613631043642956139
 GameObject:
   m_ObjectHideFlags: 0
@@ -222673,7 +222778,6 @@ Transform:
   - {fileID: 8612379810955957026}
   - {fileID: 8612264724607865446}
   - {fileID: 8612347331199300390}
-  - {fileID: 8618202491376803644}
   - {fileID: 8618336188510671013}
   - {fileID: 8612517434143075055}
   - {fileID: 8612116985171714108}
@@ -223256,9 +223360,7 @@ Transform:
   - {fileID: 1566317863}
   - {fileID: 1508215885}
   - {fileID: 1734429058}
-  - {fileID: 1003155538}
   - {fileID: 2704330}
-  - {fileID: 1172039435}
   - {fileID: 1048085323}
   - {fileID: 889141791}
   - {fileID: 644037085}
@@ -230690,10 +230792,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6206fe6c0cdc5da418d963b0ba5fa017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  crackEffects: []
   doorOpen: {x: 0, y: 270, z: 0}
   doorClose: {x: 0, y: 180, z: 0}
-  isDoor: 0
+  onLockedCheckTask: 0
+  onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  doorKnockingSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
+  onDoorOpen:
+    m_PersistentCalls:
+      m_Calls: []
+  isDoorOpen: 0
   isDoorLock: 0
+  knockPunch: {x: 0, y: 6, z: 0}
+  knockInDuration: 0.05
+  knockOutDuration: 0.08
+  knockHitTimes:
+  - 0.07
+  - 0.25
+  - 0.39
+  - 0.55
+  - 0.7
+  navBlocker: {fileID: 0}
+  forceOpenDuration: 0.2
 --- !u!1 &8614458270723852695
 GameObject:
   m_ObjectHideFlags: 0
@@ -230727,10 +230855,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6206fe6c0cdc5da418d963b0ba5fa017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  crackEffects: []
   doorOpen: {x: 0, y: 0, z: 0}
   doorClose: {x: 0, y: -90, z: 0}
-  isDoor: 0
+  onLockedCheckTask: 0
+  onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  doorKnockingSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
+  onDoorOpen:
+    m_PersistentCalls:
+      m_Calls: []
+  isDoorOpen: 0
   isDoorLock: 1
+  knockPunch: {x: 0, y: 6, z: 0}
+  knockInDuration: 0.05
+  knockOutDuration: 0.08
+  knockHitTimes:
+  - 0.07
+  - 0.25
+  - 0.39
+  - 0.55
+  - 0.7
+  navBlocker: {fileID: 0}
+  forceOpenDuration: 0.2
 --- !u!82 &8614458270723852697
 AudioSource:
   m_ObjectHideFlags: 0
@@ -230741,7 +230895,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b69741551c9a7554ebf9496360fa0db1, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: b69741551c9a7554ebf9496360fa0db1, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -235094,10 +235248,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6206fe6c0cdc5da418d963b0ba5fa017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crosshairState: 0
+  detectionText: 
+  collider: {fileID: 0}
+  crackEffects: []
   doorOpen: {x: 0, y: 0, z: 0}
   doorClose: {x: 0, y: 90, z: 0}
-  isDoor: 0
+  onLockedCheckTask: 0
+  onDoorBreakTask: 0
+  audioSource: {fileID: 0}
+  doorKnockingSource: {fileID: 0}
+  lockedDoorSFX: {fileID: 0}
+  doorOpenSFX: {fileID: 0}
+  doorCloseSFX: {fileID: 0}
+  doorBellSFX: {fileID: 0}
+  onDoorOpen:
+    m_PersistentCalls:
+      m_Calls: []
+  isDoorOpen: 0
   isDoorLock: 0
+  knockPunch: {x: 0, y: 6, z: 0}
+  knockInDuration: 0.05
+  knockOutDuration: 0.08
+  knockHitTimes:
+  - 0.07
+  - 0.25
+  - 0.39
+  - 0.55
+  - 0.7
+  navBlocker: {fileID: 0}
+  forceOpenDuration: 0.2
 --- !u!1 &8614911950025964370
 GameObject:
   m_ObjectHideFlags: 0
@@ -244023,24 +244203,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
   m_IsActive: 1
---- !u!1 &8615347255921937564
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8618202491376803644}
-  - component: {fileID: 8454101454587434896}
-  - component: {fileID: 8606159312966841756}
-  m_Layer: 0
-  m_Name: Bedroom_furniture6
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
 --- !u!1 &8615349827706816848
 GameObject:
   m_ObjectHideFlags: 0
@@ -244854,21 +245016,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
   m_IsActive: 1
---- !u!4 &8618202491376803644
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8615347255921937564}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.94066846, z: -0, w: 0.3393272}
-  m_LocalPosition: {x: -0.5313407, y: 3.025, z: -0.73400015}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8613705393757800154}
-  m_LocalEulerAnglesHint: {x: 0, y: 50.328003, z: 0}
 --- !u!4 &8618203246945382041
 Transform:
   m_ObjectHideFlags: 0
@@ -295101,7 +295248,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 832db2c57ea08c941a3433a81680da2a, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 832db2c57ea08c941a3433a81680da2a, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1

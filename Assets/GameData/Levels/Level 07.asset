@@ -13,20 +13,20 @@ MonoBehaviour:
   m_Name: Level 07
   m_EditorClassIdentifier: 
   level: 7
-  missionName: "You Trapped."
+  missionName: Exit the room
   thumbnail: {fileID: 21300000, guid: 1745df08ce9236e49ab850a63deef10f, type: 3}
   tasks:
   - taskType: 5
-    description: "-The baby trapped you! Find the axe."
+    description: -The nanny trapped you! Find the axe.
     completePreviousTasks: 0
   - taskType: 25
-    description: "-Break the door."
+    description: -Break the door.
     completePreviousTasks: 0
   - taskType: 1
-    description: "-Pick up the baby."
+    description: -Pick up the baby.
     completePreviousTasks: 0
   - taskType: 14
-    description: "-drop the baby on the rocking chair."
+    description: -drop the baby on the rocking chair.
     completePreviousTasks: 1
   modules:
   - rid: 1000

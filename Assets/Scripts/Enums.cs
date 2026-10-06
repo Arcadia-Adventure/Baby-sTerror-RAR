@@ -81,6 +81,8 @@ public enum NannyState
     Glimpse = 6,
     BangDoor = 7,
     Banished = 8,
+    Repelled = 9,
+    KnockedDown = 10,
 }
 
 public enum NannyMode

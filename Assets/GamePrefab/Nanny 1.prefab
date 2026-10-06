@@ -113,6 +113,9 @@ MonoBehaviour:
   sightBlockers:
     serializedVersion: 2
     m_Bits: 4294966617
+  babyNoiseBonus: 3
+  sprintNoiseBonus: 3
+  sprintSpeedThreshold: 4
   chaseSpeed: 4
   searchSpeed: 2
   loseInterestTime: 6
@@ -124,6 +127,23 @@ MonoBehaviour:
   attackImpactDelay: 0.45
   attackHitRange: 2.4
   attackTurnSpeed: 540
+  huntInterval: 15
+  huntRadius: 5
+  glimpseNoticeTime: 0.4
+  glimpseVanishDistance: 3
+  glimpseLookAngle: 25
+  glimpseTurnSpeed: 60
+  jumpScareDistance: 1.5
+  jumpScareLookDuration: 0.12
+  jumpScareAttackGrace: 1.5
+  lookAtPoint: {fileID: 6350331833362454077}
+  doorCheckDistance: 1
+  doorCheckHeight: 0.8
+  doorBreakTime: 2.5
+  doorBangInterval: 0.6
+  doorLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!54 &7799908497059990096
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -196,6 +216,9 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 9ae7436bfbe9041d8b542feed8cb5057, type: 3}
   - sound: 3
     clip: {fileID: 8300000, guid: d1ca4ae5ef423434d962d5134ef9706b, type: 3}
+  - sound: 1
+    clip: {fileID: 8300000, guid: 5da20d3a10c7c4baab8ae5eb53c8c7f9, type: 3}
+  doorBangClip: {fileID: 0}
 --- !u!114 &548521416247874406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,5 +599,10 @@ PrefabInstance:
 --- !u!4 &1030334613516027070 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f10002f40a0d7492aad450a228a91609, type: 3}
+  m_PrefabInstance: {fileID: 704464393858245461}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6350331833362454077 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3321919801592875672, guid: f10002f40a0d7492aad450a228a91609, type: 3}
   m_PrefabInstance: {fileID: 704464393858245461}
   m_PrefabAsset: {fileID: 0}

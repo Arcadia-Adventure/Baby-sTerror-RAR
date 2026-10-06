@@ -9,6 +9,10 @@ public class NannyStateManager : MonoBehaviour
     const float LockedDoorIgnoreTime = 8f;
     const float MinJumpScareDistance = 0.8f;
     const int DoorBangAttackVariant = 0;
+    const float RetreatRepathInterval = 0.4f;
+    const float MinRetreatStep = 1f;
+    const float RepelBlend = 0.2f;
+    static readonly float[] RetreatAngles = { 0f, 45f, -45f, 90f, -90f };
 
     [Header("Components")]
     [SerializeField] private NavMeshAgent agent;
@@ -103,6 +107,20 @@ public class NannyStateManager : MonoBehaviour
     [SerializeField] private float doorBangInterval = 0.6f;
     [SerializeField] private LayerMask doorLayers = ~0;
 
+    [Header("Player Attacks")]
+    [Tooltip("Seconds she stays down after an axe hit.")]
+    [SerializeField] private float knockdownDuration = 8f;
+    [Tooltip("How fast she runs away from the extinguisher spray.")]
+    [SerializeField] private float retreatSpeed = 3.5f;
+    [Tooltip("How far away from the player each retreat step aims.")]
+    [SerializeField] private float retreatDistance = 4f;
+    [Tooltip("Longest a continuous extinguisher spray can push her back before she comes through it.")]
+    [SerializeField] private float maxRepelTime = 4f;
+    [Tooltip("After a push-back ends, the extinguisher can't push her again for this long.")]
+    [SerializeField] private float repelImmunityTime = 3f;
+    [Tooltip("Seconds she blends up off the floor.")]
+    [SerializeField] private float getUpBlend = 0.4f;
+
     public NannyState State { get; private set; } = NannyState.Patrol;
     public NannyMode Mode => _mode;
     /// <summary>How long a jump scare holds the player, for anything that should wait for it to land.</summary>
@@ -110,6 +128,13 @@ public class NannyStateManager : MonoBehaviour
 
     /// <summary>The point on her the player's camera aims at to look her in the face.</summary>
     public Transform LookAtPoint => lookAtPoint != null ? lookAtPoint : transform;
+
+    /// <summary>Middle of her body, standing or crawling. Her capsule only covers her legs, so weapons aim here.</summary>
+    public Vector3 AimPoint => (transform.position + LookAtPoint.position) * 0.5f;
+
+    /// <summary>Whether an axe hit or extinguisher spray can land on her right now.</summary>
+    public bool CanBeHurt => isActiveAndEnabled && agent.isOnNavMesh && _mode != NannyMode.Glimpse
+        && State is not (NannyState.Dead or NannyState.Banished or NannyState.KnockedDown);
 
     Transform _player;
     PlayerController _playerController;
@@ -128,6 +153,7 @@ public class NannyStateManager : MonoBehaviour
     bool _attackPending;
     bool _hasPatrolTarget;
     bool _screamedThisHunt;
+    bool _offNavMeshReported;
 
     NannyMode _mode = NannyMode.Patrol;
     bool _configured;
@@ -146,14 +172,20 @@ public class NannyStateManager : MonoBehaviour
     NannyState _stateBeforeDoor;
     float _stateTimerBeforeDoor;
 
+    float _repelStartTime;
+    float _repelEndTime;
+    float _repelImmuneUntil;
+    float _nextRetreatTime;
+
     Vector3 EyePosition => transform.position + Vector3.up * eyeHeight * transform.lossyScale.y;
-    Vector3 BodyCenter => _bodyCollider != null && _bodyCollider.enabled
+    Vector3 BodyCenter => _bodyCollider.enabled
         ? _bodyCollider.bounds.center
         : transform.position + Vector3.up;
     // The timer covers the frame before the animator picks up the Scream trigger.
-    bool IsScreaming => Time.time < _screamEndTime
-        || (animationController != null && animationController.IsScreaming);
+    bool IsScreaming => Time.time < _screamEndTime || animationController.IsScreaming;
     bool IsRoaming => State is NannyState.Idle or NannyState.Patrol or NannyState.Chase or NannyState.Search;
+    // Queries must use her agent type, or they can land on a NavMesh she can't stand on.
+    NavMeshQueryFilter NavFilter => new NavMeshQueryFilter { agentTypeID = agent.agentTypeID, areaMask = agent.areaMask };
 
     private void Awake()
     {
@@ -163,7 +195,7 @@ public class NannyStateManager : MonoBehaviour
         _bodyCollider = GetComponent<Collider>();
 
         // Facing is driven from the actual velocity so she never slides sideways through turns.
-        if (agent != null) agent.updateRotation = false;
+        agent.updateRotation = false;
 
         _spawnPosition = transform.position;
     }
@@ -180,11 +212,17 @@ public class NannyStateManager : MonoBehaviour
         if (State == NannyState.Dead)
             return;
 
-        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+        if (!agent.isOnNavMesh)
+        {
+            if (!_offNavMeshReported)
+                Debug.LogError($"[NannyStateManager] Not on the NavMesh at {transform.position}, so she can't move. " +
+                               "Rebake the NavMesh Surface for her agent type, or move her spawn point onto it.", this);
+            _offNavMeshReported = true;
             return;
+        }
+        _offNavMeshReported = false;
 
-        if (!TryResolvePlayer())
-            return;
+        ResolvePlayer();
 
         _stateTimer += Time.deltaTime;
 
@@ -212,6 +250,12 @@ public class NannyStateManager : MonoBehaviour
             case NannyState.Banished:
                 TickBanished();
                 break;
+            case NannyState.Repelled:
+                TickRepelled();
+                break;
+            case NannyState.KnockedDown:
+                TickKnockedDown();
+                break;
         }
 
         // A tick can kill her or make her vanish.
@@ -227,26 +271,19 @@ public class NannyStateManager : MonoBehaviour
         UpdateAnimationAndAudio();
     }
 
-    /// <summary>
-    /// GamePlayManager spawns and wires the player during its own Start, so the reference
-    /// isn't guaranteed to exist on our first frame.
-    /// </summary>
-    bool TryResolvePlayer()
+    /// <summary>Resolved on first use, since JumpScare can run before her first Update.</summary>
+    void ResolvePlayer()
     {
         if (_player != null)
-            return true;
+            return;
 
-        PlayerController player = GamePlayManager.Instance != null ? GamePlayManager.Instance.player : null;
-        if (player == null)
-            return false;
-
+        PlayerController player = GamePlayManager.Instance.player;
         _player = player.transform;
         _playerController = player;
         _playerHealth = player.GetComponent<PlayerHealth>();
         _playerBody = player.GetComponent<Rigidbody>();
         // Looked up rather than via Instance, which would spawn an empty controller in test scenes.
         _pickDrop = FindFirstObjectByType<PickDropController>();
-        return true;
     }
 
     #region States
@@ -259,11 +296,8 @@ public class NannyStateManager : MonoBehaviour
         _hasPatrolTarget = false;
         _screamedThisHunt = false;
 
-        if (agent != null && agent.isOnNavMesh)
-        {
-            agent.speed = patrolSpeed;
-            agent.isStopped = false;
-        }
+        agent.speed = patrolSpeed;
+        agent.isStopped = false;
     }
 
     void TickPatrol()
@@ -405,8 +439,8 @@ public class NannyStateManager : MonoBehaviour
 
         int variant = animationController.AttackVariants[Random.Range(0, animationController.AttackVariants.Length)];
 
-        animationController?.PlayAttack(variant);
-        audioController?.Play(NannySound.Attack);
+        animationController.PlayAttack(variant);
+        audioController.Play(NannySound.Attack);
     }
 
     void TickAttack()
@@ -438,7 +472,7 @@ public class NannyStateManager : MonoBehaviour
         if (_harmless || PlayerHoldsTalisman())
             return;
 
-        if (_playerHealth == null || _playerHealth.IsDead)
+        if (_playerHealth.IsDead)
             return;
 
         if (PlanarDistanceToPlayer() > attackHitRange)
@@ -485,11 +519,8 @@ public class NannyStateManager : MonoBehaviour
         _glimpseLookTime = 0f;
         _vanishing = false;
 
-        if (agent != null && agent.isOnNavMesh)
-        {
-            agent.isStopped = true;
-            agent.velocity = Vector3.zero;
-        }
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
     }
 
     void TickGlimpse()
@@ -527,13 +558,13 @@ public class NannyStateManager : MonoBehaviour
 
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
-        animationController?.PlayAttack(DoorBangAttackVariant);
+        animationController.PlayAttack(DoorBangAttackVariant);
     }
 
     void TickBangDoor()
     {
         // The player opened it for her, or something else did.
-        if (_door == null || _door.isDoorOpen)
+        if (_door.isDoorOpen)
         {
             ResumeAfterDoor();
             return;
@@ -543,7 +574,7 @@ public class NannyStateManager : MonoBehaviour
 
         if (Time.time >= _nextBangTime)
         {
-            _door.BangOnDoor(audioController != null ? audioController.DoorBangClip : null);
+            _door.BangOnDoor(audioController.DoorBangClip);
             _nextBangTime = Time.time + doorBangInterval;
         }
 
@@ -584,7 +615,7 @@ public class NannyStateManager : MonoBehaviour
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
 
-        _playerController?.ForceLookAt(LookAtPoint);
+        _playerController.ForceLookAt(LookAtPoint);
         PlayScream();
     }
 
@@ -599,21 +630,111 @@ public class NannyStateManager : MonoBehaviour
         ObjectiveUIController.OnTaskEventReceived(TaskType.BanishNanny);
     }
 
+    void EnterRepelled(float duration)
+    {
+        State = NannyState.Repelled;
+        _stateTimer = 0f;
+        _repelStartTime = Time.time;
+        _repelEndTime = Time.time + duration;
+        _nextRetreatTime = 0f;
+        _attackPending = false;
+        _door = null;
+        _screamEndTime = 0f;
+
+        agent.speed = retreatSpeed;
+        // An attack or scream left playing would slide her across the floor in that pose.
+        animationController.ReturnToLocomotion(RepelBlend);
+        audioController.Play(NannySound.Scream);
+        UpdateRetreat();
+    }
+
+    void TickRepelled()
+    {
+        if (Time.time >= _repelEndTime)
+        {
+            _repelImmuneUntil = Time.time + repelImmunityTime;
+            _lastKnownPlayerPosition = _player.position;
+            _screamedThisHunt = true;
+            EnterChase();
+            return;
+        }
+
+        UpdateRetreat();
+
+        // A closed door corners her rather than being banged down mid-retreat.
+        if (TryFindBlockingDoor(out _, out _))
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
+        FaceMovementDirection();
+    }
+
+    void UpdateRetreat()
+    {
+        if (Time.time < _nextRetreatTime && !HasArrived())
+            return;
+        _nextRetreatTime = Time.time + RetreatRepathInterval;
+
+        if (TryFindRetreatPoint(out Vector3 point))
+        {
+            agent.isStopped = false;
+            agent.SetDestination(point);
+        }
+        else
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+    }
+
+    void EnterKnockedDown()
+    {
+        State = NannyState.KnockedDown;
+        _stateTimer = 0f;
+        _attackPending = false;
+        _door = null;
+        _screamEndTime = 0f;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        SetBodyCollidersEnabled(false);
+
+        animationController.SetSpeed(0f);
+        animationController.PlayDeath();
+
+        audioController.SetFootstepsActive(false);
+        audioController.Play(NannySound.Death);
+    }
+
+    void TickKnockedDown()
+    {
+        if (_stateTimer < knockdownDuration)
+            return;
+
+        SetBodyCollidersEnabled(true);
+        _screamEndTime = Time.time + screamDuration;
+        animationController.PlayGetUp(getUpBlend);
+        audioController.Play(NannySound.Scream);
+
+        _lastKnownPlayerPosition = _player.position;
+        _screamedThisHunt = true;
+        EnterChase();
+    }
+
     void PlayScream()
     {
         _screamEndTime = Time.time + screamDuration;
-        animationController?.PlayScream();
-        audioController?.Play(NannySound.Scream);
+        animationController.PlayScream();
+        audioController.Play(NannySound.Scream);
     }
 
     void Hide()
     {
         _vanishing = false;
-        if (audioController != null)
-        {
-            audioController.SetFootstepsActive(false);
-            audioController.Stop();
-        }
+        audioController.SetFootstepsActive(false);
+        audioController.Stop();
         gameObject.SetActive(false);
     }
 
@@ -623,10 +744,7 @@ public class NannyStateManager : MonoBehaviour
 
     bool CanSeePlayer()
     {
-        if (_player == null)
-            return false;
-
-        if (_playerHealth != null && _playerHealth.IsDead)
+        if (_playerHealth.IsDead)
             return false;
 
         Vector3 toPlayer = _player.position - transform.position;
@@ -654,7 +772,7 @@ public class NannyStateManager : MonoBehaviour
     /// </summary>
     bool CanHearPlayer()
     {
-        if (_player == null || (_playerHealth != null && _playerHealth.IsDead))
+        if (_playerHealth.IsDead)
             return false;
 
         float bonus = NoiseBonus();
@@ -668,7 +786,7 @@ public class NannyStateManager : MonoBehaviour
     float NoiseBonus()
     {
         float bonus = 0f;
-        if (_pickDrop != null && _pickDrop.heldPickable is BabyController)
+        if (_pickDrop.heldPickable is BabyController)
             bonus = babyNoiseBonus;
 
         if (PlayerPlanarSpeed() > sprintSpeedThreshold)
@@ -694,11 +812,7 @@ public class NannyStateManager : MonoBehaviour
 
     bool IsPlayerLookingAtMe()
     {
-        Camera cam = _playerController != null ? _playerController.PlayerCamera : null;
-        if (cam == null)
-            return false;
-
-        Transform view = cam.transform;
+        Transform view = _playerController.PlayerCamera.transform;
         Vector3 toMe = BodyCenter - view.position;
         if (toMe.magnitude > viewDistance)
             return false;
@@ -711,15 +825,12 @@ public class NannyStateManager : MonoBehaviour
 
     bool PlayerHoldsTalisman()
     {
-        PickableItem held = _pickDrop != null ? _pickDrop.heldPickable : null;
+        PickableItem held = _pickDrop.heldPickable;
         return held != null && held.itemType == ItemType.Talisman;
     }
 
     float PlayerPlanarSpeed()
     {
-        if (_playerBody == null)
-            return 0f;
-
         Vector3 velocity = _playerBody.linearVelocity;
         velocity.y = 0f;
         return velocity.magnitude;
@@ -732,37 +843,49 @@ public class NannyStateManager : MonoBehaviour
         return delta.magnitude;
     }
 
-    /// <summary>
-    /// The NavMesh is baked straight through the doorways, so a closed door has to be spotted
-    /// physically or she would walk through it.
-    /// </summary>
     void CheckForBlockingDoor()
     {
         if (Time.time < _nextDoorCheckTime)
             return;
         _nextDoorCheckTime = Time.time + DoorCheckInterval;
 
-        if (agent.isStopped || !agent.hasPath)
-            return;
-
-        Vector3 direction = agent.steeringTarget - transform.position;
-        direction.y = 0f;
-        if (direction.sqrMagnitude < 0.0001f)
-            return;
-
-        Vector3 origin = transform.position + Vector3.up * doorCheckHeight;
-        if (!Physics.SphereCast(origin, DoorCheckRadius, direction.normalized, out RaycastHit hit,
-                doorCheckDistance, doorLayers, QueryTriggerInteraction.Ignore))
-            return;
-
-        DoorController door = hit.collider.GetComponentInParent<DoorController>();
-        if (door == null || door.isDoorOpen)
+        if (!TryFindBlockingDoor(out DoorController door, out Vector3 contactPoint))
             return;
 
         if (door == _ignoredDoor && Time.time < _ignoreDoorUntil)
             return;
 
-        EnterBangDoor(door, hit.point);
+        EnterBangDoor(door, contactPoint);
+    }
+
+    /// <summary>
+    /// The NavMesh is baked straight through the doorways, so a closed door has to be spotted
+    /// physically or she would walk through it.
+    /// </summary>
+    bool TryFindBlockingDoor(out DoorController door, out Vector3 contactPoint)
+    {
+        door = null;
+        contactPoint = default;
+
+        if (agent.isStopped || !agent.hasPath)
+            return false;
+
+        Vector3 direction = agent.steeringTarget - transform.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f)
+            return false;
+
+        Vector3 origin = transform.position + Vector3.up * doorCheckHeight;
+        if (!Physics.SphereCast(origin, DoorCheckRadius, direction.normalized, out RaycastHit hit,
+                doorCheckDistance, doorLayers, QueryTriggerInteraction.Ignore))
+            return false;
+
+        door = hit.collider.GetComponentInParent<DoorController>();
+        if (door == null || door.isDoorOpen)
+            return false;
+
+        contactPoint = hit.point;
+        return true;
     }
 
     #endregion
@@ -770,6 +893,12 @@ public class NannyStateManager : MonoBehaviour
     #region Helpers
 
     bool CanAttack() => !_harmless && Time.time >= _nextAttackTime;
+
+    void SetBodyCollidersEnabled(bool enabled)
+    {
+        foreach (Collider body in GetComponents<Collider>())
+            body.enabled = enabled;
+    }
 
     bool HasArrived()
     {
@@ -781,17 +910,11 @@ public class NannyStateManager : MonoBehaviour
 
     bool TryPickPatrolDestination(out Vector3 destination)
     {
-        if (patrolPoints != null && patrolPoints.Length > 0)
+        if (patrolPoints.Length > 0)
         {
-            for (int i = 0; i < patrolPoints.Length; i++)
-            {
-                _patrolIndex = (_patrolIndex + 1) % patrolPoints.Length;
-                if (patrolPoints[_patrolIndex] != null)
-                {
-                    destination = patrolPoints[_patrolIndex].position;
-                    return true;
-                }
-            }
+            _patrolIndex = (_patrolIndex + 1) % patrolPoints.Length;
+            destination = patrolPoints[_patrolIndex].position;
+            return true;
         }
 
         return TryFindPointNear(_spawnPosition, wanderRadius, out destination);
@@ -804,7 +927,7 @@ public class NannyStateManager : MonoBehaviour
             Vector2 offset = Random.insideUnitCircle * radius;
             Vector3 candidate = center + new Vector3(offset.x, 0f, offset.y);
 
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius, agent.areaMask))
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, radius, NavFilter))
             {
                 destination = hit.position;
                 return true;
@@ -822,14 +945,14 @@ public class NannyStateManager : MonoBehaviour
     bool TryFindJumpScareSpot(Vector3 forward, out Vector3 spot)
     {
         spot = default;
-        if (!NavMesh.SamplePosition(_player.position, out NavMeshHit start, 2f, agent.areaMask))
+        if (!NavMesh.SamplePosition(_player.position, out NavMeshHit start, 2f, NavFilter))
             return false;
 
         for (int side = 0; side < 2; side++)
         {
             Vector3 direction = side == 0 ? forward : -forward;
             Vector3 target = start.position + direction * jumpScareDistance;
-            Vector3 end = NavMesh.Raycast(start.position, target, out NavMeshHit blocked, agent.areaMask)
+            Vector3 end = NavMesh.Raycast(start.position, target, out NavMeshHit blocked, NavFilter)
                 ? blocked.position
                 : target;
 
@@ -843,12 +966,39 @@ public class NannyStateManager : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// A reachable spot away from the player, veering to the side when a wall is straight behind her.
+    /// </summary>
+    bool TryFindRetreatPoint(out Vector3 point)
+    {
+        Vector3 away = transform.position - _player.position;
+        away.y = 0f;
+        away = away.sqrMagnitude > 0.0001f ? away.normalized : transform.forward;
+
+        foreach (float angle in RetreatAngles)
+        {
+            Vector3 target = transform.position + Quaternion.AngleAxis(angle, Vector3.up) * away * retreatDistance;
+            Vector3 end = NavMesh.Raycast(transform.position, target, out NavMeshHit blocked, NavFilter)
+                ? blocked.position
+                : target;
+
+            if ((end - transform.position).magnitude >= MinRetreatStep)
+            {
+                point = end;
+                return true;
+            }
+        }
+
+        point = transform.position;
+        return false;
+    }
+
     void PlaceAt(Vector3 position, Quaternion rotation)
     {
-        if (agent != null && agent.enabled && NavMesh.SamplePosition(position, out NavMeshHit hit, 2f, agent.areaMask))
+        if (NavMesh.SamplePosition(position, out NavMeshHit hit, 2f, NavFilter))
             agent.Warp(hit.position);
         else
-            transform.position = position;
+            Debug.LogError($"[NannyStateManager] No NavMesh for her agent type within 2m of {position}, so she can't be placed there.", this);
 
         Vector3 forward = Vector3.ProjectOnPlane(rotation * Vector3.forward, Vector3.up);
         if (forward.sqrMagnitude > 0.0001f)
@@ -893,14 +1043,11 @@ public class NannyStateManager : MonoBehaviour
     {
         // Always the real velocity: after isStopped the agent still brakes, and the legs must follow.
         float speed = PlanarVelocity().magnitude;
-        animationController?.SetSpeed(speed);
-
-        if (audioController == null)
-            return;
-
+        animationController.SetSpeed(speed);
         audioController.SetFootstepsActive(speed > 0.2f);
 
-        if (IsScreaming)
+        // The voice loop would cut off her death groan, or her shriek at the spray.
+        if (IsScreaming || State is NannyState.KnockedDown or NannyState.Repelled)
             return;
 
         if (State is NannyState.Chase or NannyState.Attack or NannyState.BangDoor)
@@ -918,9 +1065,6 @@ public class NannyStateManager : MonoBehaviour
     {
         _configured = true;
         patrolPoints = route;
-
-        if (setup == null)
-            return;
 
         _mode = setup.mode;
         patrolSpeed = setup.patrolSpeed;
@@ -967,21 +1111,26 @@ public class NannyStateManager : MonoBehaviour
     /// </summary>
     public void JumpScare(PlayerController player)
     {
-        if (State == NannyState.Dead || player == null)
+        if (State == NannyState.Dead)
             return;
 
         gameObject.SetActive(true);
-        if (agent == null || !agent.enabled || !TryResolvePlayer())
-            return;
+        ResolvePlayer();
 
-        Transform view = player.PlayerCamera != null ? player.PlayerCamera.transform : player.transform;
+        Transform view = player.PlayerCamera.transform;
         Vector3 forward = Vector3.ProjectOnPlane(view.forward, Vector3.up);
         if (forward.sqrMagnitude < 0.0001f)
             forward = player.transform.forward;
         forward.Normalize();
 
         if (!TryFindJumpScareSpot(forward, out Vector3 spot))
+        {
+            Debug.LogError($"[NannyStateManager] Jump scare skipped: no NavMesh for her agent type near the player at {player.transform.position}.", this);
             return;
+        }
+
+        if (State == NannyState.KnockedDown)
+            SetBodyCollidersEnabled(true);
 
         Vector3 toPlayer = player.transform.position - spot;
         PlaceAt(spot, Quaternion.LookRotation(toPlayer.sqrMagnitude > 0.0001f ? toPlayer : -forward));
@@ -1021,44 +1170,65 @@ public class NannyStateManager : MonoBehaviour
         _harmless = true;
         _door = null;
 
-        if (agent != null)
+        if (agent.isOnNavMesh)
         {
-            if (agent.enabled && agent.isOnNavMesh)
-            {
-                agent.isStopped = true;
-                agent.velocity = Vector3.zero;
-            }
-            agent.enabled = false;
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
         }
+        agent.enabled = false;
 
         // The upright capsule would leave an invisible wall where her body has fallen.
-        foreach (Collider body in GetComponents<Collider>())
-            body.enabled = false;
+        SetBodyCollidersEnabled(false);
 
-        animationController?.SetSpeed(0f);
-        animationController?.PlayDeath();
+        animationController.SetSpeed(0f);
+        animationController.PlayDeath();
 
-        if (audioController != null)
-        {
-            audioController.SetFootstepsActive(false);
-            audioController.Play(NannySound.Death);
-        }
+        audioController.SetFootstepsActive(false);
+        audioController.Play(NannySound.Death);
     }
 
     /// <summary>Sends her hunting toward a position, e.g. from a scripted scare or a noise.</summary>
     public void AlertTo(Vector3 position)
     {
-        if (State == NannyState.Dead || _mode == NannyMode.Glimpse)
+        if (State is NannyState.Dead or NannyState.KnockedDown || _mode == NannyMode.Glimpse)
             return;
 
         _lastKnownPlayerPosition = position;
         EnterChase();
     }
 
+    /// <summary>An axe blow: she drops on the spot and gets back up after knockdownDuration.</summary>
+    public void KnockDown()
+    {
+        if (CanBeHurt)
+            EnterKnockedDown();
+    }
+
+    /// <summary>
+    /// Extinguisher spray, called every frame it reaches her. She runs away from the player until
+    /// holdTime after the last call, but never longer than maxRepelTime in one go, so a constant
+    /// spray can't hold her off forever.
+    /// </summary>
+    public void Repel(float holdTime)
+    {
+        if (!CanBeHurt || Time.time < _repelImmuneUntil)
+            return;
+
+        ResolvePlayer();
+        if (State != NannyState.Repelled)
+        {
+            EnterRepelled(Mathf.Min(holdTime, maxRepelTime));
+            return;
+        }
+
+        float cap = _repelStartTime + maxRepelTime;
+        _repelEndTime = Mathf.Max(_repelEndTime, Mathf.Min(Time.time + holdTime, cap));
+    }
+
     public void SetCrawling(bool isCrawling)
     {
         _crawling = isCrawling;
-        animationController?.SetCrawling(isCrawling);
+        animationController.SetCrawling(isCrawling);
     }
 
     #endregion

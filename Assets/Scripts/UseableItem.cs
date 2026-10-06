@@ -4,13 +4,13 @@ public class UseableItem : PickableItem
     public Sprite useSprite;
     void OnEnable()
     {
-        OnPick+=OnPickDevice;
-        OnDrop+=OnDropDevice;
+        OnPick.AddListener(OnPickDevice);
+        OnDrop.AddListener(OnDropDevice);
     }
     void OnDisable()
     {
-        OnPick-=OnPickDevice;
-        OnDrop-=OnDropDevice;
+        OnPick.RemoveListener(OnPickDevice);
+        OnDrop.RemoveListener(OnDropDevice);
     }
     public virtual void OnPickDevice()
     {

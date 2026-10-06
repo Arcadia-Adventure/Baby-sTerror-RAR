@@ -14,6 +14,8 @@ public class NannyAnimationController : MonoBehaviour
 
     static readonly int LocomotionTag = Animator.StringToHash("Locomotion");
     static readonly int ScreamStateHash = Animator.StringToHash("Scream");
+    static readonly int LocomotionStateHash = Animator.StringToHash("Locomotion");
+    static readonly int CrawlLocomotionStateHash = Animator.StringToHash("CrawlLocomotion");
     const float MovingThreshold = 0.05f;
 
     /// <summary>Attack, Bite, Bite2 and NeckBite, in AttackVariant order.</summary>
@@ -41,7 +43,6 @@ public class NannyAnimationController : MonoBehaviour
     {
         get
         {
-            if (nannyAnimator == null) return false;
             if (nannyAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash == ScreamStateHash) return true;
             return nannyAnimator.IsInTransition(0)
                 && nannyAnimator.GetNextAnimatorStateInfo(0).shortNameHash == ScreamStateHash;
@@ -57,7 +58,6 @@ public class NannyAnimationController : MonoBehaviour
     public void SetSpeed(float speed)
     {
         _moveSpeed = speed;
-        if (nannyAnimator == null) return;
         nannyAnimator.SetFloat(SpeedParam, speed, speedDamping, Time.deltaTime);
     }
 
@@ -67,8 +67,6 @@ public class NannyAnimationController : MonoBehaviour
     /// </summary>
     private void OnAnimatorMove()
     {
-        if (nannyAnimator == null) return;
-
         float dt = Time.deltaTime;
         if (dt <= 0f) return;
 
@@ -102,7 +100,6 @@ public class NannyAnimationController : MonoBehaviour
 
     public void SetCrawling(bool isCrawling)
     {
-        if (nannyAnimator == null) return;
         nannyAnimator.SetBool(CrawlParam, isCrawling);
     }
 
@@ -113,7 +110,6 @@ public class NannyAnimationController : MonoBehaviour
 
     public void PlayAttack(int variant, Action onComplete = null)
     {
-        if (nannyAnimator == null) return;
         // AttackVariants contains the actual Animator parameter values, not array indices.
         nannyAnimator.SetInteger(AttackVariantParam, variant);
         Trigger(AttackParam, onComplete);
@@ -124,11 +120,39 @@ public class NannyAnimationController : MonoBehaviour
         Trigger(DieParam, onComplete);
     }
 
-    void Trigger(string parameter, Action onComplete)
+    /// <summary>
+    /// Rises off the floor straight into a scream. There is no get-up clip and Dying has no way out,
+    /// so this blends across directly.
+    /// </summary>
+    public void PlayGetUp(float blend)
     {
-        if (nannyAnimator == null)
+        CrossFade(ScreamStateHash, blend);
+    }
+
+    /// <summary>Cuts an attack or scream short and blends back into walking or crawling.</summary>
+    public void ReturnToLocomotion(float blend)
+    {
+        if (nannyAnimator.GetCurrentAnimatorStateInfo(0).tagHash == LocomotionTag && !nannyAnimator.IsInTransition(0))
             return;
 
+        CrossFade(nannyAnimator.GetBool(CrawlParam) ? CrawlLocomotionStateHash : LocomotionStateHash, blend);
+    }
+
+    void CrossFade(int stateHash, float blend)
+    {
+        ResetAllTriggers();
+
+        if (_onCompleteRoutine != null)
+        {
+            StopCoroutine(_onCompleteRoutine);
+            _onCompleteRoutine = null;
+        }
+
+        nannyAnimator.CrossFadeInFixedTime(stateHash, blend, 0);
+    }
+
+    void Trigger(string parameter, Action onComplete)
+    {
         ResetAllTriggers();
         nannyAnimator.SetTrigger(parameter);
 

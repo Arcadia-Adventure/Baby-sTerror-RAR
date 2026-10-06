@@ -3,6 +3,7 @@ using Ommy.Attributes;
 using Ommy.Audio;
 using SickscoreGames.HUDNavigationSystem;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PickableItem : Interactable
 {
@@ -17,7 +18,7 @@ public class PickableItem : Interactable
     public DropPoint currentDropPoint;
     public HUDNavigationElement hUDNavigationElement;
     public AudioClip pickSFX, dropSFX;
-    public Action OnPick,OnDrop;
+    public UnityEvent OnPick, OnDrop;
 
     [Header("Objective Settings")]
     [Tooltip("Task to complete when this item is picked up. Set to None to disable.")]

@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Level 06
   m_EditorClassIdentifier: 
   level: 6
-  missionName: "The Empty Cradle"
+  missionName: The Empty Cradle
   thumbnail: {fileID: 21300000, guid: 4c4b7f0a7627de8478c6a90b31c5b06b, type: 3}
   tasks:
   - taskType: 1
-    description: "-The cradle is empty... Find the baby hiding in the house."
+    description: -The cradle is empty... Find the baby hiding in the house.
     completePreviousTasks: 0
   - taskType: 8
-    description: "-Bring the baby back to the cradle. Its crying will draw her."
+    description: -Bring the baby back to the cradle. Its crying will draw her.
     completePreviousTasks: 0
   modules:
   - rid: 1000
@@ -68,7 +68,7 @@ MonoBehaviour:
       data:
         dropPoints:
         - Cradle
-        - HiddenDropPoint
+        - RockingChair
     - rid: 1004
       type: {class: LevelStartEvent, ns: , asm: Assembly-CSharp}
       data:

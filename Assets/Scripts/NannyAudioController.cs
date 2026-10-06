@@ -42,9 +42,21 @@ public class NannyAudioController : MonoBehaviour
             _clipLookup[entry.sound] = entry.clip;
     }
 
+    // In Start, because the sources are on child objects whose Awake may not have run yet.
+    private void Start()
+    {
+        foreach (NannySound sound in Enum.GetValues(typeof(NannySound)))
+        {
+            if (sound != NannySound.None && (!_clipLookup.TryGetValue(sound, out var clip) || clip == null))
+                Debug.LogError($"[NannyAudioController] No clip for {sound} in Audio Entries, so it never plays.", this);
+        }
+
+        if (footStepSource.clip == null)
+            Debug.LogError("[NannyAudioController] The footstep source's AudioSource has no clip, so her footsteps are silent.", footStepSource);
+    }
+
     public void Play(NannySound sound)
     {
-        if (voiceSource == null) return;
         if (!_clipLookup.TryGetValue(sound, out var clip) || clip == null)
             return;
 
@@ -62,7 +74,6 @@ public class NannyAudioController : MonoBehaviour
 
     public void Stop()
     {
-        if (voiceSource == null) return;
         voiceSource.loop = false;
         voiceSource.Stop();
         _currentLoop = NannySound.None;
@@ -70,8 +81,6 @@ public class NannyAudioController : MonoBehaviour
 
     public void SetFootstepsActive(bool active)
     {
-        if (footStepSource == null) return;
-
         if (!active)
         {
             footStepSource.Stop();
@@ -81,12 +90,10 @@ public class NannyAudioController : MonoBehaviour
         if (footStepSource.isPlaying)
             return;
 
-        float min = footStepVolumeRange.Length > 0 ? footStepVolumeRange[0] : 0.8f;
-        float max = footStepVolumeRange.Length > 1 ? footStepVolumeRange[1] : 1f;
-        footStepSource.volume = UnityEngine.Random.Range(min, max);
+        footStepSource.volume = UnityEngine.Random.Range(footStepVolumeRange[0], footStepVolumeRange[1]);
         footStepSource.pitch = UnityEngine.Random.Range(0.8f, 1.1f);
         footStepSource.Play();
     }
 
-    public bool IsPlaying => voiceSource != null && voiceSource.isPlaying;
+    public bool IsPlaying => voiceSource.isPlaying;
 }

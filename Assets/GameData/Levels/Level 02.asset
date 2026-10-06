@@ -55,7 +55,7 @@ MonoBehaviour:
       data:
         active: 1
         requireItem: 2
-        canPickBaby: 0
+        canPickBaby: 1
         playHorrorOnPick: 0
         initialAnimation: 1
         overrideSound: 0
