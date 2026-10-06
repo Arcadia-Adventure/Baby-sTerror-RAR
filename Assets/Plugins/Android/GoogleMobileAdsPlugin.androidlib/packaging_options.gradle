@@ -1,7 +1,5 @@
 android {
-    packaging {
-        resources {
-            pickFirsts.add("META-INF/kotlinx_coroutines_core.version")
-        }
+    packagingOptions {
+        pickFirst "META-INF/kotlinx_coroutines_core.version"
     }
 }
