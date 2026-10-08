@@ -17,16 +17,17 @@ MonoBehaviour:
   thumbnail: {fileID: 21300000, guid: f771d5d869fa50c4b8434e66cb06151c, type: 3}
   tasks:
   - taskType: 1
-    description: "-Answer the ringing doorbell and find the baby."
+    description: -Answer the ringing doorbell and find the baby.
     completePreviousTasks: 0
   - taskType: 8
-    description: "-Pick up the baby and settle it in Bedroom."
+    description: -Pick up the baby and settle it in Bedroom.
     completePreviousTasks: 0
   modules:
   - rid: 1000
   - rid: 1001
   - rid: 1002
   - rid: 1004
+  - rid: 1005
   references:
     version: 2
     RefIds:
@@ -73,3 +74,18 @@ MonoBehaviour:
         delay: 0
         actions:
         - rid: 1003
+    - rid: 1005
+      type: {class: PlayerEntersZoneEvent, ns: , asm: Assembly-CSharp}
+      data:
+        delay: 0
+        actions:
+        - rid: 1006
+        zone: {fileID: 11400000, guid: f6e9e52def184b828517cd391bb9de12, type: 2}
+        requireItem: 1
+        once: 1
+    - rid: 1006
+      type: {class: SlamDoorAction, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
+        duration: 0.15
+        slamSFX: {fileID: 8300000, guid: 772aa6a4d14d943ec8a40e78e45803f7, type: 3}

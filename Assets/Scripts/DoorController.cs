@@ -184,6 +184,33 @@ public class DoorController : Interactable
         UpdateNavBlocker();
     }
 
+    /// <summary>
+    /// Swings the door shut on its own, as a scare. Leaves the lock alone and sends no task event,
+    /// since the player didn't close it. Does nothing if the door is already closed.
+    /// </summary>
+    public void SlamShut(float duration, AudioClip slamSFX = null)
+    {
+        if (!isDoorOpen)
+            return;
+
+        TweenUtilities.Kill(this);
+        TweenUtilities.Kill(transform);
+
+        AudioClip clip = slamSFX != null ? slamSFX : doorCloseSFX;
+        TweenUtilities.Rotate(transform, doorClose, duration)
+            .SetEase(Ease.InQuad)
+            .OnComplete(() =>
+            {
+                if (clip != null)
+                    AudioManager.Instance.PlaySFX(clip);
+            });
+
+        isDoorOpen = false;
+        onDoorOpen.Invoke(false);
+        UpdateDetectionText();
+        UpdateNavBlocker();
+    }
+
     void OnCollisionExit(Collision other)
     {
         if (!other.collider.TryGetComponent(out AxeController axe)) return;

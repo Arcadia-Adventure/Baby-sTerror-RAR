@@ -143,6 +143,12 @@ MonoBehaviour:
   hUDNavigationElement: {fileID: 1779368745491943079}
   pickSFX: {fileID: 0}
   dropSFX: {fileID: 0}
+  OnPick:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDrop:
+    m_PersistentCalls:
+      m_Calls: []
   OnPickTaskType: 21
   OnDropForBabyTaskType: 22
 --- !u!1 &946031169141240705
@@ -4918,7 +4924,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2757131370503425663}
-  m_LocalRotation: {x: 0.013110873, y: -0.059594814, z: 0.0033551555, w: 0.9981309}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.001}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 1
@@ -11693,7 +11699,12 @@ SkinnedMeshRenderer:
   - {fileID: 6882929360811884597}
   - {fileID: 6882929360811905253}
   - {fileID: 6882929360811854045}
-  m_BlendShapeWeights: []
+  m_BlendShapeWeights:
+  - 0
+  - 0
+  - 100
+  - 100
+  - 100
   m_RootBone: {fileID: 6882929360811884597}
   m_AABB:
     m_Center: {x: -0.20298052, y: 0.03752049, z: -0.00000011920929}
@@ -12136,6 +12147,12 @@ MonoBehaviour:
   hUDNavigationElement: {fileID: 6515740226217284077}
   pickSFX: {fileID: 8300000, guid: dbc434cfdcf59449ca2fd5072830d724, type: 3}
   dropSFX: {fileID: 0}
+  OnPick:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDrop:
+    m_PersistentCalls:
+      m_Calls: []
   OnPickTaskType: 1
   OnDropForBabyTaskType: 0
   cryThreshold: 0

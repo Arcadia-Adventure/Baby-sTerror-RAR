@@ -91,6 +91,27 @@ public class SetDoorLockedAction : LevelAction
     }
 }
 
+[Serializable, LevelMenu("World/Slam Door")]
+public class SlamDoorAction : LevelAction
+{
+    [Tooltip("Key of the door's SceneObjectTag.")]
+    public SceneObjectKey door;
+    [Tooltip("Seconds the door takes to swing shut.")]
+    [Min(0.05f)] public float duration = 0.15f;
+    [Tooltip("Played as the door hits the frame. Empty uses the door's own close sound.")]
+    public AudioClip slamSFX;
+
+    public override string Label => $"Slam {(door != null ? door.name : "Door")}";
+
+    public override void Run(LevelContext ctx) => ctx.Get<DoorController>(door)?.SlamShut(duration, slamSFX);
+
+    public override void Validate(LevelDefinition level, List<string> problems)
+    {
+        if (door == null)
+            problems.Add("Slam Door has no door key.");
+    }
+}
+
 [Serializable, LevelMenu("World/Show Or Hide Objects")]
 public class SetObjectsActiveAction : LevelAction
 {

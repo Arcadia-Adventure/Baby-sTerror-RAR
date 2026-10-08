@@ -84,3 +84,57 @@ public class TaskCompletedEvent : LevelEventModule
         base.Validate(level, problems);
     }
 }
+
+[Serializable, LevelMenu("Events/On Player Enters Zone")]
+public class PlayerEntersZoneEvent : LevelEventModule
+{
+    [Tooltip("Key of the LevelTriggerZone's SceneObjectTag.")]
+    public SceneObjectKey zone;
+    [Tooltip("Only fires while the player holds this item. None fires on any entry, Any needs something in hand.")]
+    public ItemType requireItem = ItemType.None;
+    [Tooltip("Fires the first time only. Off fires on every matching entry.")]
+    public bool once = true;
+
+    public override string Label =>
+        $"On Enter {(zone != null ? zone.name : "Zone")}" +
+        (requireItem != ItemType.None ? $" with {requireItem}" : "") + DelaySuffix;
+
+    public override void Setup(LevelContext ctx)
+    {
+        var trigger = ctx.Get<LevelTriggerZone>(zone);
+        if (trigger == null)
+            return;
+
+        void OnEntered()
+        {
+            if (ctx.LevelEnded || !HoldsRequiredItem())
+                return;
+
+            if (once)
+                trigger.PlayerEntered -= OnEntered;
+            Fire(ctx);
+        }
+
+        trigger.PlayerEntered += OnEntered;
+    }
+
+    bool HoldsRequiredItem()
+    {
+        if (requireItem == ItemType.None)
+            return true;
+
+        PickableItem held = PickDropController.Instance.heldPickable;
+        if (held == null)
+            return false;
+
+        return requireItem == ItemType.Any || held.itemType == requireItem;
+    }
+
+    public override void Validate(LevelDefinition level, List<string> problems)
+    {
+        if (zone == null)
+            problems.Add("On Player Enters Zone event has no zone key.");
+
+        base.Validate(level, problems);
+    }
+}
