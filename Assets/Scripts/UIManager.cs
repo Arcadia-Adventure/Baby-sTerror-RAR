@@ -43,6 +43,8 @@ public class UIManager : Singleton<UIManager>
 
     CrosshairState currentCrosshairState = CrosshairState.None;
 
+    public CrosshairState CurrentCrosshairState => currentCrosshairState;
+
     private void Start()
     {
         Time.timeScale = 1f;
@@ -122,6 +124,7 @@ public class UIManager : Singleton<UIManager>
         nextButton.SetActive(!isLastLevel);
         rateusButton.SetActive(isLastLevel);
         ArcadiaSdkManager.Agent.PrepareRewarded();
+        ArcadiaSdkManager.Agent.PrepareInterstitial();
     }
 
     public void LevelFailed()
@@ -178,7 +181,7 @@ public class UIManager : Singleton<UIManager>
         AudioManager.Instance.GameEnd();
         AudioManager.Instance.SetBGSetting(false);
         AA_AnalyticsManager.Agent.TrackButtonClick("resume");
-        ArcadiaSdkManager.Agent.ShowBanner();
+        ArcadiaSdkManager.Agent.ShowBanner(BannerScreen.Gameplay);
     }
 
     public void HomeBtn()
@@ -213,8 +216,8 @@ public class UIManager : Singleton<UIManager>
         GamePreference.selectedLevel++;
         AudioManager.Instance.PlaySFX(SFX.Click);
         AA_AnalyticsManager.Agent.TrackButtonClick("next_level");
-        ArcadiaSdkManager.CurrentAdPlacement = "next_rewarded";
-        ShowRewardedThenLoadScene();
+        ArcadiaSdkManager.CurrentAdPlacement = "next_interstitial";
+        ArcadiaSdkManager.Agent.ShowInterstitialAd(LoadCurrentScene, LoadCurrentScene);
     }
 
     void ShowRewardedThenLoadScene()

@@ -32,7 +32,7 @@ public class MainMenuManager : Singleton<MainMenuManager>
         AudioManager.Instance.StartGame();
 
         ArcadiaSdkManager.CurrentAdPlacement = "main_menu_banner";
-        ArcadiaSdkManager.Agent.ShowBanner();
+        ArcadiaSdkManager.Agent.ShowBanner(BannerScreen.MainMenu);
         AA_AnalyticsManager.Agent.TrackScreenView("main_menu");
     }
 

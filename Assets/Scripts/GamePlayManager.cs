@@ -179,8 +179,9 @@ public class GamePlayManager : Singleton<GamePlayManager>
         _runner = new LevelRunner(new LevelContext(CurrentLevel, CurrentSetup, this));
         _runner.Start();
 
+        ArcadiaSdkManager.CurrentLevel = Level;
         ArcadiaSdkManager.CurrentAdPlacement = "gameplay_banner";
-        ArcadiaSdkManager.Agent.ShowBanner();
+        ArcadiaSdkManager.Agent.ShowBanner(BannerScreen.Gameplay);
         ArcadiaSdkManager.Agent.PrepareInterstitial();
         AnalyticsTracker.OnLevelStart(Level);
         AA_AnalyticsManager.Agent.TrackScreenView("gameplay");

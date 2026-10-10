@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Ommy.Prefs;
 using Ommy.Singleton;
@@ -21,10 +22,30 @@ public class HintManager : Singleton<HintManager>
         DeactiveAllIndicators();
     }
 
+    IEnumerator Start()
+    {
+        // The trail clears itself in its own Start, so wait for that before starting it.
+        yield return null;
+        StartAutoTrail();
+    }
+
     void OnEnable() => ObjectiveUIController.OnTaskReceived += OnTaskReceived;
     void OnDisable() => ObjectiveUIController.OnTaskReceived -= OnTaskReceived;
 
-    void OnTaskReceived(TaskType _) => UpdateHint();
+    void OnTaskReceived(TaskType _)
+    {
+        UpdateHint();
+        StartAutoTrail();
+    }
+
+    void StartAutoTrail()
+    {
+        var levelData = LevelConfigLoader.GetLevelData(GamePreference.selectedLevel);
+        if (levelData == null || !levelData.showFootstepTrail || !HasCurrentHint())
+            return;
+
+        StartTrailToHint(GamePreference.selectedLevel - 1, ObjectiveUIController.Instance.CurrentTaskIndex);
+    }
 
     public void ShowCurrentHint()
     {

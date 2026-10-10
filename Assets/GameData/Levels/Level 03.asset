@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Level 03
   m_EditorClassIdentifier: 
   level: 3
-  missionName: Something Feels Wrong
+  missionName: Change the Diaper
   thumbnail: {fileID: 21300000, guid: 6c8958fe692a1584ba6dfc0002e3f972, type: 3}
   tasks:
   - taskType: 19
     description: -Pick up the baby and take it to the washroom.
     completePreviousTasks: 0
   - taskType: 20
-    description: "-Find the body wash and clean the baby\u2019s."
+    description: "-Find the diaper and change the baby."
     completePreviousTasks: 0
   modules:
   - rid: 1000
@@ -61,7 +61,7 @@ MonoBehaviour:
         initialAnimation: 1
         overrideSound: 0
         possessed: 0
-        dirtyFace: 1
+        dirtyFace: 0
         clothed: 0
     - rid: 1003
       type: {class: EnableDropPointsAction, ns: , asm: Assembly-CSharp}

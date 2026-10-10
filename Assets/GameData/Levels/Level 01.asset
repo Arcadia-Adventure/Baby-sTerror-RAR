@@ -22,6 +22,7 @@ MonoBehaviour:
   - taskType: 8
     description: -Pick up the baby and settle it in Bedroom.
     completePreviousTasks: 0
+  showFootstepTrail: 1
   modules:
   - rid: 1000
   - rid: 1001

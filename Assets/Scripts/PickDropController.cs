@@ -21,6 +21,10 @@ public class PickDropController : Singleton<PickDropController>
     [Header("Wall Stuck Prevention")]
     [SerializeField] float maxDistanceFromHoldArea = 1.5f;
 
+    [Header("Touch Input")]
+    [Tooltip("Tapping the look pad does what the crosshair icon shows, same as its touch button.")]
+    [SerializeField] TrackPadTap lookPadTap;
+
     public FirstPersonController fpc;
 
     public DropPoint dropPoint;
@@ -41,6 +45,31 @@ public class PickDropController : Singleton<PickDropController>
             doorController.DoorOpenClose();
     }
 
+    public void PickDropBtn()
+    {
+        if (heldPickable != null)
+            DropObject();
+        else
+            PickupObject();
+    }
+
+    /// <summary>Does what the matching touch button would do for the crosshair icon currently shown.</summary>
+    public void Interact()
+    {
+        switch (UIManager.Instance.CurrentCrosshairState)
+        {
+            case CrosshairState.DoorOpen:
+            case CrosshairState.DoorClose:
+                DoorOpenCloseBtn();
+                break;
+
+            case CrosshairState.Pick:
+            case CrosshairState.Drop:
+                PickDropBtn();
+                break;
+        }
+    }
+
     [InspectorButton("ToggleZoom")]
     public void ToggleZoom() => DetectedPickable(fpc.isZoomed);
 
@@ -52,15 +81,13 @@ public class PickDropController : Singleton<PickDropController>
             doorController.DoorOpenClose();
 
         if (CF2Input.GetKeyDown(KeyCode.P))
-        {
-            if (heldPickable != null)
-                DropObject();
-            else
-                PickupObject();
-        }
+            PickDropBtn();
 
         if (CF2Input.GetKeyDown(KeyCode.F) && heldPickable is UseableItem useable)
             useable.UseDevice();
+
+        if (lookPadTap != null && lookPadTap.JustTapped)
+            Interact();
     }
 
     #endregion

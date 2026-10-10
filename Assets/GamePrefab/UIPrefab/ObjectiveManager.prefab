@@ -85,7 +85,7 @@ MonoBehaviour:
         m_PersistentCalls:
           m_Calls: []
   - levelNO: Night 3
-    missionName: Something Feels Wrong
+    missionName: Change the Diaper
     taskInfos:
     - isCompleted: 0
       requireLevel: -1
@@ -99,7 +99,7 @@ MonoBehaviour:
       requireLevel: -1
       taskType: 20
       completePreviousTasks: 0
-      description: "-Find the facewash and clean the baby\u2019s face."
+      description: "-Find the diaper and change the baby."
       OnComplete:
         m_PersistentCalls:
           m_Calls: []

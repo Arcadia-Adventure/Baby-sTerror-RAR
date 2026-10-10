@@ -145,13 +145,20 @@ public class FirebaseManager : MonoBehaviour
         Debug.Log($"[FirebaseManager] Remote Config applied. ads={JsonUtility.ToJson(AdsSettings)} game={JsonUtility.ToJson(GameSettings)}");
     }
 
+    // Overwriting a copy keeps the seeded defaults for fields the console JSON leaves out.
+    static T OverwriteCopy<T>(T current, string json)
+    {
+        var copy = JsonUtility.FromJson<T>(JsonUtility.ToJson(current));
+        JsonUtility.FromJsonOverwrite(json, copy);
+        return copy;
+    }
+
     static void TryParseAdsSettings(string json)
     {
         if (string.IsNullOrEmpty(json)) return;
         try
         {
-            var parsed = JsonUtility.FromJson<AdsRemoteSettings>(json);
-            if (parsed != null) AdsSettings = parsed;
+            AdsSettings = OverwriteCopy(AdsSettings, json);
         }
         catch (Exception e)
         {
@@ -164,8 +171,7 @@ public class FirebaseManager : MonoBehaviour
         if (string.IsNullOrEmpty(json)) return;
         try
         {
-            var parsed = JsonUtility.FromJson<GameRemoteSettings>(json);
-            if (parsed != null) GameSettings = parsed;
+            GameSettings = OverwriteCopy(GameSettings, json);
         }
         catch (Exception e)
         {

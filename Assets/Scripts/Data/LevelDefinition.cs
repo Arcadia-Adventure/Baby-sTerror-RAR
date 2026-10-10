@@ -14,6 +14,9 @@ public class LevelDefinition : ScriptableObject
 
     public TaskData[] tasks = Array.Empty<TaskData>();
 
+    [Tooltip("Runs the footstep trail to each task's hint without the player using a hint.")]
+    public bool showFootstepTrail;
+
     [Tooltip("What happens in this level. Modules run top to bottom.")]
     [SerializeReference, SubclassPicker] public List<LevelModule> modules = new();
 

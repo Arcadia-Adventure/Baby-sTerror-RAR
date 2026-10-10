@@ -73,6 +73,8 @@ public class ArcadiaSdkManager : MonoBehaviour
     private bool _isBannerVisible = false; // Track banner visibility
     private bool _wasBannerVisibleBeforeAppOpen = false; // Restore banner after App Open Ad
     private bool _interstitialLoading;
+    private int _interstitialRequests;
+    private int _interstitialsShownThisSession;
     private bool _rewardedLoading;
     private bool _rewardedRewardGranted;
     private Action _pendingRewardedFail;
@@ -389,6 +391,27 @@ public class ArcadiaSdkManager : MonoBehaviour
         adsManager.ShowBanner(myGameIds.bannerAdId);
         _isBannerVisible = true;
     }
+
+    // The native banner survives scene loads, so a screen with banners off has to hide it.
+    public void ShowBanner(BannerScreen screen)
+    {
+        if (IsBannerEnabledOn(screen))
+            ShowBanner();
+        else
+            HideBanner();
+    }
+
+    bool IsBannerEnabledOn(BannerScreen screen)
+    {
+        AdsRemoteSettings ads = FirebaseManager.AdsSettings;
+        return screen switch
+        {
+            BannerScreen.MainMenu => ads.banner_main_menu,
+            BannerScreen.LevelSelect => ads.banner_level_select,
+            BannerScreen.Gameplay => ads.banner_gameplay,
+            _ => true
+        };
+    }
     
     public void HideBanner()
     {
@@ -438,19 +461,48 @@ public class ArcadiaSdkManager : MonoBehaviour
 
     public void ShowInterstitialAd(int timer, Action successCallBack = null, Action failCallBack = null)
     {
+        if (SkipInterstitial(successCallBack)) return;
         PrepareInterstitial();
-        StartCoroutine(ShowAdWithDelay(ShowInterstitialAd, successCallBack, failCallBack, timer));
+        StartCoroutine(ShowAdWithDelay(ShowInterstitialNow, successCallBack, failCallBack, timer));
     }
     
     public void ShowInterstitialAd(Action successCallBack = null, Action failCallBack = null)
     {
-        if (removeAds || adsManager == null || !FirebaseManager.AdsSettings.interstitial)
-        {
-            ShowLoadingScreen(false);
-            successCallBack?.Invoke();
-            return;
-        }
+        if (SkipInterstitial(successCallBack)) return;
+        ShowInterstitialNow(successCallBack, failCallBack);
+    }
 
+    bool SkipInterstitial(Action successCallBack)
+    {
+        if (!ShouldSkipInterstitial()) return false;
+        ShowLoadingScreen(false);
+        successCallBack?.Invoke();
+        return true;
+    }
+
+    // Counts toward interstitial_every_n, so call it once per show request.
+    bool ShouldSkipInterstitial()
+    {
+        AdsRemoteSettings ads = FirebaseManager.AdsSettings;
+        if (removeAds || adsManager == null || !ads.interstitial) return true;
+
+        string capReason = null;
+        if (CurrentLevel < ads.interstitial_start_level)
+            capReason = $"level {CurrentLevel} is below start level {ads.interstitial_start_level}";
+        else if (ads.interstitial_max_per_session > 0 && _interstitialsShownThisSession >= ads.interstitial_max_per_session)
+            capReason = $"session max of {ads.interstitial_max_per_session} reached";
+        else if ((DateTime.Now - _lastFullScreenAdShownTime).TotalSeconds < ads.interstitial_cooldown)
+            capReason = $"{ads.interstitial_cooldown}s cooldown not over";
+        else if (++_interstitialRequests % Mathf.Max(1, ads.interstitial_every_n) != 0)
+            capReason = $"request {_interstitialRequests} is not on the every-{ads.interstitial_every_n} step";
+
+        if (capReason == null) return false;
+        PrintStatus("Interstitial skipped: " + capReason);
+        return true;
+    }
+
+    void ShowInterstitialNow(Action successCallBack, Action failCallBack)
+    {
         if (CurrentAdPlacement == "unknown") CurrentAdPlacement = "interstitial_generic";
         if (_showInterstitialCoroutine != null)
             StopCoroutine(_showInterstitialCoroutine);
@@ -642,6 +694,8 @@ public class ArcadiaSdkManager : MonoBehaviour
     {
         PrintStatus($"Ad shown: {adUnitId}");
         ShowLoadingScreen(false);
+        if (adUnitId == myGameIds.interstitialAdId)
+            _interstitialsShownThisSession++;
         string adType = ResolveAdType(adUnitId);
         AA_AnalyticsManager.Agent.TrackAdEvent("shown", adType, CurrentAdPlacement);
         AnalyticsTracker.OnAdShown(adType, CurrentAdPlacement);
@@ -708,6 +762,7 @@ public class ArcadiaSdkManager : MonoBehaviour
     }
 
     public static string CurrentAdPlacement { get; set; } = "unknown";
+    public static int CurrentLevel { get; set; }
 
     public static void PrintStatus(string message)
     {
@@ -900,6 +955,13 @@ public enum BannerType
     MediumRectangle,
     IABBanner,
     Leaderboard,
+}
+
+public enum BannerScreen
+{
+    MainMenu,
+    LevelSelect,
+    Gameplay
 }
 
 public enum AdPosition

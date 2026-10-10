@@ -45,12 +45,11 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
 
     private void Start()
     {
-		ArcadiaSdkManager.Agent.HideBanner();
         if (PlayerPrefs.GetInt(PrefKeys.UnlockAllLevels) == 1)
         {
             unlockAllLevelsButton.enabled = false;
         }
-        ArcadiaSdkManager.Agent.ShowBanner();
+        ArcadiaSdkManager.Agent.ShowBanner(BannerScreen.LevelSelect);
         BuildButtons();
         UnlockLevelsIfNeeded();
         MoveContentView();

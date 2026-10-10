@@ -36,6 +36,9 @@ public class PickableItem : Interactable
     {
         base.Start();
         itemTag = gameObject.tag;
+        // Scene still serializes the old face-wash prompt; the item is the diaper now.
+        if (itemType == ItemType.Diaper && detectionText == "Pick Facewash")
+            detectionText = "Pick Diaper";
     }
     public virtual void PickObject(Transform parent)
     {
