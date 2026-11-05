@@ -1,7 +1,10 @@
 fileFormatVersion: 2
 guid: bbed468117a0842328f82609534fd78f
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 2240788956925583484
+    second: vecteezy_white-empty-speech-bubble_11720954_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -121,7 +124,29 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: vecteezy_white-empty-speech-bubble_11720954_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 5542
+        height: 5585
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c70ea222fa1e81f10800000000000000
+      internalID: 2240788956925583484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
