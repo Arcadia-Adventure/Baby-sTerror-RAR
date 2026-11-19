@@ -42,6 +42,8 @@ public class DevSettingsBootstrap : MonoBehaviour
             "Increase Hints (+5)", IncreaseHints));
         DevSettingsMenu.AddEntry(GameplayHeading, new DevSettingsButton(
             "Unlock All Levels", UnlockAllLevels));
+        DevSettingsMenu.AddEntry(GameplayHeading, new DevSettingsButton(
+            "Remove Ads", RemoveAds));
 
         DevSettingsMenu.AddEntry(ConsoleHeading,
             new DevSettingsToggle("Mobile Console", SetConsole, IsConsoleEnabled));
@@ -128,6 +130,18 @@ public class DevSettingsBootstrap : MonoBehaviour
         var levelSelect = FindFirstObjectByType<LevelSelectionManager>();
         if (levelSelect != null)
             levelSelect.OnPurchaseSuccess();
+    }
+
+    private static void RemoveAds()
+    {
+        if (ArcadiaSdkManager.Agent == null)
+        {
+            Debug.LogWarning("[DevSettings] ArcadiaSdkManager not ready; cannot remove ads.");
+            return;
+        }
+
+        ArcadiaSdkManager.Agent.OnRemoveAds();
+        PlayerPrefs.Save();
     }
 
     private static bool IsConsoleEnabled() => PlayerPrefs.GetInt(ConsolePrefKey, 0) == 1;
