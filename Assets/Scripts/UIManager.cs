@@ -192,7 +192,7 @@ public class UIManager : Singleton<UIManager>
         KillUiTweens();
         AudioManager.Instance.PlaySFX(SFX.Click);
         AA_AnalyticsManager.Agent.TrackLevelAbandon(GamePreference.selectedLevel, "home_button");
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadSceneAsync("MainMenu");
     }
 
     public void ReplayBtn()
@@ -236,7 +236,7 @@ public class UIManager : Singleton<UIManager>
     void LoadCurrentScene()
     {
         KillUiTweens();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void SensivitySlider()

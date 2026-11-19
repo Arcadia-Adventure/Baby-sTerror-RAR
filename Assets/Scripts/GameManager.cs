@@ -12,9 +12,25 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = targetFrameRate;
+        Application.targetFrameRate = ResolveTargetFrameRate();
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         SetDefaultPlayerPrefs();
+    }
+
+    int ResolveTargetFrameRate()
+    {
+        string vendor = SystemInfo.graphicsDeviceVendor ?? string.Empty;
+        string device = SystemInfo.graphicsDeviceName ?? string.Empty;
+        bool isPowerVr =
+            vendor.IndexOf("Imagination", System.StringComparison.OrdinalIgnoreCase) >= 0
+            || vendor.IndexOf("PowerVR", System.StringComparison.OrdinalIgnoreCase) >= 0
+            || device.IndexOf("PowerVR", System.StringComparison.OrdinalIgnoreCase) >= 0;
+
+        bool lowMemory = SystemInfo.systemMemorySize < 3000 || SystemInfo.graphicsMemorySize <= 512;
+        if (isPowerVr || lowMemory)
+            return 30;
+
+        return targetFrameRate;
     }
 
     protected void Start()
