@@ -32,25 +32,47 @@ public class PickDropController : Singleton<PickDropController>
     public PickableItem detectedPickable;
     public DoorController doorController;
     public PickableItem heldPickable;
+    public WorldInteractable worldTarget;
 
     Interactable lastDetected;
     RaycastHit hit;
     Vector3 moveDirection;
+    bool _hiding;
+
+    /// <summary>True while the player is inside a hiding spot; only Leave works then.</summary>
+    public bool IsHiding => _hiding;
 
     #region Input
 
     public void DoorOpenCloseBtn()
     {
+        if (_hiding) return;
         if (doorController != null)
             doorController.DoorOpenClose();
     }
 
     public void PickDropBtn()
     {
+        if (_hiding) return;
         if (heldPickable != null)
             DropObject();
         else
             PickupObject();
+    }
+
+    /// <summary>The Interact button (E): use what the crosshair is on, or leave a hiding spot.</summary>
+    public void InteractBtn()
+    {
+        if (_hiding)
+        {
+            HideSpot spot = HideSpot.Occupied;
+            if (spot != null && spot.CanInteract(heldPickable, out _))
+                spot.Interact(this);
+            return;
+        }
+
+        if (worldTarget != null && worldTarget.CanInteract(heldPickable, out _))
+            worldTarget.Interact(this);
     }
 
     /// <summary>Does what the matching touch button would do for the crosshair icon currently shown.</summary>
@@ -66,6 +88,11 @@ public class PickDropController : Singleton<PickDropController>
             case CrosshairState.Pick:
             case CrosshairState.Drop:
                 PickDropBtn();
+                break;
+
+            case CrosshairState.Interact:
+            case CrosshairState.Hide:
+                InteractBtn();
                 break;
         }
     }
@@ -86,6 +113,9 @@ public class PickDropController : Singleton<PickDropController>
         if (CF2Input.GetKeyDown(KeyCode.F) && heldPickable is UseableItem useable)
             useable.UseDevice();
 
+        if (CF2Input.GetKeyDown(KeyCode.E))
+            InteractBtn();
+
         if (lookPadTap != null && lookPadTap.JustTapped)
             Interact();
     }
@@ -96,7 +126,17 @@ public class PickDropController : Singleton<PickDropController>
 
     private void Update()
     {
+        // Inside a hiding spot nothing is in reach; the Interact button is the way out.
+        if (_hiding)
+        {
+            if (CF2Input.GetKeyDown(KeyCode.E))
+                InteractBtn();
+            return;
+        }
+
         ButtonInputs();
+        if (_hiding)
+            return;
 
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward),
                 out hit, pickupRange, detectionLayers, queryTriggerInteraction)
@@ -121,6 +161,13 @@ public class PickDropController : Singleton<PickDropController>
         lastDetected = interactable;
         interactable.Detected();
 
+        // Each detection decides on its own buttons; drop the ones only another kind uses.
+        if (interactable is not WorldInteractable && !(interactable is DoorController d && d.HideSpot != null))
+        {
+            worldTarget = null;
+            UIManager.Instance.SetInteractButton(false);
+        }
+
         switch (interactable)
         {
             case BabyController baby:
@@ -131,14 +178,40 @@ public class PickDropController : Singleton<PickDropController>
                 HandleDropPointDetection(drop);
                 break;
 
+            // A wardrobe door means "hide here", not "open the door".
+            case DoorController door when door.HideSpot != null:
+                HandleWorldDetection(door.HideSpot);
+                break;
+
             case DoorController door:
                 HandleDoorDetection(door);
+                break;
+
+            case WorldInteractable world:
+                HandleWorldDetection(world);
                 break;
 
             case PickableItem pickable:
                 HandlePickableDetection(pickable);
                 break;
         }
+    }
+
+    void HandleWorldDetection(WorldInteractable world)
+    {
+        worldTarget = world;
+        doorController = null;
+        detectedPickable = null;
+        dropPoint = null;
+        babyController = null;
+        DetectedPickable(false);
+        UIManager.Instance.SetDoorButtonVisible(false);
+        if (heldPickable == null)
+            UIManager.Instance.SetPickButtonVisible(false);
+
+        bool usable = world.CanInteract(heldPickable, out string prompt);
+        UIManager.Instance.SetCrosshair(usable ? world.PromptState : CrosshairState.None, prompt);
+        UIManager.Instance.SetInteractButton(usable, world.buttonSprite);
     }
 
     void HandleDropPointDetection(DropPoint drop)
@@ -153,7 +226,8 @@ public class PickDropController : Singleton<PickDropController>
     void HandleDoorDetection(DoorController door)
     {
         doorController = door;
-        UIManager.Instance.SetCrosshair(door.crosshairState, door.detectionText);
+        string prompt = door.Accepts(heldPickable) ? "Unlock Door" : door.detectionText;
+        UIManager.Instance.SetCrosshair(door.crosshairState, prompt);
         UIManager.Instance.SetDoorButtonVisible(true);
     }
 
@@ -200,11 +274,40 @@ public class PickDropController : Singleton<PickDropController>
         doorController = null;
         dropPoint = null;
         babyController = null;
+        worldTarget = null;
         DetectedPickable(false);
         UIManager.Instance.SetCrosshair(CrosshairState.None, null);
         UIManager.Instance.SetDoorButtonVisible(false);
+        UIManager.Instance.SetInteractButton(false);
         if (heldPickable == null)
             UIManager.Instance.SetPickButtonVisible(false);
+    }
+
+    #endregion
+
+    #region Hiding
+
+    /// <summary>Called by HideSpot: clears what's in reach and turns the Interact button into Leave.</summary>
+    public void EnterHiding()
+    {
+        ClearDetection();
+        _hiding = true;
+        UIManager.Instance.SetPickButtonVisible(false);
+        UIManager.Instance.SetUseDeviceButtonVisible(false);
+        UIManager.Instance.SetCrouchButtonVisible(false);
+        UIManager.Instance.SetSprintButtonVisible(false);
+        UIManager.Instance.SetInteractButton(true, UIManager.Instance.exitHideSprite);
+        UIManager.Instance.SetCrosshair(CrosshairState.None, null);
+    }
+
+    public void ExitHiding()
+    {
+        _hiding = false;
+        UIManager.Instance.SetInteractButton(false);
+        UIManager.Instance.SetCrouchButtonVisible(true);
+        UIManager.Instance.SetSprintButtonVisible(true);
+        if (heldPickable != null)
+            UIManager.Instance.SetPickButtonVisible(true);
     }
 
     #endregion
@@ -213,8 +316,30 @@ public class PickDropController : Singleton<PickDropController>
 
     private void FixedUpdate()
     {
-        if (heldPickable != null)
+        // While hiding the held item is stashed (inactive), so there's nothing to move.
+        if (heldPickable != null && heldPickable.gameObject.activeInHierarchy)
             MoveHeldObject();
+    }
+
+    /// <summary>
+    /// Uses up the held item (a key in a lock, a fuse in the box): it leaves the player's hands and
+    /// the scene. Returns the item, or null if nothing was held.
+    /// </summary>
+    public PickableItem ConsumeHeld()
+    {
+        PickableItem item = heldPickable;
+        if (item == null)
+            return null;
+
+        heldPickable = null;
+        item.ReleaseObject();
+        item.rb.isKinematic = true;
+        if (item is UseableItem useable)
+            useable.OnDropDevice();
+        item.gameObject.SetActive(false);
+
+        UIManager.Instance.SetPickButtonVisible(false);
+        return item;
     }
 
     void MoveHeldObject()

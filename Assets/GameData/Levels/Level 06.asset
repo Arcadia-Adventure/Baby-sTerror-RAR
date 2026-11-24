@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 6
   missionName: The Empty Cradle
-  thumbnail: {fileID: 21300000, guid: 4c4b7f0a7627de8478c6a90b31c5b06b, type: 3}
+  thumbnail: {fileID: 21300000, guid: 9cdbb857f27154a0ba8a8e371ece9933, type: 3}
+  teaser: You hid. She left. But when you opened the wardrobe, the cradle was empty.
   tasks:
   - taskType: 1
     description: -The cradle is empty... Find the baby hiding in the house.
     completePreviousTasks: 0
   - taskType: 8
-    description: -Bring the baby back to the cradle. Its crying will draw her.
+    description: '-Bring the baby back to the cradle. Its crying draws her: crouch
+      to hush it.'
     completePreviousTasks: 0
+  showFootstepTrail: 0
   modules:
   - rid: 1000
   - rid: 1001
@@ -90,6 +93,6 @@ MonoBehaviour:
         hearingRadius: 3
         babyNoiseBonus: 6
         loseInterestTime: 6
-        attackDamage: 34
+        attackDamage: 25
         huntInterval: 15
         doorBreakTime: 2.5

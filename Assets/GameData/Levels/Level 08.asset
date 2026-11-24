@@ -11,27 +11,35 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2990ad124e9e4ba7b4d02af0567fdee9, type: 3}
   m_Name: Level 08
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
   level: 8
-  missionName: "Smoke in the Air"
-  thumbnail: {fileID: 21300000, guid: a77c8b9c74475c4439626d99ee3eb649, type: 3}
+  missionName: Locked In
+  thumbnail: {fileID: 21300000, guid: 927103c9141594d3594628ee325f0a48, type: 3}
+  teaser: The lights are back... and the nursery door is locked. The baby is crying
+    behind it.
   tasks:
-  - taskType: 6
-    description: "-Find the fire extinguisher"
+  - taskType: 29
+    description: -Find the key to the nursery.
     completePreviousTasks: 0
-  - taskType: 24
-    description: "-Put out the fire\u2026 but who started it?"
+  - taskType: 21
+    description: -Find a toy to calm the baby.
     completePreviousTasks: 0
+  - taskType: 30
+    description: -Unlock the nursery door upstairs.
+    completePreviousTasks: 0
+  - taskType: 22
+    description: -Give the toy to the baby.
+    completePreviousTasks: 0
+  showFootstepTrail: 0
   modules:
-  - rid: 1000
-  - rid: 1001
-  - rid: 1002
-  - rid: 1004
-  - rid: 1005
+  - rid: 1668347763201409239
+  - rid: 1668347763201409240
+  - rid: 1668347763201409241
+  - rid: 1668347763201409242
   references:
     version: 2
     RefIds:
-    - rid: 1000
+    - rid: 1668347763201409239
       type: {class: DoorModule, ns: , asm: Assembly-CSharp}
       data:
         door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
@@ -41,53 +49,43 @@ MonoBehaviour:
           initialDelay: 0
           interval: 0
         doorBell: 0
-    - rid: 1001
+    - rid: 1668347763201409240
       type: {class: DoorModule, ns: , asm: Assembly-CSharp}
       data:
         door: {fileID: 11400000, guid: e2563500a571469cb274380d64d28b01, type: 2}
-        locked: 0
+        locked: 1
         knocking:
           enabled: 0
           initialDelay: 0
           interval: 0
         doorBell: 0
-    - rid: 1002
+    - rid: 1668347763201409241
       type: {class: BabyModule, ns: , asm: Assembly-CSharp}
       data:
         active: 1
-        requireItem: 0
-        canPickBaby: 0
+        requireItem: 8
+        canPickBaby: 1
         playHorrorOnPick: 0
         initialAnimation: 1
         overrideSound: 0
         possessed: 0
         dirtyFace: 0
         clothed: 1
-    - rid: 1003
-      type: {class: StartFireAction, ns: , asm: Assembly-CSharp}
-      data:
-        fire: {fileID: 11400000, guid: 27474fc37b9d4f229da0cc255ff19710, type: 2}
-    - rid: 1004
-      type: {class: LevelStartEvent, ns: , asm: Assembly-CSharp}
-      data:
-        delay: 0
-        actions:
-        - rid: 1003
-    - rid: 1005
+    - rid: 1668347763201409242
       type: {class: NannyModule, ns: , asm: Assembly-CSharp}
       data:
         mode: 2
         activateOnTask: 0
-        spawnDelay: 2
+        spawnDelay: 3
         jumpScareOnTask: 0
         crawling: 0
-        patrolSpeed: 0.9
-        chaseSpeed: 3.5
-        viewDistance: 6
+        patrolSpeed: 0.8
+        chaseSpeed: 3.3
+        viewDistance: 10
         viewAngle: 110
-        hearingRadius: 6
+        hearingRadius: 3.5
         babyNoiseBonus: 3
         loseInterestTime: 6
-        attackDamage: 50
+        attackDamage: 34
         huntInterval: 15
         doorBreakTime: 2.5

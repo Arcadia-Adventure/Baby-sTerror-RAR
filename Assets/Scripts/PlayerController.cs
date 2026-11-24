@@ -16,9 +16,122 @@ public class PlayerController : MonoBehaviour
     bool _lookActive;
     bool _cameraMoveBeforeLook;
 
+    PlayerCrouch _crouch;
+    PlayerFlashlight _flashlight;
+    bool _moveBeforeHide;
+    bool _cameraMoveBeforeHide;
+
     public Camera PlayerCamera => firstPersonController != null ? firstPersonController.playerCamera : null;
+    public FirstPersonController Fpc => firstPersonController;
+    public PlayerHealth Health => playerHealth;
+
+    /// <summary>Added on demand, so the player prefab needs no new components.</summary>
+    public PlayerCrouch Crouch => _crouch != null ? _crouch : _crouch = GetOrAdd<PlayerCrouch>();
+    public PlayerFlashlight Flashlight => _flashlight != null ? _flashlight : _flashlight = GetOrAdd<PlayerFlashlight>();
+
+    public bool IsCrouched => _crouch != null && _crouch.IsCrouched;
+    public bool IsFlashlightOn => _flashlight != null && _flashlight.IsOn;
+
+    /// <summary>The hiding spot the player is in, or null.</summary>
+    public HideSpot CurrentHideSpot { get; private set; }
+    public bool IsHidden => CurrentHideSpot != null;
+
+    void Awake()
+    {
+        // Created up front so the crouch key works from the first frame.
+        _crouch = GetOrAdd<PlayerCrouch>();
+        _flashlight = GetOrAdd<PlayerFlashlight>();
+    }
+
+    T GetOrAdd<T>() where T : Component
+    {
+        T component = GetComponent<T>();
+        return component != null ? component : gameObject.AddComponent<T>();
+    }
 
     public void InitializeCameraPitch(float pitch) => firstPersonController.InitializePitch(pitch);
+
+    /// <summary>Distance from the player's pivot down to their feet.</summary>
+    public float FeetOffset
+    {
+        get
+        {
+            var capsule = GetComponent<CapsuleCollider>();
+            return capsule != null ? capsule.height * 0.5f - capsule.center.y : 0.75f;
+        }
+    }
+
+    /// <summary>Moves the player so the camera sits at the given point, looking along its forward.</summary>
+    public void TeleportCameraTo(Transform view)
+    {
+        Transform cam = PlayerCamera.transform;
+        float yaw = view.eulerAngles.y;
+        float pitch = NormalizeAngle(view.eulerAngles.x);
+        pitch = Mathf.Clamp(pitch, -firstPersonController.maxLookAngle, firstPersonController.maxLookAngle);
+
+        transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+        cam.localEulerAngles = new Vector3(pitch, 0f, 0f);
+        firstPersonController.InitializePitch(pitch);
+
+        Vector3 cameraOffset = cam.position - transform.position;
+        transform.position = view.position - cameraOffset;
+        if (rb != null)
+            rb.position = transform.position;
+    }
+
+    /// <summary>Stands the player on a floor point, facing along its forward.</summary>
+    public void TeleportFeetTo(Transform point)
+    {
+        Vector3 forward = Vector3.ProjectOnPlane(point.forward, Vector3.up);
+        if (forward.sqrMagnitude > 0.0001f)
+            transform.rotation = Quaternion.LookRotation(forward.normalized);
+
+        transform.position = point.position + Vector3.up * (FeetOffset + 0.05f);
+        if (rb != null)
+            rb.position = transform.position;
+
+        PlayerCamera.transform.localEulerAngles = Vector3.zero;
+        firstPersonController.InitializePitch(0f);
+    }
+
+    public void EnterHide(HideSpot spot)
+    {
+        if (spot == null || IsHidden)
+            return;
+
+        Crouch.ForceStand();
+        ReleaseForcedLook();
+
+        CurrentHideSpot = spot;
+        _moveBeforeHide = firstPersonController.playerCanMove;
+        _cameraMoveBeforeHide = firstPersonController.cameraCanMove;
+
+        firstPersonController.playerCanMove = false;
+        firstPersonController.cameraCanMove = spot.allowLook;
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
+    }
+
+    public void ExitHide()
+    {
+        if (!IsHidden)
+            return;
+
+        CurrentHideSpot = null;
+        if (playerHealth != null && playerHealth.IsDead)
+            return;
+
+        firstPersonController.playerCanMove = _moveBeforeHide;
+        firstPersonController.cameraCanMove = _cameraMoveBeforeHide;
+        if (rb != null)
+            rb.isKinematic = false;
+    }
 
     public void SetAnimation(PlayerAnimation animation)
     {

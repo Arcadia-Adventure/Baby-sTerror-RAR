@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 2
   missionName: The Baby is Hungry
-  thumbnail: {fileID: 21300000, guid: 3d459f81e46284d4d89125ca711f128a, type: 3}
+  thumbnail: {fileID: 21300000, guid: e2748ed10003146a49518e0279b5f5e2, type: 3}
+  teaser: The baby won't stop crying. Something in the kitchen is waiting.
   tasks:
   - taskType: 2
     description: -Find the Feeder in the Kitchen.

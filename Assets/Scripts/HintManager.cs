@@ -101,6 +101,13 @@ public class HintManager : Singleton<HintManager>
                 if (indicator != null)
                     indicator.SetActive(false);
             }
+
+            foreach (Collectible piece in setup.GetComponentsInChildren<Collectible>(true))
+            {
+                var hud = piece.GetComponentInChildren<HUDNavigationElement>(true);
+                if (hud != null)
+                    hud.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -139,11 +146,52 @@ public class HintManager : Singleton<HintManager>
 
         foreach (LevelSceneSetup setup in _setups)
         {
-            if (setup != null && setup.LevelNumber == level + 1)
-                return setup.GetTaskHint(task);
+            if (setup == null || setup.LevelNumber != level + 1)
+                continue;
+
+            // "Find the pieces": point at the nearest piece still lying around, not a fixed one
+            // that may already be picked up.
+            if (IsCollectTask(setup, task) && TryNearestPieceHint(setup, out GameObject pieceHint))
+                return pieceHint;
+
+            return setup.GetTaskHint(task);
         }
 
         return null;
+    }
+
+    static bool IsCollectTask(LevelSceneSetup setup, int task)
+    {
+        TaskData[] tasks = setup.definition != null ? setup.definition.tasks : null;
+        return tasks != null && task >= 0 && task < tasks.Length && tasks[task] != null
+               && tasks[task].taskType == TaskType.CollectPieces;
+    }
+
+    static bool TryNearestPieceHint(LevelSceneSetup setup, out GameObject hint)
+    {
+        hint = null;
+        PlayerController player = GamePlayManager.Instance != null ? GamePlayManager.Instance.player : null;
+        Vector3 from = player != null ? player.transform.position : setup.transform.position;
+        float best = float.MaxValue;
+
+        foreach (Collectible piece in setup.GetComponentsInChildren<Collectible>(false))
+        {
+            if (piece.IsCollected)
+                continue;
+
+            var hud = piece.GetComponentInChildren<HUDNavigationElement>(true);
+            if (hud == null)
+                continue;
+
+            float distance = (piece.transform.position - from).sqrMagnitude;
+            if (distance < best)
+            {
+                best = distance;
+                hint = hud.gameObject;
+            }
+        }
+
+        return hint != null;
     }
 }
 

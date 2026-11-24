@@ -13,15 +13,17 @@ MonoBehaviour:
   m_Name: Level 04
   m_EditorClassIdentifier: 
   level: 4
-  missionName: "Cold Whispers"
-  thumbnail: {fileID: 21300000, guid: 3cabe9cc02b665c4687a360fa6d62232, type: 3}
+  missionName: Cold Whispers
+  thumbnail: {fileID: 21300000, guid: 439e55a7ab54c4c4d83fe5a8c0c394b0, type: 3}
+  teaser: 'The house is freezing. Footsteps downstairs. Stay low: she listens.'
   tasks:
   - taskType: 3
-    description: "-Find warm clothes for the baby."
+    description: -Find warm clothes for the baby. Crouch to move quietly.
     completePreviousTasks: 0
   - taskType: 12
-    description: "-Get back to the baby. Something is following you."
+    description: -Get back to the baby. Something is following you.
     completePreviousTasks: 0
+  showFootstepTrail: 0
   modules:
   - rid: 1000
   - rid: 1001

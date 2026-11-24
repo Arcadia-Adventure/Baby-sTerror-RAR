@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -71,4 +72,19 @@ public class LevelContext
     /// <summary>Runs the action after the delay; it's dropped if the gameplay scene unloads first.</summary>
     public void Delay(float seconds, Action action) =>
         TweenUtilities.DelayedCall(Mathf.Max(0f, seconds), () => action(), Manager);
+
+    /// <summary>
+    /// Runs a coroutine on the gameplay manager, so it stops with the scene. Modules keep their
+    /// running state in the coroutine's locals, never in fields (they outlive the play session).
+    /// </summary>
+    public Coroutine Run(IEnumerator routine) => Manager.StartCoroutine(routine);
+
+    /// <summary>Brings the Nanny into the level at this level's spawn point.</summary>
+    public void ActivateNanny()
+    {
+        if (LevelEnded || Nanny == null)
+            return;
+
+        Nanny.Activate(Scene != null ? Scene.nannySpawnPoint : null);
+    }
 }

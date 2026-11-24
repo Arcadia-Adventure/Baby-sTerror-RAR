@@ -13,8 +13,16 @@ public class LevelDatabase : ScriptableObject
 
     [SerializeField] private LevelDefinition[] levels = Array.Empty<LevelDefinition>();
 
+    [Header("Ending")]
+    [Tooltip("Shown on the win screen of the last night, where the next night's teaser would go.")]
+    public string endingTitle = "The End?";
+    [TextArea(2, 4)] public string endingText;
+
     public IReadOnlyList<LevelDefinition> Levels => levels;
     public int Count => levels.Length;
+
+    /// <summary>The night after this one, or null when it's the last.</summary>
+    public LevelDefinition GetNext(int levelNumber) => Get(levelNumber + 1);
 
     public LevelDefinition Get(int levelNumber)
     {

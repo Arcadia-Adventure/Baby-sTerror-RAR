@@ -13,28 +13,29 @@ MonoBehaviour:
   m_Name: Level 10
   m_EditorClassIdentifier: 
   level: 10
-  missionName: "The Cursed Talisman."
-  thumbnail: {fileID: 21300000, guid: 7cec0f37724d9413a813a7399695f927, type: 3}
+  missionName: Trapped by Fire
+  thumbnail: {fileID: 21300000, guid: 1786753377dc242de84b16328f51b00a, type: 3}
+  teaser: Tonight she locks you in with the fire.
   tasks:
-  - taskType: 4
-    description: "-Find the talisman."
+  - taskType: 5
+    description: -The nanny trapped you! Find the axe.
     completePreviousTasks: 0
-  - taskType: 27
-    description: "-Face her with the talisman."
+  - taskType: 25
+    description: -Break the door.
     completePreviousTasks: 0
-  - taskType: 10
-    description: "-Give the talisman to the baby."
+  - taskType: 1
+    description: -Pick up the baby.
     completePreviousTasks: 0
-  - taskType: 8
-    description: "-Pick up the baby and put it to bed."
-    completePreviousTasks: 0
+  - taskType: 14
+    description: -drop the baby on the rocking chair.
+    completePreviousTasks: 1
+  showFootstepTrail: 0
   modules:
   - rid: 1000
   - rid: 1001
   - rid: 1002
-  - rid: 1007
-  - rid: 1008
-  - rid: 1010
+  - rid: 1005
+  - rid: 1006
   references:
     version: 2
     RefIds:
@@ -52,7 +53,7 @@ MonoBehaviour:
       type: {class: DoorModule, ns: , asm: Assembly-CSharp}
       data:
         door: {fileID: 11400000, guid: e2563500a571469cb274380d64d28b01, type: 2}
-        locked: 0
+        locked: 1
         knocking:
           enabled: 0
           initialDelay: 0
@@ -63,66 +64,44 @@ MonoBehaviour:
       data:
         active: 1
         requireItem: 0
-        canPickBaby: 0
+        canPickBaby: 1
         playHorrorOnPick: 0
-        initialAnimation: 2
-        overrideSound: 5
-        possessed: 1
+        initialAnimation: 1
+        overrideSound: 0
+        possessed: 0
         dirtyFace: 0
         clothed: 1
     - rid: 1003
       type: {class: EnableDropPointsAction, ns: , asm: Assembly-CSharp}
       data:
         dropPoints:
-        - Cradle
+        - RockingChair
     - rid: 1004
       type: {class: StartFireAction, ns: , asm: Assembly-CSharp}
       data:
         fire: {fileID: 11400000, guid: 27474fc37b9d4f229da0cc255ff19710, type: 2}
     - rid: 1005
-      type: {class: FlyingFurnitureAction, ns: , asm: Assembly-CSharp}
-      data:
-        fly: 1
-    - rid: 1006
-      type: {class: PlayPlayerAnimationAction, ns: , asm: Assembly-CSharp}
-      data:
-        animation: 2
-        waitForNannyJumpScare: 0
-    - rid: 1007
       type: {class: LevelStartEvent, ns: , asm: Assembly-CSharp}
       data:
         delay: 0
         actions:
         - rid: 1003
         - rid: 1004
-        - rid: 1005
-        - rid: 1006
-    - rid: 1008
+    - rid: 1006
       type: {class: NannyModule, ns: , asm: Assembly-CSharp}
       data:
-        mode: 3
-        activateOnTask: 0
-        spawnDelay: 2
+        mode: 2
+        activateOnTask: 25
+        spawnDelay: 0
         jumpScareOnTask: 0
-        crawling: 0
-        patrolSpeed: 1.2
-        chaseSpeed: 4
-        viewDistance: 12
+        crawling: 1
+        patrolSpeed: 0.8
+        chaseSpeed: 3
+        viewDistance: 9
         viewAngle: 110
         hearingRadius: 4
-        babyNoiseBonus: 3
+        babyNoiseBonus: 4
         loseInterestTime: 6
-        attackDamage: 50
-        huntInterval: 10
+        attackDamage: 34
+        huntInterval: 15
         doorBreakTime: 2.5
-    - rid: 1009
-      type: {class: SetBabyRequireItemAction, ns: , asm: Assembly-CSharp}
-      data:
-        item: 4
-    - rid: 1010
-      type: {class: TaskCompletedEvent, ns: , asm: Assembly-CSharp}
-      data:
-        delay: 0
-        actions:
-        - rid: 1009
-        task: 27

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 1
   missionName: "Who\u2019s at the Door?"
-  thumbnail: {fileID: 21300000, guid: f771d5d869fa50c4b8434e66cb06151c, type: 3}
+  thumbnail: {fileID: 21300000, guid: 29615f63ff50b43669b69bd549481d51, type: 3}
+  teaser: A new job. A crying baby. A doorbell that won't stop ringing.
   tasks:
   - taskType: 1
     description: -Answer the ringing doorbell and find the baby.

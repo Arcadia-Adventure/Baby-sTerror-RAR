@@ -19,7 +19,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b39bdb2d6c32457baf9fcf4b81dd9f16, type: 2}
   - {fileID: 11400000, guid: 12116f38462446b9a1e78796831893fa, type: 2}
   - {fileID: 11400000, guid: f6b1fb77686f4f5290c5255fd4d4f7ef, type: 2}
+  - {fileID: 11400000, guid: 831e13f807165475fb3fb61739e8035e, type: 2}
+  - {fileID: 11400000, guid: 5a2eccc7c718540bba7f20c6dbe1a3c3, type: 2}
+  - {fileID: 11400000, guid: 8b9619f15de2d4c5db299cd003ecd5a7, type: 2}
   - {fileID: 11400000, guid: 55b123087c9d449eb4833089c4420771, type: 2}
   - {fileID: 11400000, guid: 2356bc1b6a6d4111885a6963e6de7c91, type: 2}
+  - {fileID: 11400000, guid: 432c540a9725344d582eb7ce51be3533, type: 2}
+  - {fileID: 11400000, guid: 3a744df10e5db4694853a11446e36581, type: 2}
   - {fileID: 11400000, guid: 87481e28fcc843aea11a15e4e5e60527, type: 2}
+  - {fileID: 11400000, guid: 55ada6e75285441f7be816bc241be956, type: 2}
+  - {fileID: 11400000, guid: 1af30251394004ad1a0a3826c40000ec, type: 2}
+  - {fileID: 11400000, guid: fbae28ec5ab004d4493cbef6ec402c6f, type: 2}
+  - {fileID: 11400000, guid: 11e55777b6f9c4953a6815a83d7cc0b5, type: 2}
+  - {fileID: 11400000, guid: b21349e82347f42399740ebc96f57d52, type: 2}
   - {fileID: 11400000, guid: e066cf69b84d48509383e411d8bd276d, type: 2}
+  endingTitle: The baby sleeps... for now.
+  endingText: You broke her curse. But old houses keep their secrets. More nights
+    are coming soon.

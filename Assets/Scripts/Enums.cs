@@ -47,6 +47,21 @@ public enum TaskType
     BedroomDoorBreak = 25,
     FollowBabyVoice = 26,
     BanishNanny = 27,
+
+    // Added for the 20-night arc. Append only: assets store these as numbers.
+    /// <summary>Stayed hidden while the Nanny came close and then left.</summary>
+    Hide = 28,
+    PickKey = 29,
+    /// <summary>Opened a locked door with its key.</summary>
+    UnlockDoor = 30,
+    PickFlashlight = 31,
+    PickFuse = 32,
+    /// <summary>Put the fuse in the fuse box and brought the lights back.</summary>
+    RestorePower = 33,
+    /// <summary>Found every collectible in the level.</summary>
+    CollectPieces = 34,
+    /// <summary>Lured the Nanny away with a noise.</summary>
+    DistractNanny = 35,
 }
 public enum ItemType
 {
@@ -62,6 +77,10 @@ public enum ItemType
     Toy = 8,
     UpperRoomDoor = 9,
     HouseExitDoor = 10,
+    // Append only: assets store these as numbers.
+    Key = 11,
+    Fuse = 12,
+    Flashlight = 13,
 }
 public enum PlayerAnimation
 {
@@ -83,6 +102,8 @@ public enum NannyState
     Banished = 8,
     Repelled = 9,
     KnockedDown = 10,
+    /// <summary>Dragging the player out of a hiding spot she saw them enter.</summary>
+    PullOut = 11,
 }
 
 public enum NannyMode
@@ -113,5 +134,8 @@ public enum CrosshairState
     Pick,
     Drop,
     DoorOpen,
-    DoorClose
+    DoorClose,
+    // Append only: scene objects store these as numbers.
+    Interact,
+    Hide,
 }

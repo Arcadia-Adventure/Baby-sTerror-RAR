@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>Runs a list of actions, in order, when its trigger fires.</summary>
 [Serializable]
-public abstract class LevelEventModule : LevelModule
+public abstract class LevelEventModule : LevelModule, IHasActionLists
 {
     [Tooltip("Seconds to wait after the trigger before running the actions.")]
     [Min(0f)] public float delay;
@@ -12,30 +12,17 @@ public abstract class LevelEventModule : LevelModule
 
     protected string DelaySuffix => delay > 0f ? $" +{delay:0.##}s" : "";
 
+    public IEnumerable<List<LevelAction>> ActionLists()
+    {
+        yield return actions;
+    }
+
     protected void Fire(LevelContext ctx)
     {
         if (delay > 0f)
-            ctx.Delay(delay, () => RunActions(ctx));
+            ctx.Delay(delay, () => LevelAction.RunAll(ctx, actions));
         else
-            RunActions(ctx);
-    }
-
-    void RunActions(LevelContext ctx)
-    {
-        foreach (LevelAction action in actions)
-        {
-            if (action == null)
-                continue;
-
-            try
-            {
-                action.Run(ctx);
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e, ctx.Definition);
-            }
-        }
+            LevelAction.RunAll(ctx, actions);
     }
 
     public override void Validate(LevelDefinition level, List<string> problems)
@@ -43,13 +30,7 @@ public abstract class LevelEventModule : LevelModule
         if (actions.Count == 0)
             problems.Add($"{Label} has no actions.");
 
-        foreach (LevelAction action in actions)
-        {
-            if (action == null)
-                problems.Add($"{Label} has an empty action slot.");
-            else
-                action.Validate(level, problems);
-        }
+        LevelAction.ValidateAll(Label, actions, level, problems);
     }
 }
 

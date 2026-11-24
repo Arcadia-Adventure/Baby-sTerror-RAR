@@ -51,6 +51,29 @@ public class NannyStateManager : MonoBehaviour
     [Tooltip("Player speed above which they count as running. The player walks at 3.")]
     [SerializeField] private float sprintSpeedThreshold = 4f;
 
+    [Header("Stealth")]
+    [Tooltip("Hearing radius multiplier while the player crouches.")]
+    [SerializeField, Range(0f, 1f)] private float crouchHearingMultiplier = 0.5f;
+    [Tooltip("View distance multiplier while the player crouches.")]
+    [SerializeField, Range(0f, 1f)] private float crouchViewMultiplier = 0.75f;
+    [Tooltip("Baby-noise multiplier while the player crouches (they hush it).")]
+    [SerializeField, Range(0f, 1f)] private float crouchBabyNoiseMultiplier = 0.5f;
+    [Tooltip("A crouched player has to stay in view this long before she notices them.")]
+    [SerializeField] private float crouchNoticeDelay = 0.35f;
+    [Tooltip("View distance multiplier while the house power is out and the player's flashlight is off.")]
+    [SerializeField, Range(0f, 1f)] private float darkViewMultiplier = 0.6f;
+    [Tooltip("If she saw the player within this many seconds of them hiding, she knows where they are.")]
+    [SerializeField] private float hideSawGrace = 0.5f;
+    [Tooltip("How close she gets to a hiding spot before dragging the player out (it costs them one hit).")]
+    [SerializeField] private float pullOutRange = 1.3f;
+    [Tooltip("Seconds she stands looking at a hiding spot she wandered up to before moving on.")]
+    [SerializeField] private float inspectTime = 3f;
+    [Tooltip("Longest she follows a noise lure before giving up.")]
+    [SerializeField] private float maxLureTime = 30f;
+    [Tooltip("Hide in one spot longer than this and she finds you if she comes right up to it. " +
+             "Stops a survive timer being waited out in a single wardrobe.")]
+    [SerializeField] private float campTime = 25f;
+
     [Header("Chase")]
     [SerializeField] private float chaseSpeed = 4f;
     [SerializeField] private float searchSpeed = 2f;
@@ -136,6 +159,11 @@ public class NannyStateManager : MonoBehaviour
     public bool CanBeHurt => isActiveAndEnabled && agent.isOnNavMesh && _mode != NannyMode.Glimpse
         && State is not (NannyState.Dead or NannyState.Banished or NannyState.KnockedDown);
 
+    /// <summary>In the house and hunting: not hidden away, dead, banished or a harmless glimpse.</summary>
+    public bool IsThreat => isActiveAndEnabled && !_harmless
+        && _mode is NannyMode.Patrol or NannyMode.Hunter
+        && State is not (NannyState.Dead or NannyState.Banished);
+
     Transform _player;
     PlayerController _playerController;
     PlayerHealth _playerHealth;
@@ -176,6 +204,19 @@ public class NannyStateManager : MonoBehaviour
     float _repelEndTime;
     float _repelImmuneUntil;
     float _nextRetreatTime;
+
+    // Stealth
+    float _sightTimer;
+    HideSpot _compromisedSpot;
+    HideSpot _pullOutSpot;
+    bool _pullOutPending;
+    float _inspectUntil;
+
+    // Noise lure
+    bool _lured;
+    float _lureLinger;
+    float _lureArrivedAt = -1f;
+    float _lureGiveUpAt;
 
     Vector3 EyePosition => transform.position + Vector3.up * eyeHeight * transform.lossyScale.y;
     Vector3 BodyCenter => _bodyCollider.enabled
@@ -256,6 +297,9 @@ public class NannyStateManager : MonoBehaviour
             case NannyState.KnockedDown:
                 TickKnockedDown();
                 break;
+            case NannyState.PullOut:
+                TickPullOut();
+                break;
         }
 
         // A tick can kill her or make her vanish.
@@ -295,6 +339,8 @@ public class NannyStateManager : MonoBehaviour
         _patrolPauseDuration = 0f;
         _hasPatrolTarget = false;
         _screamedThisHunt = false;
+        _lured = false;
+        _inspectUntil = 0f;
 
         agent.speed = patrolSpeed;
         agent.isStopped = false;
@@ -302,11 +348,14 @@ public class NannyStateManager : MonoBehaviour
 
     void TickPatrol()
     {
-        if (CanSeePlayer())
+        if (SpotsPlayer())
         {
             EnterChase();
             return;
         }
+
+        if (TryCatchCamper())
+            return;
 
         if (CanHearPlayer())
         {
@@ -370,6 +419,8 @@ public class NannyStateManager : MonoBehaviour
         State = NannyState.Chase;
         _stateTimer = 0f;
         _timeSinceSeenPlayer = 0f;
+        _lured = false;
+        _inspectUntil = 0f;
         agent.speed = chaseSpeed;
         agent.isStopped = false;
 
@@ -402,6 +453,28 @@ public class NannyStateManager : MonoBehaviour
             agent.isStopped = true;
             FacePlayer(attackTurnSpeed);
             return;
+        }
+
+        // She saw them hide: straight to the spot to drag them out, no giving up.
+        if (_compromisedSpot != null)
+        {
+            if (HideSpot.Occupied != _compromisedSpot)
+            {
+                _compromisedSpot = null;
+            }
+            else
+            {
+                Vector3 spot = _compromisedSpot.ExitPosition;
+                agent.isStopped = false;
+                agent.speed = chaseSpeed;
+                agent.SetDestination(spot);
+
+                Vector3 delta = spot - transform.position;
+                delta.y = 0f;
+                if (delta.magnitude <= pullOutRange)
+                    EnterPullOut(_compromisedSpot);
+                return;
+            }
         }
 
         agent.isStopped = false;
@@ -461,6 +534,11 @@ public class NannyStateManager : MonoBehaviour
             _lastKnownPlayerPosition = _player.position;
             EnterChase();
         }
+        else if (_compromisedSpot != null)
+        {
+            // They dived into a hiding spot mid-swing; the chase goes straight to it.
+            EnterChase();
+        }
         else
         {
             EnterSearch();
@@ -469,7 +547,7 @@ public class NannyStateManager : MonoBehaviour
 
     void TryLandHit()
     {
-        if (_harmless || PlayerHoldsTalisman())
+        if (_harmless || PlayerHoldsTalisman() || _playerController.IsHidden)
             return;
 
         if (_playerHealth.IsDead)
@@ -492,10 +570,19 @@ public class NannyStateManager : MonoBehaviour
 
     void TickSearch()
     {
-        if (CanSeePlayer())
+        if (SpotsPlayer())
         {
             _lastKnownPlayerPosition = _player.position;
             EnterChase();
+            return;
+        }
+
+        if (TickInspectHidingSpot())
+            return;
+
+        if (_lured)
+        {
+            TickLure();
             return;
         }
 
@@ -738,22 +825,189 @@ public class NannyStateManager : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Searching, she wandered up to the spot the player is hiding in without having seen them go
+    /// in: she stops and stares at it for a moment (the tension beat), then moves on.
+    /// </summary>
+    /// <summary>
+    /// The player has been sitting in one hiding spot too long and she's right next to it: she
+    /// rips it open. Returns true if she found them.
+    /// </summary>
+    bool TryCatchCamper()
+    {
+        HideSpot spot = HideSpot.Occupied;
+        if (spot == null || spot.Compromised || _harmless || spot.HiddenFor < campTime)
+            return false;
+
+        Vector3 offset = spot.ExitPosition - transform.position;
+        if (Mathf.Abs(offset.y) > 1.5f || new Vector2(offset.x, offset.z).magnitude > 2.2f)
+            return false;
+
+        spot.Compromised = true;
+        _compromisedSpot = spot;
+        _lastKnownPlayerPosition = spot.ExitPosition;
+        EnterChase(forceScream: true);
+        return true;
+    }
+
+    bool TickInspectHidingSpot()
+    {
+        HideSpot spot = HideSpot.Occupied;
+        if (TryCatchCamper())
+            return true;
+        if (spot == null || spot.Compromised)
+        {
+            if (_inspectUntil > 0f)
+            {
+                _inspectUntil = 0f;
+                agent.isStopped = false;
+            }
+            return false;
+        }
+
+        if (_inspectUntil <= 0f)
+        {
+            Vector3 delta = spot.ExitPosition - transform.position;
+            delta.y = 0f;
+            if (delta.magnitude > 2.2f)
+                return false;
+
+            _inspectUntil = Time.time + inspectTime;
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
+        FaceTowards(spot.transform.position, glimpseTurnSpeed * 2f);
+        if (Time.time >= _inspectUntil)
+            EnterPatrol();
+        return true;
+    }
+
+    /// <summary>Following a noise lure: go there, look around for a while, then return to patrol.</summary>
+    void TickLure()
+    {
+        if (Time.time >= _lureGiveUpAt)
+        {
+            EnterPatrol();
+            return;
+        }
+
+        if (_lureArrivedAt < 0f)
+        {
+            if (!HasArrived())
+                return;
+
+            _lureArrivedAt = Time.time;
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+            return;
+        }
+
+        // Look around the spot the noise came from.
+        transform.Rotate(0f, 45f * Time.deltaTime, 0f);
+        if (Time.time - _lureArrivedAt >= _lureLinger)
+            EnterPatrol();
+    }
+
+    void EnterPullOut(HideSpot spot)
+    {
+        State = NannyState.PullOut;
+        _stateTimer = 0f;
+        _pullOutSpot = spot;
+        _pullOutPending = true;
+        _compromisedSpot = null;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        animationController.PlayAttack(DoorBangAttackVariant);
+        audioController.Play(NannySound.Attack);
+    }
+
+    void TickPullOut()
+    {
+        FaceTowards(_pullOutSpot != null ? _pullOutSpot.transform.position : _player.position, attackTurnSpeed);
+
+        if (_pullOutPending && _stateTimer >= attackImpactDelay)
+        {
+            _pullOutPending = false;
+            if (_pullOutSpot != null && HideSpot.Occupied == _pullOutSpot)
+            {
+                _pullOutSpot.EjectPlayer();
+                _playerController.ForceLookAt(LookAtPoint);
+                if (!_harmless)
+                    _playerHealth.TakeDamage(attackDamage, LookAtPoint);
+            }
+
+            _pullOutSpot = null;
+            _nextAttackTime = Time.time + attackCooldown;
+        }
+
+        if (_stateTimer < attackCooldown)
+            return;
+
+        _lastKnownPlayerPosition = _player.position;
+        _screamedThisHunt = true;
+        EnterChase();
+    }
+
     #endregion
 
     #region Perception
 
+    /// <summary>Hearing radius right now: a crouched player is quieter.</summary>
+    float HearingRadiusNow => _playerController != null && _playerController.IsCrouched
+        ? hearingRadius * crouchHearingMultiplier
+        : hearingRadius;
+
+    /// <summary>View distance right now: shorter for a crouched player, and in the dark unless their flashlight is on.</summary>
+    float ViewDistanceNow
+    {
+        get
+        {
+            float distance = viewDistance;
+            if (_playerController == null)
+                return distance;
+
+            if (_playerController.IsCrouched)
+                distance *= crouchViewMultiplier;
+            if (!HouseLights.IsPowerOn && !_playerController.IsFlashlightOn)
+                distance *= darkViewMultiplier;
+            return distance;
+        }
+    }
+
+    /// <summary>
+    /// Sight that turns into a chase. A crouched player has to stay in view for a moment first,
+    /// so ducking behind cover just in time works.
+    /// </summary>
+    bool SpotsPlayer()
+    {
+        if (!CanSeePlayer())
+        {
+            _sightTimer = 0f;
+            return false;
+        }
+
+        if (!_playerController.IsCrouched)
+            return true;
+
+        _sightTimer += Time.deltaTime;
+        return _sightTimer >= crouchNoticeDelay;
+    }
+
     bool CanSeePlayer()
     {
-        if (_playerHealth.IsDead)
+        if (_playerHealth.IsDead || _playerController.IsHidden)
             return false;
 
         Vector3 toPlayer = _player.position - transform.position;
         float distance = toPlayer.magnitude;
 
-        bool withinEarshot = distance <= hearingRadius;
+        bool withinEarshot = distance <= HearingRadiusNow;
         if (!withinEarshot)
         {
-            if (distance > viewDistance)
+            if (distance > ViewDistanceNow)
                 return false;
 
             Vector3 flatDirection = new Vector3(toPlayer.x, 0f, toPlayer.z);
@@ -772,7 +1026,7 @@ public class NannyStateManager : MonoBehaviour
     /// </summary>
     bool CanHearPlayer()
     {
-        if (_playerHealth.IsDead)
+        if (_playerHealth.IsDead || _playerController.IsHidden)
             return false;
 
         float bonus = NoiseBonus();
@@ -780,14 +1034,14 @@ public class NannyStateManager : MonoBehaviour
             return false;
 
         // Full distance, so the player on the floor above isn't heard as if they were next to her.
-        return (_player.position - transform.position).magnitude <= hearingRadius + bonus;
+        return (_player.position - transform.position).magnitude <= HearingRadiusNow + bonus;
     }
 
     float NoiseBonus()
     {
         float bonus = 0f;
         if (_pickDrop.heldPickable is BabyController)
-            bonus = babyNoiseBonus;
+            bonus = _playerController.IsCrouched ? babyNoiseBonus * crouchBabyNoiseMultiplier : babyNoiseBonus;
 
         if (PlayerPlanarSpeed() > sprintSpeedThreshold)
             bonus = Mathf.Max(bonus, sprintNoiseBonus);
@@ -798,8 +1052,10 @@ public class NannyStateManager : MonoBehaviour
     bool HasLineOfSight()
     {
         Vector3 eye = EyePosition;
-        // Aim at the player's chest rather than their pivot, which sits on the floor.
-        Vector3 target = _player.position + Vector3.up;
+        // Aim just below the player's eyes. Their pivot is the capsule centre, so "pivot + 1m" was
+        // above their head and crouching behind cover never broke her sight.
+        Camera cam = _playerController != null ? _playerController.PlayerCamera : null;
+        Vector3 target = cam != null ? cam.transform.position + Vector3.down * 0.1f : _player.position + Vector3.up * 0.5f;
         Vector3 direction = target - eye;
 
         if (!Physics.Raycast(eye, direction.normalized, out RaycastHit hit, direction.magnitude,
@@ -1117,6 +1373,10 @@ public class NannyStateManager : MonoBehaviour
         gameObject.SetActive(true);
         ResolvePlayer();
 
+        // She can't appear in the face of someone inside a wardrobe: drag them out first.
+        if (player.IsHidden && player.CurrentHideSpot != null)
+            player.CurrentHideSpot.EjectPlayer();
+
         Transform view = player.PlayerCamera.transform;
         Vector3 forward = Vector3.ProjectOnPlane(view.forward, Vector3.up);
         if (forward.sqrMagnitude < 0.0001f)
@@ -1229,6 +1489,175 @@ public class NannyStateManager : MonoBehaviour
     {
         _crawling = isCrawling;
         animationController.SetCrawling(isCrawling);
+    }
+
+    /// <summary>
+    /// Changes her tuning mid-level, e.g. Patrol to Hunter after a task or as a survive timer runs
+    /// down. Only the groups switched on in the retune change. Safe whether she's active or not.
+    /// </summary>
+    public void Retune(NannyRetune retune)
+    {
+        if (retune == null)
+            return;
+
+        if (retune.changeSpeeds)
+        {
+            patrolSpeed = retune.patrolSpeed;
+            chaseSpeed = retune.chaseSpeed;
+        }
+
+        if (retune.changeSenses)
+        {
+            viewDistance = retune.viewDistance;
+            viewAngle = retune.viewAngle;
+            hearingRadius = retune.hearingRadius;
+            babyNoiseBonus = retune.babyNoiseBonus;
+            loseInterestTime = retune.loseInterestTime;
+        }
+
+        if (retune.changeThreat)
+        {
+            attackDamage = retune.attackDamage;
+            huntInterval = retune.huntInterval;
+            if (_mode == NannyMode.Hunter)
+                _nextHuntTime = Mathf.Min(_nextHuntTime, Time.time + huntInterval * 0.5f);
+        }
+
+        if (retune.changeCrawling && isActiveAndEnabled)
+            SetCrawling(retune.crawling);
+        else if (retune.changeCrawling)
+            _crawling = retune.crawling;
+
+        if (retune.changeMode && retune.mode != _mode)
+            SwitchMode(retune.mode);
+
+        if (isActiveAndEnabled && agent.isOnNavMesh)
+            RefreshAgentSpeed();
+    }
+
+    void SwitchMode(NannyMode mode)
+    {
+        NannyMode previous = _mode;
+        _mode = mode;
+
+        // Not in the level yet: Activate starts her in the new mode.
+        if (!isActiveAndEnabled || State == NannyState.Dead)
+            return;
+
+        switch (mode)
+        {
+            case NannyMode.None:
+                Hide();
+                break;
+
+            case NannyMode.Glimpse:
+                if (IsRoaming)
+                    EnterGlimpse();
+                break;
+
+            default:
+                if (previous == NannyMode.Glimpse && State == NannyState.Glimpse)
+                {
+                    _vanishing = false;
+                    EnterPatrol();
+                }
+
+                // A new hunter starts drifting toward the player soon.
+                if (mode == NannyMode.Hunter)
+                    _nextHuntTime = Time.time + 1f;
+                break;
+        }
+    }
+
+    void RefreshAgentSpeed()
+    {
+        switch (State)
+        {
+            case NannyState.Idle:
+            case NannyState.Patrol:
+                agent.speed = patrolSpeed;
+                break;
+            case NannyState.Chase:
+                agent.speed = chaseSpeed;
+                break;
+            case NannyState.Search:
+                agent.speed = searchSpeed;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// A noise elsewhere in the house (a ringing phone, the TV): she goes to look and lingers there.
+    /// Returns false if she's too busy to take the bait, e.g. chasing someone she can see.
+    /// </summary>
+    public bool Investigate(Vector3 position, float linger)
+    {
+        if (!isActiveAndEnabled || !agent.isOnNavMesh || _mode is NannyMode.None or NannyMode.Glimpse)
+            return false;
+
+        if (State is NannyState.Dead or NannyState.KnockedDown or NannyState.Banished or NannyState.Repelled
+            or NannyState.Attack or NannyState.PullOut or NannyState.Glimpse)
+            return false;
+
+        ResolvePlayer();
+        if (State == NannyState.Chase && _timeSinceSeenPlayer < 1f)
+            return false;
+
+        if (State == NannyState.BangDoor)
+        {
+            _door = null;
+            agent.isStopped = false;
+        }
+
+        _lastKnownPlayerPosition = NavMesh.SamplePosition(position, out NavMeshHit hit, 3f, NavFilter)
+            ? hit.position
+            : position;
+
+        _lured = true;
+        _lureLinger = Mathf.Max(0f, linger);
+        _lureArrivedAt = -1f;
+        _lureGiveUpAt = Time.time + maxLureTime;
+        _inspectUntil = 0f;
+        EnterSearch();
+        return true;
+    }
+
+    /// <summary>The player just climbed into a hiding spot. Did she see them do it?</summary>
+    public void OnPlayerHid(HideSpot spot)
+    {
+        if (spot == null || !isActiveAndEnabled || _harmless)
+            return;
+
+        ResolvePlayer();
+        bool sawIt = State == NannyState.Attack
+            || (State == NannyState.Chase && _timeSinceSeenPlayer <= hideSawGrace
+                && Vector3.Distance(transform.position, spot.ExitPosition) <= viewDistance);
+
+        if (!sawIt)
+            return;
+
+        spot.Compromised = true;
+        _compromisedSpot = spot;
+        _lastKnownPlayerPosition = spot.ExitPosition;
+
+        if (State == NannyState.Attack)
+        {
+            // Mid-swing: let the swing finish (it misses), then come for the spot.
+            _attackPending = false;
+        }
+    }
+
+    public void OnPlayerLeftHiding(HideSpot spot)
+    {
+        if (_compromisedSpot == spot)
+            _compromisedSpot = null;
+
+        if (_inspectUntil > 0f)
+        {
+            _inspectUntil = 0f;
+            if (agent.isOnNavMesh)
+                agent.isStopped = false;
+        }
     }
 
     #endregion

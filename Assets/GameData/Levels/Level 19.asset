@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2990ad124e9e4ba7b4d02af0567fdee9, type: 3}
+  m_Name: Level 19
+  m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
+  level: 19
+  missionName: The Longest Night
+  thumbnail: {fileID: 21300000, guid: 0c48ae864a6634bb7b111b330b2d737d, type: 3}
+  teaser: One more night. The house is burning, and she has never been angrier.
+  tasks:
+  - taskType: 6
+    description: -Fire! Find the fire extinguisher.
+    completePreviousTasks: 0
+  - taskType: 24
+    description: -Put out the fire in the nursery.
+    completePreviousTasks: 0
+  - taskType: 18
+    description: -Survive until dawn
+    completePreviousTasks: 0
+  showFootstepTrail: 0
+  modules:
+  - rid: 1668347763201409216
+  - rid: 1668347763201409217
+  - rid: 1668347763201409218
+  - rid: 1668347763201409219
+  - rid: 1668347763201409220
+  references:
+    version: 2
+    RefIds:
+    - rid: 1668347763201409216
+      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
+      data:
+        door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
+        locked: 1
+        knocking:
+          enabled: 0
+          initialDelay: 0
+          interval: 0
+        doorBell: 0
+    - rid: 1668347763201409217
+      type: {class: BabyModule, ns: , asm: Assembly-CSharp}
+      data:
+        active: 1
+        requireItem: 0
+        canPickBaby: 0
+        playHorrorOnPick: 0
+        initialAnimation: 4
+        overrideSound: 0
+        possessed: 0
+        dirtyFace: 0
+        clothed: 1
+    - rid: 1668347763201409218
+      type: {class: LevelStartEvent, ns: , asm: Assembly-CSharp}
+      data:
+        delay: 0
+        actions:
+        - rid: 1668347763201409221
+        - rid: 1668347763201409222
+    - rid: 1668347763201409219
+      type: {class: NannyModule, ns: , asm: Assembly-CSharp}
+      data:
+        mode: 2
+        activateOnTask: 0
+        spawnDelay: 6
+        jumpScareOnTask: 0
+        crawling: 0
+        patrolSpeed: 0.9
+        chaseSpeed: 3.5
+        viewDistance: 10
+        viewAngle: 110
+        hearingRadius: 4
+        babyNoiseBonus: 3
+        loseInterestTime: 6
+        attackDamage: 50
+        huntInterval: 12
+        doorBreakTime: 2.5
+    - rid: 1668347763201409220
+      type: {class: SurviveModule, ns: , asm: Assembly-CSharp}
+      data:
+        seconds: 150
+        startOnTask: 24
+        task: 18
+        format: ' ({0}:{1:00})'
+        finalSecondsTick: {fileID: 8300000, guid: b25eee3f12532429da1321d1a7521c44, type: 3}
+        thresholds:
+        - atSecondsLeft: 100
+          actions:
+          - rid: 1668347763201409223
+        - atSecondsLeft: 50
+          actions:
+          - rid: 1668347763201409224
+    - rid: 1668347763201409221
+      type: {class: StartFireAction, ns: , asm: Assembly-CSharp}
+      data:
+        fire: {fileID: 11400000, guid: 27474fc37b9d4f229da0cc255ff19710, type: 2}
+    - rid: 1668347763201409222
+      type: {class: FlyingFurnitureAction, ns: , asm: Assembly-CSharp}
+      data:
+        fly: 1
+    - rid: 1668347763201409223
+      type: {class: ConfigureNannyAction, ns: , asm: Assembly-CSharp}
+      data:
+        retune:
+          changeMode: 1
+          mode: 3
+          changeSpeeds: 0
+          patrolSpeed: 1
+          chaseSpeed: 3.5
+          changeSenses: 0
+          viewDistance: 12
+          viewAngle: 110
+          hearingRadius: 4
+          babyNoiseBonus: 3
+          loseInterestTime: 8
+          changeThreat: 1
+          attackDamage: 50
+          huntInterval: 12
+          changeCrawling: 0
+          crawling: 0
+        activateIfInactive: 0
+        alertToPlayer: 0
+    - rid: 1668347763201409224
+      type: {class: ConfigureNannyAction, ns: , asm: Assembly-CSharp}
+      data:
+        retune:
+          changeMode: 0
+          mode: 3
+          changeSpeeds: 1
+          patrolSpeed: 1.1
+          chaseSpeed: 4
+          changeSenses: 0
+          viewDistance: 12
+          viewAngle: 110
+          hearingRadius: 4
+          babyNoiseBonus: 3
+          loseInterestTime: 8
+          changeThreat: 0
+          attackDamage: 34
+          huntInterval: 12
+          changeCrawling: 0
+          crawling: 0
+        activateIfInactive: 0
+        alertToPlayer: 1

@@ -218,13 +218,23 @@ public class FirebaseManager : MonoBehaviour
         LogWhenReady(() => FirebaseAnalytics.LogEvent(eventName, parameterName, parameterValue));
     }
 
+    /// <summary>
+    /// Which set of level designs this build ships (2 = the 20-night arc). Sent with level events and
+    /// as a user property, so funnels and retention cohorts can be split before/after the redesign,
+    /// since the same level number now means a different night.
+    /// </summary>
+    public const int LevelDesignVersion = 2;
+    const string LevelDesignParameter = "level_design_version";
+
     public static void LogLevelStartEvent(int level)
     {
         LogWhenReady(() =>
         {
+            FirebaseAnalytics.SetUserProperty("level_design", "v" + LevelDesignVersion);
             FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelStart,
                 new Parameter(FirebaseAnalytics.ParameterLevel, level),
-                new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level));
+                new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
+                new Parameter(LevelDesignParameter, LevelDesignVersion));
         });
     }
 
@@ -235,13 +245,15 @@ public class FirebaseManager : MonoBehaviour
             FirebaseAnalytics.LogEvent("level_fail",
                 new Parameter(FirebaseAnalytics.ParameterLevel, level),
                 new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
-                new Parameter(FirebaseAnalytics.ParameterScore, score));
+                new Parameter(FirebaseAnalytics.ParameterScore, score),
+                new Parameter(LevelDesignParameter, LevelDesignVersion));
 
             FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
                 new Parameter(FirebaseAnalytics.ParameterLevel, level),
                 new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
                 new Parameter(FirebaseAnalytics.ParameterSuccess, 0),
-                new Parameter(FirebaseAnalytics.ParameterScore, score));
+                new Parameter(FirebaseAnalytics.ParameterScore, score),
+                new Parameter(LevelDesignParameter, LevelDesignVersion));
         });
     }
 
@@ -252,13 +264,15 @@ public class FirebaseManager : MonoBehaviour
             FirebaseAnalytics.LogEvent("level_complete",
                 new Parameter(FirebaseAnalytics.ParameterLevel, level),
                 new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
-                new Parameter(FirebaseAnalytics.ParameterScore, score));
+                new Parameter(FirebaseAnalytics.ParameterScore, score),
+                new Parameter(LevelDesignParameter, LevelDesignVersion));
 
             FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLevelEnd,
                 new Parameter(FirebaseAnalytics.ParameterLevel, level),
                 new Parameter(FirebaseAnalytics.ParameterLevelName, "level_" + level),
                 new Parameter(FirebaseAnalytics.ParameterSuccess, 1),
-                new Parameter(FirebaseAnalytics.ParameterScore, score));
+                new Parameter(FirebaseAnalytics.ParameterScore, score),
+                new Parameter(LevelDesignParameter, LevelDesignVersion));
         });
     }
 

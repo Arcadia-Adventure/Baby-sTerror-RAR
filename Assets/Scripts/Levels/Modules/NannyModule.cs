@@ -43,7 +43,7 @@ public class NannyModule : LevelModule
         ctx.Nanny.Configure(this, ctx.Scene != null ? ctx.Scene.PatrolWaypoints() : Array.Empty<Transform>());
 
         if (activateOnTask == TaskType.None)
-            ctx.Delay(spawnDelay, () => Activate(ctx));
+            ctx.Delay(spawnDelay, ctx.ActivateNanny);
     }
 
     public override void OnTaskCompleted(LevelContext ctx, TaskType task)
@@ -52,7 +52,7 @@ public class NannyModule : LevelModule
             return;
 
         if (task == activateOnTask)
-            Activate(ctx);
+            ctx.ActivateNanny();
 
         if (task == jumpScareOnTask)
         {
@@ -65,14 +65,6 @@ public class NannyModule : LevelModule
     {
         if (won && ctx.Nanny != null)
             ctx.Nanny.StandDown();
-    }
-
-    static void Activate(LevelContext ctx)
-    {
-        if (ctx.LevelEnded || ctx.Nanny == null)
-            return;
-
-        ctx.Nanny.Activate(ctx.Scene != null ? ctx.Scene.nannySpawnPoint : null);
     }
 
     public override void Validate(LevelDefinition level, List<string> problems)

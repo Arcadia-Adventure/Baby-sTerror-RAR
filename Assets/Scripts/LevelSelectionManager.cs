@@ -87,20 +87,20 @@ public class LevelSelectionManager : Singleton<LevelSelectionManager>
     public void MoveContentView()
     {
         int openLevel = GamePreference.openLevels;
-        int totalLevels = LockableLevels;
+        int buttonCount = LevelConfigLoader.LevelCount;
 
         // Safety check
-        if (totalLevels <= 1)
+        if (buttonCount <= 1)
         {
             scrollView.horizontalNormalizedPosition = 0f;
             return;
         }
 
-        // Last unlocked level index (0-based)
-        int lastUnlockedIndex = Mathf.Clamp(openLevel - 1, 0, totalLevels - 1);
+        // The newest playable night: openLevels counts unlocks after night 1, so it's button openLevels.
+        int newestIndex = Mathf.Clamp(openLevel, 0, buttonCount - 1);
 
         // For horizontal scroll: 0 = left, 1 = right
-        float targetPosition = (float)lastUnlockedIndex / (totalLevels - 1);
+        float targetPosition = (float)newestIndex / (buttonCount - 1);
         targetPosition = Mathf.Clamp01(targetPosition);
 
         // Start from left (0) and animate to target position

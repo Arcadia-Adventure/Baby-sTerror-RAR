@@ -11,6 +11,10 @@ public class LevelDefinition : ScriptableObject
     public string missionName;
     [Tooltip("Picture on this level's button in level select.")]
     public Sprite thumbnail;
+    [Tooltip("This night's story hook, shown on the previous night's win screen to pull the player into this one.")]
+    [TextArea(2, 4)] public string teaser;
+
+    public const int MaxTasks = 4;
 
     public TaskData[] tasks = Array.Empty<TaskData>();
 
@@ -48,6 +52,8 @@ public class LevelDefinition : ScriptableObject
         var problems = new List<string>();
         if (tasks.Length == 0)
             problems.Add("No tasks, so the level can never be completed.");
+        if (tasks.Length > MaxTasks)
+            problems.Add($"{tasks.Length} tasks, but the HUD only shows {MaxTasks}; the rest would be invisible.");
 
         for (int i = 0; i < modules.Count; i++)
         {
@@ -66,8 +72,11 @@ public class LevelDefinition : ScriptableObject
         GiveSharedEntriesTheirOwnInstance(modules);
         foreach (LevelModule module in modules)
         {
-            if (module is LevelEventModule levelEvent)
-                GiveSharedEntriesTheirOwnInstance(levelEvent.actions);
+            if (module is IHasActionLists owner)
+            {
+                foreach (List<LevelAction> list in owner.ActionLists())
+                    GiveSharedEntriesTheirOwnInstance(list);
+            }
         }
     }
 

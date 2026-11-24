@@ -35,6 +35,36 @@ public class DoorController : Interactable
     [SerializeField] NavMeshObstacle navBlocker;
     [SerializeField] float forceOpenDuration = 0.2f;
 
+    [Header("Key")]
+    [Tooltip("Task completed when the player unlocks this door with its key.")]
+    public TaskType onUnlockTask = TaskType.UnlockDoor;
+    public AudioClip unlockSFX;
+
+    /// <summary>Set when this door belongs to a wardrobe the player can hide in.</summary>
+    public HideSpot HideSpot { get; set; }
+
+    SceneObjectKey _identity;
+    bool _identityResolved;
+
+    /// <summary>This door's SceneObjectKey, which a KeyItem names to open it.</summary>
+    public SceneObjectKey Identity
+    {
+        get
+        {
+            if (!_identityResolved)
+            {
+                _identityResolved = true;
+                var tag = GetComponentInParent<SceneObjectTag>();
+                _identity = tag != null ? tag.key : null;
+            }
+
+            return _identity;
+        }
+    }
+
+    public bool Accepts(PickableItem held) =>
+        isDoorLock && held is KeyItem key && key.opensDoor != null && key.opensDoor == Identity;
+
     public override void Start()
     {
         base.Start();
@@ -125,6 +155,17 @@ public class DoorController : Interactable
 
     public void DoorOpenClose()
     {
+        if (isDoorLock && PickDropController.Instance != null && Accepts(PickDropController.Instance.heldPickable))
+        {
+            PickDropController.Instance.ConsumeHeld();
+            SetLocked(false);
+            if (unlockSFX != null)
+                AudioManager.Instance.PlaySFX(unlockSFX);
+            AA_AnalyticsManager.Agent.TrackButtonClick("door_unlocked");
+            ObjectiveUIController.OnTaskEventReceived(onUnlockTask);
+            // Falls through to open the now-unlocked door.
+        }
+
         if (isDoorLock)
         {
             ObjectiveUIController.OnTaskEventReceived(onLockedCheckTask);

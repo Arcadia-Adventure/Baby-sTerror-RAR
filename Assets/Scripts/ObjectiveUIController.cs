@@ -19,28 +19,55 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     [SerializeField] private AudioClip typewriterClip;
 
     public int TotalTasks { get; private set; }
-    public int CurrentTaskIndex => TotalTasks - PendingTasks;
+    public int CompletedTasks => TotalTasks - PendingTasks;
     public int PendingTasks => _taskInfos.Count(t => !t.isCompleted);
+
+    /// <summary>
+    /// The first task still to do, which is what hints point at. Tasks can complete out of order
+    /// (a key picked up early, say), so the completed count isn't always the current task.
+    /// </summary>
+    public int CurrentTaskIndex
+    {
+        get
+        {
+            int index = _taskInfos.FindIndex(t => !t.isCompleted);
+            return index >= 0 ? index : TotalTasks;
+        }
+    }
 
     public static event Action<TaskType> OnTaskReceived;
 
     List<TaskInfo> _taskInfos = new();
+    readonly Dictionary<TaskType, string> _progressSuffix = new();
+    LevelDefinition _levelData;
     int _displayableCount;
     float _lastObjectiveTime;
     bool _stallReported;
     const float StallThresholdSeconds = 120f;
 
-    private void Start()
+    // Tasks are built in Awake: level modules run in GamePlayManager.Start and may report progress
+    // straight away, and the order between two Start methods isn't guaranteed.
+    protected override void Awake()
     {
-        var levelData = LevelConfigLoader.GetLevelData(GamePreference.selectedLevel);
-        if (levelData == null || levelData.tasks == null || levelData.tasks.Length == 0)
+        base.Awake();
+
+        _levelData = LevelConfigLoader.GetLevelData(GamePreference.selectedLevel);
+        if (_levelData == null || _levelData.tasks == null || _levelData.tasks.Length == 0)
         {
             Debug.LogError($"[ObjectiveUIController] No task data for level {GamePreference.selectedLevel}");
+            _levelData = null;
             return;
         }
 
-        BuildTasks(levelData);
-        InitializeUI(levelData);
+        BuildTasks(_levelData);
+    }
+
+    private void Start()
+    {
+        if (_levelData == null)
+            return;
+
+        InitializeUI(_levelData);
 
         _lastObjectiveTime = Time.realtimeSinceStartup;
         _stallReported = false;
@@ -148,18 +175,36 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     {
         var txt = taskTxt[index];
         txt.gameObject.SetActive(true);
-        var tween = TweenUtilities.Typewriter(txt, _taskInfos[index].description, typewriterCharsPerSecond);
-        if (tween == null) return;
+        _taskInfos[index].isRevealing = true;
+        var tween = TweenUtilities.Typewriter(txt, DisplayText(index), typewriterCharsPerSecond,
+            onComplete: () => FinishReveal(index));
+        if (tween == null)
+        {
+            FinishReveal(index);
+            return;
+        }
 
         PlayTypewriterSound();
         tween.OnKill(StopTypewriterSound);
+    }
+
+    // Progress can change while the line types out, so the finished line picks up the latest text.
+    void FinishReveal(int index)
+    {
+        _taskInfos[index].isRevealing = false;
+        if (_taskInfos[index].isCompleted)
+            return;
+
+        var txt = taskTxt[index];
+        txt.text = DisplayText(index);
+        txt.maxVisibleCharacters = int.MaxValue;
     }
 
     void HideTask(int index)
     {
         var txt = taskTxt[index];
         TweenUtilities.Kill(txt);
-        txt.text = _taskInfos[index].description;
+        txt.text = DisplayText(index);
         txt.maxVisibleCharacters = 0;
         txt.gameObject.SetActive(false);
     }
@@ -168,10 +213,45 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
     {
         var txt = taskTxt[index];
         TweenUtilities.Kill(txt);
+        _taskInfos[index].isRevealing = false;
         txt.maxVisibleCharacters = int.MaxValue;
         txt.text = $"{_taskInfos[index].description} (complete)";
         txt.color = completeTaskColor;
         txt.gameObject.SetActive(true);
+    }
+
+    string DisplayText(int index)
+    {
+        TaskInfo info = _taskInfos[index];
+        return _progressSuffix.TryGetValue(info.taskType, out string suffix)
+            ? info.description + suffix
+            : info.description;
+    }
+
+    /// <summary>
+    /// Shows live progress after a task's description, e.g. " (2/3)" or " (1:24)". An empty
+    /// suffix clears it. Every task of that type shows it.
+    /// </summary>
+    public void SetTaskProgress(TaskType taskType, string suffix)
+    {
+        if (string.IsNullOrEmpty(suffix))
+            _progressSuffix.Remove(taskType);
+        else
+            _progressSuffix[taskType] = suffix;
+
+        for (int i = 0; i < _displayableCount; i++)
+        {
+            TaskInfo info = _taskInfos[i];
+            if (info.taskType != taskType || info.isCompleted || info.isRevealing)
+                continue;
+
+            var txt = taskTxt[i];
+            if (!txt.gameObject.activeSelf)
+                continue;
+
+            txt.text = DisplayText(i);
+            txt.maxVisibleCharacters = int.MaxValue;
+        }
     }
 
     #endregion
@@ -198,6 +278,9 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
         return taskInfo != null;
     }
 
+    public bool IsTaskCompleted(TaskType taskType) =>
+        _taskInfos.Count > 0 && _taskInfos.TrueForAll(t => t.taskType != taskType || t.isCompleted);
+
     #endregion
 
     IEnumerator StallDetectionLoop()
@@ -222,6 +305,7 @@ public class ObjectiveUIController : Singleton<ObjectiveUIController>
 public class TaskInfo
 {
     public bool isCompleted;
+    [NonSerialized] public bool isRevealing;
     public TaskType taskType;
     public bool completePreviousTasks;
     public string description;

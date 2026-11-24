@@ -28,6 +28,7 @@ public class TriggerTask : MonoBehaviour
     }
     public bool HaveRequireItem()
     {
-        return PickDropController.Instance.heldPickable.itemType == requireItem;
+        PickableItem held = PickDropController.Instance.heldPickable;
+        return held != null && (requireItem == ItemType.Any || held.itemType == requireItem);
     }
 }

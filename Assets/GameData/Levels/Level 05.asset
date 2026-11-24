@@ -13,20 +13,26 @@ MonoBehaviour:
   m_Name: Level 05
   m_EditorClassIdentifier: 
   level: 5
-  missionName: "The Baby\u2019s Silent Tears"
-  thumbnail: {fileID: 21300000, guid: 7299a8ca02e019741b797c43cdee3dc2, type: 3}
+  missionName: Footsteps on the Stairs
+  thumbnail: {fileID: 21300000, guid: 3485f5d38f2794e5c9c64abff8b8c560, type: 3}
+  teaser: She heard you last night. Tonight she's coming to the nursery.
   tasks:
   - taskType: 21
-    description: "-Find a toy to cheer up the baby. Stay out of her sight."
+    description: -Find a toy to cheer up the baby. Stay out of her sight.
     completePreviousTasks: 0
   - taskType: 22
-    description: "-Give the toy to the baby."
+    description: -Give the toy to the baby.
     completePreviousTasks: 0
+  - taskType: 28
+    description: -She's coming up the stairs! Hide in the wardrobe and wait.
+    completePreviousTasks: 0
+  showFootstepTrail: 0
   modules:
   - rid: 1000
   - rid: 1001
   - rid: 1002
   - rid: 1003
+  - rid: 1668347763201409225
   references:
     version: 2
     RefIds:
@@ -77,6 +83,25 @@ MonoBehaviour:
         hearingRadius: 3.5
         babyNoiseBonus: 3
         loseInterestTime: 6
-        attackDamage: 34
+        attackDamage: 25
         huntInterval: 15
         doorBreakTime: 2.5
+    - rid: 1668347763201409225
+      type: {class: TaskCompletedEvent, ns: , asm: Assembly-CSharp}
+      data:
+        delay: 1.5
+        actions:
+        - rid: 1668347763201409226
+        - rid: 1668347763201409227
+        task: 22
+    - rid: 1668347763201409226
+      type: {class: PlaySoundAction, ns: , asm: Assembly-CSharp}
+      data:
+        clip: {fileID: 8300000, guid: c6b269991d5f64da08b00c604ea7e03f, type: 3}
+        volume: 0.8
+    - rid: 1668347763201409227
+      type: {class: SendNannyToAction, ns: , asm: Assembly-CSharp}
+      data:
+        point: {fileID: 0}
+        linger: 6
+        activateIfInactive: 1

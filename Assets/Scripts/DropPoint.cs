@@ -22,7 +22,8 @@ public class DropPoint : Interactable
         => acceptableItemType == ItemType.Any || acceptableItemType == item.itemType;
     public void DropOnPoint(PickableItem item, float jumpPower = 0.5f, float jumpDuration = 0.5f, float rotationDuration = 0.5f)
     {
-        dropAreaVFX.Stop();
+        if (dropAreaVFX != null)
+            dropAreaVFX.Stop();
         item.ReleaseObject();
         item.rb.isKinematic = true;
         TweenUtilities.Kill(item.transform);

@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 3
   missionName: Change the Diaper
-  thumbnail: {fileID: 21300000, guid: 6c8958fe692a1584ba6dfc0002e3f972, type: 3}
+  thumbnail: {fileID: 21300000, guid: 79b7eee995411481db9828891efe55a9, type: 3}
+  teaser: Who was the woman in the kitchen? The baby needs changing... and she's
+    still here.
   tasks:
   - taskType: 19
     description: -Pick up the baby and take it to the washroom.
@@ -22,7 +24,7 @@ MonoBehaviour:
   - taskType: 20
     description: -Find the diaper and change the baby.
     completePreviousTasks: 1
-  showFootstepTrail: 0
+  showFootstepTrail: 1
   modules:
   - rid: 1000
   - rid: 1001

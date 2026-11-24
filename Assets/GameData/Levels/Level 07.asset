@@ -11,33 +11,38 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2990ad124e9e4ba7b4d02af0567fdee9, type: 3}
   m_Name: Level 07
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
   level: 7
-  missionName: Exit the room
-  thumbnail: {fileID: 21300000, guid: 1745df08ce9236e49ab850a63deef10f, type: 3}
+  missionName: Lights Out
+  thumbnail: {fileID: 21300000, guid: 09639bba58cfb45e3a3a8a8ad09d70e4, type: 3}
+  teaser: Then every light in the house went out.
   tasks:
-  - taskType: 5
-    description: -The nanny trapped you! Find the axe.
+  - taskType: 31
+    description: -The power is out. Find the flashlight.
     completePreviousTasks: 0
-  - taskType: 25
-    description: -Break the door.
+  - taskType: 32
+    description: -Find a spare fuse downstairs.
     completePreviousTasks: 0
-  - taskType: 1
-    description: -Pick up the baby.
+  - taskType: 33
+    description: -Put the fuse in the fuse box in the downstairs bathroom.
     completePreviousTasks: 0
-  - taskType: 14
-    description: -drop the baby on the rocking chair.
-    completePreviousTasks: 1
+  showFootstepTrail: 0
   modules:
-  - rid: 1000
-  - rid: 1001
-  - rid: 1002
-  - rid: 1005
-  - rid: 1006
+  - rid: 1668347763201409192
+  - rid: 1668347763201409193
+  - rid: 1668347763201409194
+  - rid: 1668347763201409195
+  - rid: 1668347763201409196
   references:
     version: 2
     RefIds:
-    - rid: 1000
+    - rid: 1668347763201409192
+      type: {class: PowerModule, ns: , asm: Assembly-CSharp}
+      data:
+        startPowerOff: 1
+        flickerBeforeCut: 2
+        giveFlashlight: 0
+    - rid: 1668347763201409193
       type: {class: DoorModule, ns: , asm: Assembly-CSharp}
       data:
         door: {fileID: 11400000, guid: 3bd2c618c4ad430c958a98609675a087, type: 2}
@@ -47,59 +52,62 @@ MonoBehaviour:
           initialDelay: 0
           interval: 0
         doorBell: 0
-    - rid: 1001
-      type: {class: DoorModule, ns: , asm: Assembly-CSharp}
-      data:
-        door: {fileID: 11400000, guid: e2563500a571469cb274380d64d28b01, type: 2}
-        locked: 1
-        knocking:
-          enabled: 0
-          initialDelay: 0
-          interval: 0
-        doorBell: 0
-    - rid: 1002
+    - rid: 1668347763201409194
       type: {class: BabyModule, ns: , asm: Assembly-CSharp}
       data:
         active: 1
         requireItem: 0
-        canPickBaby: 1
+        canPickBaby: 0
         playHorrorOnPick: 0
-        initialAnimation: 1
+        initialAnimation: 4
         overrideSound: 0
         possessed: 0
         dirtyFace: 0
         clothed: 1
-    - rid: 1003
-      type: {class: EnableDropPointsAction, ns: , asm: Assembly-CSharp}
-      data:
-        dropPoints:
-        - RockingChair
-    - rid: 1004
-      type: {class: StartFireAction, ns: , asm: Assembly-CSharp}
-      data:
-        fire: {fileID: 11400000, guid: 27474fc37b9d4f229da0cc255ff19710, type: 2}
-    - rid: 1005
-      type: {class: LevelStartEvent, ns: , asm: Assembly-CSharp}
-      data:
-        delay: 0
-        actions:
-        - rid: 1003
-        - rid: 1004
-    - rid: 1006
+    - rid: 1668347763201409195
       type: {class: NannyModule, ns: , asm: Assembly-CSharp}
       data:
-        mode: 2
-        activateOnTask: 25
-        spawnDelay: 0
+        mode: 1
+        activateOnTask: 0
+        spawnDelay: 6
         jumpScareOnTask: 0
-        crawling: 1
+        crawling: 0
         patrolSpeed: 0.8
-        chaseSpeed: 3
-        viewDistance: 9
+        chaseSpeed: 3.2
+        viewDistance: 10
         viewAngle: 110
-        hearingRadius: 4
-        babyNoiseBonus: 4
+        hearingRadius: 3.5
+        babyNoiseBonus: 3
         loseInterestTime: 6
         attackDamage: 34
         huntInterval: 15
         doorBreakTime: 2.5
+    - rid: 1668347763201409196
+      type: {class: TaskCompletedEvent, ns: , asm: Assembly-CSharp}
+      data:
+        delay: 0
+        actions:
+        - rid: 1668347763201409197
+        task: 32
+    - rid: 1668347763201409197
+      type: {class: ConfigureNannyAction, ns: , asm: Assembly-CSharp}
+      data:
+        retune:
+          changeMode: 1
+          mode: 2
+          changeSpeeds: 1
+          patrolSpeed: 0.8
+          chaseSpeed: 3.2
+          changeSenses: 1
+          viewDistance: 10
+          viewAngle: 110
+          hearingRadius: 3.5
+          babyNoiseBonus: 3
+          loseInterestTime: 6
+          changeThreat: 1
+          attackDamage: 34
+          huntInterval: 15
+          changeCrawling: 0
+          crawling: 0
+        activateIfInactive: 1
+        alertToPlayer: 0

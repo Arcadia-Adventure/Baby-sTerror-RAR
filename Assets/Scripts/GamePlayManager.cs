@@ -173,6 +173,13 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
         PlacePlayer(CurrentSetup.playerSpawnPoint);
         CullingManager.Instance.SetActiveArea(CurrentSetup.spawnCullingArea);
+
+        // A root saved active in the scene would leak its items into every other level.
+        foreach (LevelSceneSetup setup in LevelSceneSetup.FindAll())
+        {
+            if (setup != CurrentSetup)
+                setup.gameObject.SetActive(false);
+        }
         CurrentSetup.gameObject.SetActive(true);
 
         ResetHouse();

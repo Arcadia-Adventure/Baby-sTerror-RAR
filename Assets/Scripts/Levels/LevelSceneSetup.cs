@@ -27,6 +27,12 @@ public class LevelSceneSetup : MonoBehaviour
     [Tooltip("The hint indicator for each task, in the same order as the level's tasks.")]
     public GameObject[] taskHints = Array.Empty<GameObject>();
 
+    [Header("Thumbnail")]
+    [Tooltip("Optional camera pose for this level's thumbnail (Baby's Terror > 20 Nights > Capture Level Thumbnails). Empty = the player's spawn view.")]
+    public Transform thumbnailView;
+    [Tooltip("Light the thumbnail with the player's flashlight, for nights that start in the dark.")]
+    public bool thumbnailFlashlight;
+
     public int LevelNumber => definition != null ? definition.level : 0;
 
     public GameObject GetTaskHint(int taskIndex) =>
